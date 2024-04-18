@@ -79,8 +79,6 @@ export class Character {
         name: string,
         template: CharacterTemplate
     ) {
-        console.log(id, location_id)
-
         if (id == undefined) {
             this.id = DataID.Character.new_id(location_id)
         } else {

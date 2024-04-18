@@ -14,7 +14,6 @@ const content_1 = require("../../.././../game_content/src/content");
 const data_objects_1 = require("../data/data_objects");
 class Character {
     constructor(id, battle_id, user_id, location_id, name, template) {
-        console.log(id, location_id);
         if (id == undefined) {
             this.id = data_id_1.DataID.Character.new_id(location_id);
         }

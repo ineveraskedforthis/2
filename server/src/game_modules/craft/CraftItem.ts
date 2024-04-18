@@ -89,6 +89,9 @@ export function event_craft_item(character: Character, craft: CraftItemTemplate)
 }
 
 export function new_craft_item(id: string, input: box[], output: EQUIPMENT_PIECE, output_affixes: affix[], difficulty: skill_check[]) {
+    if (difficulty.length == 0) {
+        console.log('craft ' + id + " is invalid: no difficulty checks")
+    }
     crafts_items[id] = {
         id: id,
         input: input,
@@ -97,6 +100,7 @@ export function new_craft_item(id: string, input: box[], output: EQUIPMENT_PIECE
         difficulty: difficulty,
     };
     craft_actions[id] = generate_craft_item_action(crafts_items[id]);
+
 
     return crafts_items[id]
 }

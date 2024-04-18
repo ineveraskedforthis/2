@@ -26,6 +26,12 @@ function generate_skill_check(skill_check, difficulty, material_category) {
         case 10 /* MATERIAL_CATEGORY.WOOD */:
             skill_check.push({ skill: "woodwork", difficulty: difficulty });
             break;
+        case 12 /* MATERIAL_CATEGORY.METAL */:
+            skill_check.push({ skill: "smith", difficulty: difficulty });
+            break;
+        case 11 /* MATERIAL_CATEGORY.TEXTILE */:
+            skill_check.push({ skill: "clothier", difficulty: difficulty });
+            break;
     }
     return skill_check;
 }

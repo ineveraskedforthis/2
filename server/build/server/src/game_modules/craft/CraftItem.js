@@ -54,6 +54,7 @@ function durability(character, craft) {
         durability += base_durability(system_1.CharacterSystem.skill(character, item.skill), item.difficulty);
     }
     durability = durability / craft.difficulty.length;
+    console.log(durability, bonus_durability(character, craft));
     return Math.floor(durability + bonus_durability(character, craft));
 }
 exports.durability = durability;
@@ -81,6 +82,9 @@ function event_craft_item(character, craft) {
 }
 exports.event_craft_item = event_craft_item;
 function new_craft_item(id, input, output, output_affixes, difficulty) {
+    if (difficulty.length == 0) {
+        console.log('craft ' + id + " is invalid: no difficulty checks");
+    }
     crafts_storage_1.crafts_items[id] = {
         id: id,
         input: input,

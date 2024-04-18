@@ -49,8 +49,10 @@ export const enum MATERIAL_CATEGORY {
     FOOD,
     FRUIT,
     WOOD,
+    TEXTILE,
+    METAL,
 }
-export type material_category_string_id = "bow-ammo"|"plant"|"material"|"bone"|"skin"|"leather"|"meat"|"fish"|"food"|"fruit"|"wood"
+export type material_category_string_id = "bow-ammo"|"plant"|"material"|"bone"|"skin"|"leather"|"meat"|"fish"|"food"|"fruit"|"wood"|"textile"|"metal"
 
 export const enum EQUIP_SLOT {
     WEAPON,
@@ -201,8 +203,8 @@ export class MaterialConfiguration {
 
     static MATERIAL_MATERIAL : Record<MATERIAL, MATERIAL> = [MATERIAL.ARROW_BONE, MATERIAL.ARROW_ZAZ, MATERIAL.COTTON, MATERIAL.TEXTILE, MATERIAL.SMALL_BONE_RAT, MATERIAL.SMALL_BONE_HUMAN, MATERIAL.SMALL_BONE_GRACI, MATERIAL.BONE_RAT, MATERIAL.BONE_HUMAN, MATERIAL.BONE_GRACI, MATERIAL.SKIN_RAT, MATERIAL.SKIN_HUMAN, MATERIAL.SKIN_GRACI, MATERIAL.SKIN_BALL, MATERIAL.LEATHER_RAT, MATERIAL.LEATHER_HUMAN, MATERIAL.LEATHER_GRACI, MATERIAL.LEATHER_BALL, MATERIAL.MEAT_RAT, MATERIAL.MEAT_RAT_FRIED, MATERIAL.MEAT_ELODINO, MATERIAL.MEAT_BALL, MATERIAL.MEAT_HUMAN, MATERIAL.MEAT_GRACI, MATERIAL.MEAT_HUMAN_FRIED, MATERIAL.MEAT_GRACI_FRIED, MATERIAL.FISH_OKU, MATERIAL.FISH_OKU_FRIED, MATERIAL.BERRY_FIE, MATERIAL.BERRY_ZAZ, MATERIAL.ZAZ, MATERIAL.WOOD_RED, MATERIAL.WOOD_RED_PLATE, MATERIAL.HAIR_GRACI, MATERIAL.STEEL, ]
     static MATERIAL_MATERIAL_STRING : Record<MATERIAL, material_string_id> = ["arrow-bone", "arrow-zaz", "cotton", "textile", "small-bone-rat", "small-bone-human", "small-bone-graci", "bone-rat", "bone-human", "bone-graci", "skin-rat", "skin-human", "skin-graci", "skin-ball", "leather-rat", "leather-human", "leather-graci", "leather-ball", "meat-rat", "meat-rat-fried", "meat-elodino", "meat-ball", "meat-human", "meat-graci", "meat-human-fried", "meat-graci-fried", "fish-oku", "fish-oku-fried", "berry-fie", "berry-zaz", "zaz", "wood-red", "wood-red-plate", "hair-graci", "steel", ]
-    static MATERIAL_CATEGORY : Record<MATERIAL, MATERIAL_CATEGORY> = [MATERIAL_CATEGORY.BOW_AMMO, MATERIAL_CATEGORY.BOW_AMMO, MATERIAL_CATEGORY.PLANT, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.LEATHER, MATERIAL_CATEGORY.LEATHER, MATERIAL_CATEGORY.LEATHER, MATERIAL_CATEGORY.LEATHER, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FISH, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.FRUIT, MATERIAL_CATEGORY.FRUIT, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.WOOD, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.MATERIAL, ]
-    static MATERIAL_CATEGORY_STRING : Record<MATERIAL, material_category_string_id> = ["bow-ammo", "bow-ammo", "plant", "material", "bone", "bone", "bone", "bone", "bone", "bone", "skin", "skin", "skin", "skin", "leather", "leather", "leather", "leather", "meat", "food", "meat", "food", "meat", "meat", "food", "meat", "fish", "food", "fruit", "fruit", "material", "wood", "material", "material", "material", ]
+    static MATERIAL_CATEGORY : Record<MATERIAL, MATERIAL_CATEGORY> = [MATERIAL_CATEGORY.BOW_AMMO, MATERIAL_CATEGORY.BOW_AMMO, MATERIAL_CATEGORY.PLANT, MATERIAL_CATEGORY.TEXTILE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.LEATHER, MATERIAL_CATEGORY.LEATHER, MATERIAL_CATEGORY.LEATHER, MATERIAL_CATEGORY.LEATHER, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FISH, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.FRUIT, MATERIAL_CATEGORY.FRUIT, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.WOOD, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.TEXTILE, MATERIAL_CATEGORY.METAL, ]
+    static MATERIAL_CATEGORY_STRING : Record<MATERIAL, material_category_string_id> = ["bow-ammo", "bow-ammo", "plant", "textile", "bone", "bone", "bone", "bone", "bone", "bone", "skin", "skin", "skin", "skin", "leather", "leather", "leather", "leather", "meat", "food", "meat", "food", "meat", "meat", "food", "meat", "fish", "food", "fruit", "fruit", "material", "wood", "material", "textile", "metal", ]
 
     // Numbers: 
 
@@ -220,11 +222,11 @@ export class MaterialConfiguration {
 }
 
 export class MaterialCategoryConfiguration {
-    static CATEGORY : MATERIAL_CATEGORY[] = [MATERIAL_CATEGORY.BOW_AMMO, MATERIAL_CATEGORY.PLANT, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.LEATHER, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FISH, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.FRUIT, MATERIAL_CATEGORY.WOOD, ]
-    static CATEGORY_FROM_STRING : Record<material_category_string_id, MATERIAL_CATEGORY> = { "bow-ammo": MATERIAL_CATEGORY.BOW_AMMO, "plant": MATERIAL_CATEGORY.PLANT, "material": MATERIAL_CATEGORY.MATERIAL, "bone": MATERIAL_CATEGORY.BONE, "skin": MATERIAL_CATEGORY.SKIN, "leather": MATERIAL_CATEGORY.LEATHER, "meat": MATERIAL_CATEGORY.MEAT, "fish": MATERIAL_CATEGORY.FISH, "food": MATERIAL_CATEGORY.FOOD, "fruit": MATERIAL_CATEGORY.FRUIT, "wood": MATERIAL_CATEGORY.WOOD }
-    static CATEGORY_TO_STRING : Record<MATERIAL_CATEGORY, material_category_string_id> = ["bow-ammo", "plant", "material", "bone", "skin", "leather", "meat", "fish", "food", "fruit", "wood", ]
+    static CATEGORY : MATERIAL_CATEGORY[] = [MATERIAL_CATEGORY.BOW_AMMO, MATERIAL_CATEGORY.PLANT, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.LEATHER, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FISH, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.FRUIT, MATERIAL_CATEGORY.WOOD, MATERIAL_CATEGORY.TEXTILE, MATERIAL_CATEGORY.METAL, ]
+    static CATEGORY_FROM_STRING : Record<material_category_string_id, MATERIAL_CATEGORY> = { "bow-ammo": MATERIAL_CATEGORY.BOW_AMMO, "plant": MATERIAL_CATEGORY.PLANT, "material": MATERIAL_CATEGORY.MATERIAL, "bone": MATERIAL_CATEGORY.BONE, "skin": MATERIAL_CATEGORY.SKIN, "leather": MATERIAL_CATEGORY.LEATHER, "meat": MATERIAL_CATEGORY.MEAT, "fish": MATERIAL_CATEGORY.FISH, "food": MATERIAL_CATEGORY.FOOD, "fruit": MATERIAL_CATEGORY.FRUIT, "wood": MATERIAL_CATEGORY.WOOD, "textile": MATERIAL_CATEGORY.TEXTILE, "metal": MATERIAL_CATEGORY.METAL }
+    static CATEGORY_TO_STRING : Record<MATERIAL_CATEGORY, material_category_string_id> = ["bow-ammo", "plant", "material", "bone", "skin", "leather", "meat", "fish", "food", "fruit", "wood", "textile", "metal", ]
     static get zero_record() : Record<MATERIAL_CATEGORY, number> {
-        return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
+        return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
     }
     static is_valid_id(id: number): id is MATERIAL_CATEGORY {
         return id in this.CATEGORY 
@@ -235,15 +237,15 @@ export class MaterialCategoryConfiguration {
 
     // ENUMS: 
 
-    static MATERIAL_CATEGORY_CATEGORY : Record<MATERIAL_CATEGORY, MATERIAL_CATEGORY> = [MATERIAL_CATEGORY.BOW_AMMO, MATERIAL_CATEGORY.PLANT, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.LEATHER, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FISH, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.FRUIT, MATERIAL_CATEGORY.WOOD, ]
-    static MATERIAL_CATEGORY_CATEGORY_STRING : Record<MATERIAL_CATEGORY, material_category_string_id> = ["bow-ammo", "plant", "material", "bone", "skin", "leather", "meat", "fish", "food", "fruit", "wood", ]
+    static MATERIAL_CATEGORY_CATEGORY : Record<MATERIAL_CATEGORY, MATERIAL_CATEGORY> = [MATERIAL_CATEGORY.BOW_AMMO, MATERIAL_CATEGORY.PLANT, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.LEATHER, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FISH, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.FRUIT, MATERIAL_CATEGORY.WOOD, MATERIAL_CATEGORY.TEXTILE, MATERIAL_CATEGORY.METAL, ]
+    static MATERIAL_CATEGORY_CATEGORY_STRING : Record<MATERIAL_CATEGORY, material_category_string_id> = ["bow-ammo", "plant", "material", "bone", "skin", "leather", "meat", "fish", "food", "fruit", "wood", "textile", "metal", ]
 
     // Numbers: 
 
 
     // Strings: 
 
-    static MATERIAL_CATEGORY_NAME : Record<MATERIAL_CATEGORY, string> = ["Ammo(bow)", "Plant", "Material", "Bone", "Skin", "Leather", "Meat", "Fish", "Food", "Fruit", "Wood", ]
+    static MATERIAL_CATEGORY_NAME : Record<MATERIAL_CATEGORY, string> = ["Ammo(bow)", "Plant", "Material", "Bone", "Skin", "Leather", "Meat", "Fish", "Food", "Fruit", "Wood", "Textile", "Metal", ]
 }
 
 export class EquipSlotConfiguration {
@@ -630,7 +632,7 @@ export class MaterialStorage {
 }
 
 export class MaterialCategoryStorage {
-    private static instances : Record<MATERIAL_CATEGORY, MaterialCategoryInstance> = [new MaterialCategoryInstance(MATERIAL_CATEGORY.BOW_AMMO), new MaterialCategoryInstance(MATERIAL_CATEGORY.PLANT), new MaterialCategoryInstance(MATERIAL_CATEGORY.MATERIAL), new MaterialCategoryInstance(MATERIAL_CATEGORY.BONE), new MaterialCategoryInstance(MATERIAL_CATEGORY.SKIN), new MaterialCategoryInstance(MATERIAL_CATEGORY.LEATHER), new MaterialCategoryInstance(MATERIAL_CATEGORY.MEAT), new MaterialCategoryInstance(MATERIAL_CATEGORY.FISH), new MaterialCategoryInstance(MATERIAL_CATEGORY.FOOD), new MaterialCategoryInstance(MATERIAL_CATEGORY.FRUIT), new MaterialCategoryInstance(MATERIAL_CATEGORY.WOOD)]
+    private static instances : Record<MATERIAL_CATEGORY, MaterialCategoryInstance> = [new MaterialCategoryInstance(MATERIAL_CATEGORY.BOW_AMMO), new MaterialCategoryInstance(MATERIAL_CATEGORY.PLANT), new MaterialCategoryInstance(MATERIAL_CATEGORY.MATERIAL), new MaterialCategoryInstance(MATERIAL_CATEGORY.BONE), new MaterialCategoryInstance(MATERIAL_CATEGORY.SKIN), new MaterialCategoryInstance(MATERIAL_CATEGORY.LEATHER), new MaterialCategoryInstance(MATERIAL_CATEGORY.MEAT), new MaterialCategoryInstance(MATERIAL_CATEGORY.FISH), new MaterialCategoryInstance(MATERIAL_CATEGORY.FOOD), new MaterialCategoryInstance(MATERIAL_CATEGORY.FRUIT), new MaterialCategoryInstance(MATERIAL_CATEGORY.WOOD), new MaterialCategoryInstance(MATERIAL_CATEGORY.TEXTILE), new MaterialCategoryInstance(MATERIAL_CATEGORY.METAL)]
 
     // Retrieve instance of MaterialCategoryInstance 
     static get(id: MATERIAL_CATEGORY) : MaterialCategoryInstance {

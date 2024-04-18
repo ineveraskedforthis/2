@@ -144,10 +144,18 @@ var Data;
         function string_to_item(s) {
             const item_data = JSON.parse(s);
             if ("prototype_weapon" in item_data) {
-                return new item_1.Weapon(item_data.id, item_data.durability, item_data.affixes, content_1.WeaponStorage.from_string(item_data["prototype_weapon"]).id);
+                const weapon = new item_1.Weapon(item_data.id, item_data.durability, item_data.affixes, content_1.WeaponStorage.from_string(item_data["prototype_weapon"]).id);
+                if (weapon.durability == null) {
+                    weapon.durability = 5;
+                }
+                return weapon;
             }
             if ("prototype_armour" in item_data) {
-                return new item_1.Armour(item_data.id, item_data.durability, item_data.affixes, content_1.ArmourStorage.from_string(item_data["prototype_armour"]).id);
+                const armour = new item_1.Armour(item_data.id, item_data.durability, item_data.affixes, content_1.ArmourStorage.from_string(item_data["prototype_armour"]).id);
+                if (armour.durability == null) {
+                    armour.durability = 5;
+                }
+                return armour;
             }
             return undefined;
         }
