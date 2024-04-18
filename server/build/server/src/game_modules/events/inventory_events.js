@@ -4,7 +4,7 @@ exports.EventInventory = void 0;
 const user_manager_1 = require("../client_communication/user_manager");
 const affix_1 = require("../base_game_classes/affix");
 const alerts_1 = require("../client_communication/network_actions/alerts");
-const effects_1 = require("./effects");
+const effects_1 = require("../effects/effects");
 const events_1 = require("./events");
 const system_1 = require("../character/system");
 const data_objects_1 = require("../data/data_objects");
@@ -54,7 +54,7 @@ var EventInventory;
         events_1.Event.change_stash(character, 30 /* MATERIAL.ZAZ */, -1);
         const pure_skill = system_1.CharacterSystem.pure_skill(character, 'magic_mastery');
         if (pure_skill < 10)
-            effects_1.Effect.Change.skill(character, 'magic_mastery', 1);
+            effects_1.Effect.Change.skill(character, 'magic_mastery', 1, "Enchanting" /* CHANGE_REASON.ENCHANTING */);
         if ((0, item_1.is_weapon)(item))
             (0, affix_1.roll_affix_weapon)(enchant_rating, item);
         else
@@ -75,7 +75,7 @@ var EventInventory;
         events_1.Event.change_stash(character, 30 /* MATERIAL.ZAZ */, -1);
         const pure_skill = system_1.CharacterSystem.pure_skill(character, 'magic_mastery');
         if (pure_skill < 10 * rolls)
-            effects_1.Effect.Change.skill(character, 'magic_mastery', 1);
+            effects_1.Effect.Change.skill(character, 'magic_mastery', 1, "Enchanting" /* CHANGE_REASON.ENCHANTING */);
         item.affixes = [];
         for (let i = 0; i < rolls; i++) {
             if ((0, item_1.is_weapon)(item))

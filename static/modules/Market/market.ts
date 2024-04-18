@@ -6,7 +6,7 @@ import { elementById, inputById, selectById, selectOne } from "../HTMLwrappers/c
 import { globals } from "../globals.js";
 import { socket } from "../Socket/socket.js";
 import { BulkOrderView } from '@custom_types/responses.js';
-import { MATERIAL, MaterialConfiguration, MaterialStorage } from '@content/content.js';
+import { MATERIAL, MaterialConfiguration, MaterialStorage, material_string_id } from '@content/content.js';
 
 function send_execute_order_request(order_id: number, amount: number) {
     socket.emit('execute-order', { amount: amount, order: order_id });
@@ -154,6 +154,9 @@ export function new_market_bulk() {
 }
 
 export function init_market_bulk_infrastructure(market_bulk: List<BulkOrderView>) {
+    if (FILTER_STATE.per_good.length > 0 ) {
+        return
+    }
 
     let filters = elementById('per_good_filters')
 
@@ -218,7 +221,7 @@ export function init_market_bulk_infrastructure(market_bulk: List<BulkOrderView>
         let amount = inputById('create_order_amount').value
         let price = inputById('create_order_price').value
 
-        socket.emit(type, {material: Number(material), amount: Number(amount), price: Number(price)})
+        socket.emit(type, {material: MaterialStorage.from_string(material as material_string_id).id, amount: Number(amount), price: Number(price)})
         // console.log(material, type, amount, price)
     })
 

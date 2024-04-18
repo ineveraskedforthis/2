@@ -136,6 +136,9 @@ export function new_market_bulk() {
     return market_bulk;
 }
 export function init_market_bulk_infrastructure(market_bulk) {
+    if (FILTER_STATE.per_good.length > 0) {
+        return;
+    }
     let filters = elementById('per_good_filters');
     for (let item_index of MaterialConfiguration.MATERIAL) {
         const material = MaterialStorage.get(item_index);
@@ -184,7 +187,7 @@ export function init_market_bulk_infrastructure(market_bulk) {
         let type = selectById('create_order_type').value;
         let amount = inputById('create_order_amount').value;
         let price = inputById('create_order_price').value;
-        socket.emit(type, { material: Number(material), amount: Number(amount), price: Number(price) });
+        socket.emit(type, { material: MaterialStorage.from_string(material).id, amount: Number(amount), price: Number(price) });
         // console.log(material, type, amount, price)
     });
     let order_button = elementById('create_auction_order_button');

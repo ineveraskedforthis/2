@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.use_input = exports.check_inputs = exports.on_craft_update = exports.roll_skill_improvement = exports.skill_to_ratio = exports.MAX_SKILL_MULTIPLIER_BULK = void 0;
 const basic_functions_1 = require("../calculations/basic_functions");
-const effects_1 = require("../events/effects");
+const effects_1 = require("../effects/effects");
 const events_1 = require("../events/events");
 const system_1 = require("../character/system");
 exports.MAX_SKILL_MULTIPLIER_BULK = 10;
@@ -26,12 +26,12 @@ function on_craft_update(character, difficulty) {
         const pure_skill = system_1.CharacterSystem.pure_skill(character, item.skill);
         const total_skill = system_1.CharacterSystem.skill(character, item.skill);
         if (roll_skill_improvement(pure_skill, item.difficulty)) {
-            effects_1.Effect.Change.skill(character, item.skill, 1);
+            effects_1.Effect.Change.skill(character, item.skill, 1, "Crafting" /* CHANGE_REASON.CRAFTING */);
         }
         fatigue += (0, basic_functions_1.trim)(item.difficulty - total_skill, 0, 20);
     }
-    effects_1.Effect.Change.stress(character, 1);
-    effects_1.Effect.Change.fatigue(character, fatigue);
+    effects_1.Effect.Change.stress(character, 1, "Crafting" /* CHANGE_REASON.CRAFTING */);
+    effects_1.Effect.Change.fatigue(character, fatigue, "Crafting" /* CHANGE_REASON.CRAFTING */);
 }
 exports.on_craft_update = on_craft_update;
 function check_inputs(inputs, stash) {

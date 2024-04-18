@@ -10,7 +10,7 @@ import { Perks } from "@custom_types/character";
 import { Request } from "./request";
 import { skill } from "@custom_types/inventory";
 import { Data } from "../../data/data_objects";
-import { Effect } from "../../events/effects";
+import { Effect } from "../../effects/effects";
 import { DataID } from "../../data/data_id";
 
 export namespace SocketCommand {

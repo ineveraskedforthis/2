@@ -2,12 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Effect = void 0;
 const user_manager_1 = require("../client_communication/user_manager");
-const scripted_values_1 = require("./scripted_values");
+const scripted_values_1 = require("../events/scripted_values");
 const basic_functions_1 = require("../calculations/basic_functions");
-const triggers_1 = require("./triggers");
+const triggers_1 = require("../events/triggers");
 const system_1 = require("../market/system");
 const data_id_1 = require("../data/data_id");
 const data_objects_1 = require("../data/data_objects");
+const content_1 = require("../../.././../game_content/src/content");
 const alerts_1 = require("../client_communication/network_actions/alerts");
 var Effect;
 (function (Effect) {
@@ -46,6 +47,51 @@ var Effect;
             user_manager_1.UserManagement.add_user_to_update_queue(to.user_id, 9 /* UI_Part.SAVINGS */);
         }
         Transfer.savings = savings;
+        function stash(A, B, what, amount, reason) {
+            A.stash.transfer(B.stash, what, amount);
+            alerts_1.Alerts.Log.material_transfer(A, B, what, amount, reason);
+            user_manager_1.UserManagement.add_user_to_update_queue(A.user_id, 8 /* UI_Part.STASH */);
+            user_manager_1.UserManagement.add_user_to_update_queue(B.user_id, 8 /* UI_Part.STASH */);
+        }
+        Transfer.stash = stash;
+        function to_trade_stash(A, material, amount) {
+            if (amount > 0) {
+                if (A.stash.get(material) < amount)
+                    return false;
+                A.stash.transfer(A.trade_stash, material, amount);
+                user_manager_1.UserManagement.add_user_to_update_queue(A.user_id, 8 /* UI_Part.STASH */);
+                alerts_1.Alerts.Log.to_trade_stash(A, material, amount);
+                return true;
+            }
+            if (amount < 0) {
+                if (A.trade_stash.get(material) < -amount)
+                    return false;
+                A.trade_stash.transfer(A.stash, material, -amount);
+                user_manager_1.UserManagement.add_user_to_update_queue(A.user_id, 8 /* UI_Part.STASH */);
+                alerts_1.Alerts.Log.from_trade_stash(A, material, -amount);
+                return true;
+            }
+            return true;
+        }
+        Transfer.to_trade_stash = to_trade_stash;
+        function to_trade_savings(A, amount) {
+            if (amount > 0) {
+                if (A.savings.get() < amount)
+                    return false;
+                A.savings.transfer(A.trade_savings, amount);
+                alerts_1.Alerts.Log.to_trade_savings(A, amount);
+                return true;
+            }
+            if (amount < 0) {
+                if (A.trade_savings.get() < -amount)
+                    return false;
+                A.trade_savings.transfer(A.savings, -amount);
+                alerts_1.Alerts.Log.from_trade_savings(A, -amount);
+                return true;
+            }
+            return true;
+        }
+        Transfer.to_trade_savings = to_trade_savings;
     })(Transfer = Effect.Transfer || (Effect.Transfer = {}));
     let Set;
     (function (Set) {
@@ -93,6 +139,28 @@ var Effect;
         }
         Set.blood = blood;
     })(Set = Effect.Set || (Effect.Set = {}));
+    function transaction(A, B, savings_A_to_B, stash_A_to_B, savings_B_to_A, stash_B_to_A, reason) {
+        // transaction validation
+        if (A.savings.get() < savings_A_to_B)
+            return false;
+        if (B.savings.get() < savings_B_to_A)
+            return false;
+        for (let material of content_1.MaterialConfiguration.MATERIAL) {
+            if (A.stash.get(material) < stash_A_to_B.get(material))
+                return false;
+            if (B.stash.get(material) < stash_B_to_A.get(material))
+                return false;
+        }
+        //transaction is validated, execution
+        Transfer.savings(A, B, savings_A_to_B, reason);
+        Transfer.savings(B, A, savings_B_to_A, reason);
+        for (let material of content_1.MaterialConfiguration.MATERIAL) {
+            Transfer.stash(A, B, material, stash_A_to_B.get(material), reason);
+            Transfer.stash(B, A, material, stash_B_to_A.get(material), reason);
+        }
+        return true;
+    }
+    Effect.transaction = transaction;
     let Change;
     (function (Change) {
         function status(character, dstatus, reason) {
@@ -232,3 +300,4 @@ var Effect;
     }
     Effect.spoilage = spoilage;
 })(Effect || (exports.Effect = Effect = {}));
+

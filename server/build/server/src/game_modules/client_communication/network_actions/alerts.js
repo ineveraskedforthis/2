@@ -6,6 +6,7 @@ const systems_communication_1 = require("../../systems_communication");
 const user_manager_1 = require("../user_manager");
 const data_id_1 = require("../../data/data_id");
 const data_objects_1 = require("../../data/data_objects");
+const content_1 = require("../../../.././../game_content/src/content");
 var Alerts;
 (function (Alerts) {
     function not_enough_to_user(user, tag, current, min, max) {
@@ -48,6 +49,10 @@ var Alerts;
         user.socket.emit('log-message', message);
     }
     Alerts.log_to_user = log_to_user;
+    function log_to_character(character, message) {
+        generic_character_alert(character, 'log-message', message);
+    }
+    Alerts.log_to_character = log_to_character;
     function log_attack(character, attack, resistance, total_damage, role) {
         generic_character_alert(character, 'log-attack', {
             attack: attack,
@@ -264,4 +269,87 @@ var Alerts;
         Alerts.generic_character_alert(character, 'leave-room', character);
     }
     Alerts.leave_room = leave_room;
+    let Log;
+    (function (Log) {
+        function to_trade_stash(A, material, amount) {
+            Alerts.log_to_character(A, `You moved ${amount} of ${content_1.MaterialStorage.get(material).name} to your trade stash. Cancel your market order to return it back.`);
+        }
+        Log.to_trade_stash = to_trade_stash;
+        function from_trade_stash(A, material, amount) {
+            Alerts.log_to_character(A, `You moved ${amount} of ${content_1.MaterialStorage.get(material).name} from your trade stash.`);
+        }
+        Log.from_trade_stash = from_trade_stash;
+        function to_trade_savings(A, amount) {
+            Alerts.log_to_character(A, `You moved ${amount} money to your trade savings. Cancel your market order to return it back.`);
+        }
+        Log.to_trade_savings = to_trade_savings;
+        function from_trade_savings(A, amount) {
+            Alerts.log_to_character(A, `You moved ${amount} money from your trade savings.`);
+        }
+        Log.from_trade_savings = from_trade_savings;
+        function savings_transfer(from, to, amount, reason) {
+            Alerts.log_to_character(from, `You transfered ${amount} money to ${to.name}(${to.id}). Reason:${reason}`);
+            Alerts.log_to_character(to, `You got ${amount} money from ${from.name}(${to.id}). Reason:${reason}`);
+        }
+        Log.savings_transfer = savings_transfer;
+        function stash_transfer(from, to, transfer, reason) {
+            for (const m of content_1.MaterialConfiguration.MATERIAL) {
+                const amount = transfer.get(m);
+                if (amount == 0)
+                    continue;
+                material_transfer(from, to, m, amount, reason);
+            }
+        }
+        Log.stash_transfer = stash_transfer;
+        function material_transfer(from, to, what, amount, reason) {
+            Alerts.log_to_character(from, `You transfered ${amount} of ${content_1.MaterialStorage.get(what).name} to ${to.name}(${to.id}). Reason:${reason}`);
+            Alerts.log_to_character(to, `You got ${amount} of ${content_1.MaterialStorage.get(what).name} from ${from.name}(${to.id}). Reason:${reason}`);
+        }
+        Log.material_transfer = material_transfer;
+        function hp_change(character, d, reason) {
+            Alerts.log_to_character(character, `Your hp changed by ${d}. Reason: ${reason}`);
+        }
+        Log.hp_change = hp_change;
+        function stress_change(character, d, reason) {
+            Alerts.log_to_character(character, `Your stress changed by ${d}. Reason: ${reason}`);
+        }
+        Log.stress_change = stress_change;
+        function fatigue_change(character, d, reason) {
+            Alerts.log_to_character(character, `Your fatigue changed by ${d}. Reason: ${reason}`);
+        }
+        Log.fatigue_change = fatigue_change;
+        function blood_change(character, d, reason) {
+            Alerts.log_to_character(character, `Your blood changed by ${d}. Reason: ${reason}`);
+        }
+        Log.blood_change = blood_change;
+        function rage_change(character, d, reason) {
+            Alerts.log_to_character(character, `Your rage changed by ${d}. Reason: ${reason}`);
+        }
+        Log.rage_change = rage_change;
+        function hp_set(character, d, reason) {
+            Alerts.log_to_character(character, `Your hp was set to ${d}. Reason: ${reason}`);
+        }
+        Log.hp_set = hp_set;
+        function stress_set(character, d, reason) {
+            Alerts.log_to_character(character, `Your stress was set to ${d}. Reason: ${reason}`);
+        }
+        Log.stress_set = stress_set;
+        function fatigue_set(character, d, reason) {
+            Alerts.log_to_character(character, `Your fatigue was set to ${d}. Reason: ${reason}`);
+        }
+        Log.fatigue_set = fatigue_set;
+        function blood_set(character, d, reason) {
+            Alerts.log_to_character(character, `Your blood was set to ${d}. Reason: ${reason}`);
+        }
+        Log.blood_set = blood_set;
+        function rage_set(character, d, reason) {
+            Alerts.log_to_character(character, `Your rage was set to ${d}. Reason: ${reason}`);
+        }
+        Log.rage_set = rage_set;
+        function skill_change(character, skill, d, reason) {
+            Alerts.log_to_character(character, `Your ${skill} skill changed by ${d}. Reason: ${reason}`);
+        }
+        Log.skill_change = skill_change;
+    })(Log = Alerts.Log || (Alerts.Log = {}));
 })(Alerts || (exports.Alerts = Alerts = {}));
+

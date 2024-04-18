@@ -1,14 +1,12 @@
 import { Character } from "../character/character";
 import { UI_Part } from "../client_communication/causality_graph";
 import { UserManagement } from "../client_communication/user_manager";
-import { EquipmentPiece, Item } from "../data/entities/item";
-import { ItemSystem } from "../systems/items/item_system";
 import { roll_affix_armour, roll_affix_weapon } from "../base_game_classes/affix";
 import { Alerts } from "../client_communication/network_actions/alerts";
-import { Effect } from "./effects";
+import { CHANGE_REASON, Effect } from "../effects/effects";
 import { Event } from "./events";
 import { CharacterSystem } from "../character/system";
-import { EQUIP_SLOT, MATERIAL, MaterialStorage } from "@content/content";
+import { EQUIP_SLOT, MATERIAL } from "@content/content";
 import { Data } from "../data/data_objects";
 import { item_id } from "@custom_types/ids";
 import { is_weapon } from "../../content_wrappers/item";
@@ -59,7 +57,7 @@ export namespace EventInventory {
 
         Event.change_stash(character, MATERIAL.ZAZ, -1)
         const pure_skill = CharacterSystem.pure_skill(character, 'magic_mastery')
-        if (pure_skill < 10) Effect.Change.skill(character, 'magic_mastery', 1)
+        if (pure_skill < 10) Effect.Change.skill(character, 'magic_mastery', 1, CHANGE_REASON.ENCHANTING)
         if (is_weapon(item)) roll_affix_weapon(enchant_rating, item)
         else roll_affix_armour(enchant_rating, item)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
@@ -80,7 +78,7 @@ export namespace EventInventory {
         let rolls = item.affixes.length
         Event.change_stash(character, MATERIAL.ZAZ, -1)
         const pure_skill = CharacterSystem.pure_skill(character, 'magic_mastery')
-        if (pure_skill < 10 * rolls) Effect.Change.skill(character, 'magic_mastery', 1)
+        if (pure_skill < 10 * rolls) Effect.Change.skill(character, 'magic_mastery', 1, CHANGE_REASON.ENCHANTING)
 
 
         item.affixes = []

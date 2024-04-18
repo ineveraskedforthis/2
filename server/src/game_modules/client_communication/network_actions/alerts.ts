@@ -1,5 +1,5 @@
 import { BattleEventSocket, BattleEventTag, battle_position } from "../../../../../shared/battle_data";
-import { ItemData } from "../../../../../shared/inventory";
+import { ItemData, skill } from "../../../../../shared/inventory";
 import { AttackObj } from "../../attack/class";
 import { Battle } from "../../battle/classes/battle";
 import { BattleSystem } from "../../battle/system";
@@ -14,6 +14,9 @@ import { UserManagement } from "../user_manager";
 import { cell_id } from "@custom_types/ids";
 import { DataID } from "../../data/data_id";
 import { Data } from "../../data/data_objects";
+import { CHANGE_REASON } from "../../effects/effects";
+import { Stash } from "../../inventories/stash";
+import { MATERIAL, MaterialConfiguration, MaterialStorage } from "@content/content";
 
 export namespace Alerts {
     export function not_enough_to_user(
@@ -60,6 +63,10 @@ export namespace Alerts {
 
     export function log_to_user(user: User, message: string) {
         user.socket.emit('log-message', message);
+    }
+
+    export function log_to_character(character: Character, message: string) {
+        generic_character_alert(character, 'log-message', message)
     }
 
     export function log_attack(character: Character, attack: AttackObj, resistance: Damage, total_damage: number, role: 'defender'|'attacker') {
@@ -276,5 +283,86 @@ export namespace Alerts {
 
     export function leave_room(character: Character) {
         Alerts.generic_character_alert(character, 'leave-room', character)
+    }
+
+    export namespace Log {
+        export function to_trade_stash(A: Character, material: MATERIAL, amount: number) {
+            Alerts.log_to_character(A, `You moved ${amount} of ${MaterialStorage.get(material).name} to your trade stash. Cancel your market order to return it back.`)
+        }
+
+        export function from_trade_stash(A: Character, material: MATERIAL, amount: number) {
+            Alerts.log_to_character(A, `You moved ${amount} of ${MaterialStorage.get(material).name} from your trade stash.`)
+        }
+
+        export function to_trade_savings(A: Character, amount: number) {
+            Alerts.log_to_character(A, `You moved ${amount} money to your trade savings. Cancel your market order to return it back.`)
+        }
+
+        export function from_trade_savings(A: Character, amount: number) {
+            Alerts.log_to_character(A, `You moved ${amount} money from your trade savings.`)
+        }
+
+        export function savings_transfer(from: Character, to: Character, amount: number, reason: CHANGE_REASON) {
+            Alerts.log_to_character(from, `You transfered ${amount} money to ${to.name}(${to.id}). Reason:${reason}`)
+            Alerts.log_to_character(to, `You got ${amount} money from ${from.name}(${to.id}). Reason:${reason}`)
+        }
+
+        export function stash_transfer(from: Character, to: Character, transfer: Stash, reason: CHANGE_REASON) {
+            for (const m of MaterialConfiguration.MATERIAL) {
+                const amount = transfer.get(m)
+                if (amount == 0) continue;
+
+                material_transfer(from, to, m, amount, reason)
+            }
+        }
+
+        export function material_transfer(from: Character, to: Character, what: MATERIAL, amount: number, reason: CHANGE_REASON) {
+            Alerts.log_to_character(from, `You transfered ${amount} of ${MaterialStorage.get(what).name} to ${to.name}(${to.id}). Reason:${reason}`)
+            Alerts.log_to_character(to, `You got ${amount} of ${MaterialStorage.get(what).name} from ${from.name}(${to.id}). Reason:${reason}`)
+        }
+
+        export function hp_change(character: Character, d: number, reason: CHANGE_REASON) {
+            Alerts.log_to_character(character, `Your hp changed by ${d}. Reason: ${reason}`)
+        }
+
+        export function stress_change(character: Character, d: number, reason: CHANGE_REASON) {
+            Alerts.log_to_character(character, `Your stress changed by ${d}. Reason: ${reason}`)
+        }
+
+        export function fatigue_change(character: Character, d: number, reason: CHANGE_REASON) {
+            Alerts.log_to_character(character, `Your fatigue changed by ${d}. Reason: ${reason}`)
+        }
+
+        export function blood_change(character: Character, d: number, reason: CHANGE_REASON) {
+            Alerts.log_to_character(character, `Your blood changed by ${d}. Reason: ${reason}`)
+        }
+
+        export function rage_change(character: Character, d: number, reason: CHANGE_REASON) {
+            Alerts.log_to_character(character, `Your rage changed by ${d}. Reason: ${reason}`)
+        }
+
+        export function hp_set(character: Character, d: number, reason: CHANGE_REASON) {
+            Alerts.log_to_character(character, `Your hp was set to ${d}. Reason: ${reason}`)
+        }
+
+        export function stress_set(character: Character, d: number, reason: CHANGE_REASON) {
+            Alerts.log_to_character(character, `Your stress was set to ${d}. Reason: ${reason}`)
+        }
+
+        export function fatigue_set(character: Character, d: number, reason: CHANGE_REASON) {
+            Alerts.log_to_character(character, `Your fatigue was set to ${d}. Reason: ${reason}`)
+        }
+
+        export function blood_set(character: Character, d: number, reason: CHANGE_REASON) {
+            Alerts.log_to_character(character, `Your blood was set to ${d}. Reason: ${reason}`)
+        }
+
+        export function rage_set(character: Character, d: number, reason: CHANGE_REASON) {
+            Alerts.log_to_character(character, `Your rage was set to ${d}. Reason: ${reason}`)
+        }
+
+        export function skill_change(character: Character, skill: skill, d: number, reason: CHANGE_REASON) {
+            Alerts.log_to_character(character, `Your ${skill} skill changed by ${d}. Reason: ${reason}`)
+        }
     }
 }

@@ -2,13 +2,14 @@ import { CharacterMapAction, DurationModifier, MapActionEffect, MapActionTrigger
 import { Character } from "../character/character";
 import { basic_trigger } from "./generic_functions";
 import { cell_id } from "@custom_types/ids";
-import { Effect } from "../events/effects";
+import { CHANGE_REASON, Effect } from "../effects/effects";
 export function generate_action(
     fatigue_cost: number,
     duration_modifer: DurationModifier,
     trigger: MapActionTriggerTargeted,
     effect: MapActionEffect,
-    start_effect: MapActionEffect): CharacterMapAction
+    start_effect: MapActionEffect,
+    associated_reason: CHANGE_REASON): CharacterMapAction
 {
     return {
         duration(character: Character) {
@@ -25,7 +26,7 @@ export function generate_action(
 
         result:  function(character:Character, cell: cell_id) {
             if (this.check(character, cell).response == 'OK') {
-                Effect.Change.fatigue(character, fatigue_cost)
+                Effect.Change.fatigue(character, fatigue_cost, associated_reason)
                 effect(character, cell)
             }
         },

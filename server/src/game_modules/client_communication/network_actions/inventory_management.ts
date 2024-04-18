@@ -9,7 +9,7 @@ import { Character } from "../../character/character";
 import { Data } from "../../data/data_objects";
 import { EquipSlotConfiguration, EquipSlotStorage, MATERIAL_CATEGORY, MaterialConfiguration, MaterialStorage } from "@content/content";
 import { money } from "@custom_types/common";
-import { Effect } from "../../events/effects";
+import { CHANGE_REASON, Effect } from "../../effects/effects";
 import { UI_Part } from "../causality_graph";
 import { UserManagement } from "../user_manager";
 
@@ -42,9 +42,9 @@ export namespace InventoryCommands {
 
         character.stash.inc(material.id, -1)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH)
-        Effect.Change.hp(character, Math.round(material.density * 20 + material.magic_power * 5))
-        Effect.Change.stress(character, -Math.round(material.density * 5 + material.magic_power * 10))
-        Effect.Change.fatigue(character, -Math.round(material.density * 20 + material.magic_power * 5))
+        Effect.Change.hp(character, Math.round(material.density * 20 + material.magic_power * 5), CHANGE_REASON.EATING)
+        Effect.Change.stress(character, -Math.round(material.density * 5 + material.magic_power * 10), CHANGE_REASON.EATING)
+        Effect.Change.fatigue(character, -Math.round(material.density * 20 + material.magic_power * 5), CHANGE_REASON.EATING)
     }
 
     export function equip(sw: SocketWrapper, msg: number) {

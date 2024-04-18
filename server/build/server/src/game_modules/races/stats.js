@@ -33,14 +33,14 @@ exports.BaseStats = {
         learning: 0,
     },
     Rat: {
-        phys_power: 10,
-        magic_power: 10,
+        phys_power: 5,
+        magic_power: 5,
         movement_speed: 2,
         learning: 10
     },
     MageRat: {
         phys_power: 4,
-        magic_power: 20,
+        magic_power: 15,
         movement_speed: 1.5,
         learning: 30
     },

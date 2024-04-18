@@ -8,7 +8,7 @@ const market_1 = require("../../events/market");
 const system_1 = require("../../market/system");
 const data_objects_1 = require("../../data/data_objects");
 const content_1 = require("../../../.././../game_content/src/content");
-const effects_1 = require("../../events/effects");
+const effects_1 = require("../../effects/effects");
 const user_manager_1 = require("../user_manager");
 function r(f) {
     return (sw) => {
@@ -43,9 +43,9 @@ var InventoryCommands;
         // console.log(5)
         character.stash.inc(material.id, -1);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.STASH */);
-        effects_1.Effect.Change.hp(character, Math.round(material.density * 20 + material.magic_power * 5));
-        effects_1.Effect.Change.stress(character, -Math.round(material.density * 5 + material.magic_power * 10));
-        effects_1.Effect.Change.fatigue(character, -Math.round(material.density * 20 + material.magic_power * 5));
+        effects_1.Effect.Change.hp(character, Math.round(material.density * 20 + material.magic_power * 5), "Eating" /* CHANGE_REASON.EATING */);
+        effects_1.Effect.Change.stress(character, -Math.round(material.density * 5 + material.magic_power * 10), "Eating" /* CHANGE_REASON.EATING */);
+        effects_1.Effect.Change.fatigue(character, -Math.round(material.density * 20 + material.magic_power * 5), "Eating" /* CHANGE_REASON.EATING */);
     }
     InventoryCommands.eat = eat;
     function equip(sw, msg) {

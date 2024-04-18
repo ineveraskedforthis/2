@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ItemOrders = exports.MarketOrders = exports.AuctionResponse = void 0;
-const system_1 = require("../character/system");
 const stash_1 = require("../inventories/stash");
 const data_objects_1 = require("../data/data_objects");
 const data_id_1 = require("../data/data_id");
+const effects_1 = require("../effects/effects");
 var AuctionResponse;
 (function (AuctionResponse) {
     AuctionResponse["NOT_IN_THE_SAME_CELL"] = "not_in_the_same_cell";
@@ -31,9 +31,9 @@ var MarketOrders;
         order.amount -= amount;
         const transaction_stash = new stash_1.Stash();
         transaction_stash.inc(material, amount);
-        system_1.CharacterSystem.to_trade_stash(owner, order.material, -amount);
+        effects_1.Effect.Transfer.to_trade_stash(owner, order.material, -amount);
         //actual transaction
-        system_1.CharacterSystem.transaction(owner, buyer, 0, transaction_stash, pay, empty_stash);
+        effects_1.Effect.transaction(owner, buyer, 0, transaction_stash, pay, empty_stash, "Trade" /* CHANGE_REASON.TRADE */);
         return 'ok';
     }
     MarketOrders.execute_sell_order = execute_sell_order;
@@ -72,9 +72,9 @@ var MarketOrders;
         order.amount -= amount;
         const transaction_stash = new stash_1.Stash();
         transaction_stash.inc(material, amount);
-        system_1.CharacterSystem.to_trade_savings(owner, -pay);
+        effects_1.Effect.Transfer.to_trade_savings(owner, -pay);
         //transaction
-        system_1.CharacterSystem.transaction(owner, seller, pay, empty_stash, 0, transaction_stash);
+        effects_1.Effect.transaction(owner, seller, pay, empty_stash, 0, transaction_stash, "Trade" /* CHANGE_REASON.TRADE */);
         return 'ok';
     }
     MarketOrders.execute_buy_order = execute_buy_order;
@@ -88,7 +88,7 @@ var MarketOrders;
             return 'invalid_amount';
         if (owner.savings.get() < price * amount)
             return 'not_enough_savings';
-        system_1.CharacterSystem.to_trade_savings(owner, amount * price);
+        effects_1.Effect.Transfer.to_trade_savings(owner, amount * price);
         const order = data_objects_1.Data.MarketOrders.create(amount, price, 'buy', material, owner.id);
         return 'ok';
     }
@@ -103,7 +103,7 @@ var MarketOrders;
             return 'invalid_amount';
         if (owner.stash.get(material) < amount)
             return 'not_enough_material';
-        system_1.CharacterSystem.to_trade_stash(owner, material, amount);
+        effects_1.Effect.Transfer.to_trade_stash(owner, material, amount);
         const order = data_objects_1.Data.MarketOrders.create(amount, price, 'sell', material, owner.id);
         return 'ok';
     }

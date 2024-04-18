@@ -9,8 +9,15 @@ var Loot;
 (function (Loot) {
     function base(dead) {
         switch (dead) {
-            case 'elo': return [{ material: 20 /* MATERIAL.MEAT_ELODINO */, amount: 3 }];
-            case 'human': return [{ material: 22 /* MATERIAL.MEAT_HUMAN */, amount: 6 }];
+            case 'elo': return [
+                { material: 20 /* MATERIAL.MEAT_ELODINO */, amount: 3 }
+            ];
+            case 'human': return [
+                { material: 22 /* MATERIAL.MEAT_HUMAN */, amount: 10 },
+                { material: 8 /* MATERIAL.BONE_HUMAN */, amount: 2 },
+                { material: 5 /* MATERIAL.SMALL_BONE_HUMAN */, amount: 5 },
+                { material: 11 /* MATERIAL.SKIN_HUMAN */, amount: 5 }
+            ];
             case 'rat': {
                 return [
                     { material: 18 /* MATERIAL.MEAT_RAT */, amount: 3 },
@@ -35,7 +42,13 @@ var Loot;
                     { material: 10 /* MATERIAL.SKIN_RAT */, amount: 6 }
                 ];
             }
-            case 'graci': return [{ material: 33 /* MATERIAL.HAIR_GRACI */, amount: 3 }, { material: 23 /* MATERIAL.MEAT_GRACI */, amount: 50 }];
+            case 'graci': return [
+                { material: 33 /* MATERIAL.HAIR_GRACI */, amount: 10 },
+                { material: 23 /* MATERIAL.MEAT_GRACI */, amount: 50 },
+                { material: 9 /* MATERIAL.BONE_GRACI */, amount: 10 },
+                { material: 12 /* MATERIAL.SKIN_GRACI */, amount: 50 },
+                { material: 6 /* MATERIAL.SMALL_BONE_GRACI */, amount: 100 }
+            ];
             case "test": return [];
             case "berserkrat": return [
                 { material: 18 /* MATERIAL.MEAT_RAT */, amount: 10 },
@@ -43,8 +56,16 @@ var Loot;
                 { material: 7 /* MATERIAL.BONE_RAT */, amount: 2 },
                 { material: 10 /* MATERIAL.SKIN_RAT */, amount: 6 }
             ];
-            case "human_strong": return [{ material: 22 /* MATERIAL.MEAT_HUMAN */, amount: 20 }];
-            case "ball": return [{ material: 21 /* MATERIAL.MEAT_BALL */, amount: 20 }];
+            case "human_strong": return [
+                { material: 22 /* MATERIAL.MEAT_HUMAN */, amount: 20 },
+                { material: 8 /* MATERIAL.BONE_HUMAN */, amount: 5 },
+                { material: 5 /* MATERIAL.SMALL_BONE_HUMAN */, amount: 10 },
+                { material: 11 /* MATERIAL.SKIN_HUMAN */, amount: 10 }
+            ];
+            case "ball": return [
+                { material: 21 /* MATERIAL.MEAT_BALL */, amount: 20 },
+                { material: 13 /* MATERIAL.SKIN_BALL */, amount: 20 }
+            ];
         }
         return [];
     }
@@ -65,10 +86,14 @@ var Loot;
         return response;
     }
     Loot.items = items;
-    function skinning(dead) {
-        if (dead == 'rat')
-            return 4;
-        return 0;
+    function skin(race) {
+        switch (race) {
+            case "human": return 11 /* MATERIAL.SKIN_HUMAN */;
+            case "rat": return 10 /* MATERIAL.SKIN_RAT */;
+            case "graci": return 12 /* MATERIAL.SKIN_GRACI */;
+            case "elo": return undefined;
+            case "ball": return 13 /* MATERIAL.SKIN_BALL */;
+        }
     }
-    Loot.skinning = skinning;
+    Loot.skin = skin;
 })(Loot || (exports.Loot = Loot = {}));

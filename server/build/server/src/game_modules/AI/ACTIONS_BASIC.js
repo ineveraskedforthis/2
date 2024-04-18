@@ -13,7 +13,7 @@ const constraints_1 = require("./constraints");
 const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
 const data_objects_1 = require("../data/data_objects");
 const data_id_1 = require("../data/data_id");
-const effects_1 = require("../events/effects");
+const effects_1 = require("../effects/effects");
 const content_1 = require("../../.././../game_content/src/content");
 const LOOT = [18 /* MATERIAL.MEAT_RAT */, 10 /* MATERIAL.SKIN_RAT */, 7 /* MATERIAL.BONE_RAT */, 4 /* MATERIAL.SMALL_BONE_RAT */, 26 /* MATERIAL.FISH_OKU */];
 function loot(character) {

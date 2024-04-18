@@ -5,6 +5,7 @@ import { Character } from "../character/character";
 import { Armour, Item, Weapon } from "../data/entities/item";
 import { Damage } from "../Damage";
 import { IMPACT_TYPE, MATERIAL } from "@content/content";
+import { CHANGE_REASON, Effect } from "../effects/effects";
 
 export function get_potential_affix_weapon(enchant_rating:number, item:Weapon):{tag: affix_tag, weight: number}[] {
     let potential_affix:{tag: affix_tag, weight: number}[] = []
@@ -275,20 +276,20 @@ type character_update_function = (agent: Character) => void
 
 export const update_character:{[_ in affix_tag]?: character_update_function} = {
         of_elder_beast: (agent: Character) => {
-            agent.change('stress', 5);
-            agent.change('rage', 5 );
-            agent.change('hp', 1 );
+            Effect.Change.stress(agent, 5, CHANGE_REASON.EQUIPMENT_ENCHANT)
+            Effect.Change.rage(agent, 5, CHANGE_REASON.EQUIPMENT_ENCHANT)
+            Effect.Change.hp(agent, 1, CHANGE_REASON.EQUIPMENT_ENCHANT)
         },
 
         of_graci_beauty: (agent: Character) => {
-            agent.change('stress', 1);
+            Effect.Change.stress(agent, 1, CHANGE_REASON.EQUIPMENT_ENCHANT)
         },
 
         of_elodino_pleasure: (agent: Character) => {
-            agent.change('stress', 1);
+            Effect.Change.stress(agent, 1, CHANGE_REASON.EQUIPMENT_ENCHANT)
         },
 
         of_painful_protection: (agent: Character) => {
-            agent.change('hp', -1);
+            Effect.Change.hp(agent, -1, CHANGE_REASON.EQUIPMENT_ENCHANT)
         }
     }

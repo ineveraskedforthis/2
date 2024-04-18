@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.rest = exports.clean = void 0;
-const effects_1 = require("../events/effects");
+const effects_1 = require("../effects/effects");
 const generator_1 = require("./generator");
 const types_1 = require("./types");
 const generic_functions_1 = require("./generic_functions");
@@ -23,7 +23,7 @@ function clean_trigger(character) {
     return { response: "Notification:", value: "Lack of water in this location" };
 }
 function clean_effect(character, cell) {
-    effects_1.Effect.Change.blood(character, -100);
+    effects_1.Effect.Change.blood(character, -100, "Cleaning" /* CHANGE_REASON.CLEANING */);
 }
 // function eat_effect(character: Character, cell: cell_id) {
 //     Effect.Change.fatigue(character, -2)
@@ -31,7 +31,7 @@ function clean_effect(character, cell) {
 //     Effect.Change.hp(character, 10)
 //     Event.change_stash(character, MATERIAL.MEAT_RAT_FRIED, -1)
 // }
-exports.clean = (0, generator_1.generate_action)(CLEAN_FATIGUE_COST, clean_duration_modifier, clean_trigger, clean_effect, generic_functions_1.dummy_effect);
+exports.clean = (0, generator_1.generate_action)(CLEAN_FATIGUE_COST, clean_duration_modifier, clean_trigger, clean_effect, generic_functions_1.dummy_effect, "Cleaning" /* CHANGE_REASON.CLEANING */);
 exports.rest = {
     duration(char) {
         return 0.1 + char.get_fatigue() / 20;
@@ -62,9 +62,9 @@ exports.rest = {
         const target_fatigue = scripted_values_1.ScriptedValue.rest_target_fatigue(scripted_values_1.ScriptedValue.rest_tier(char, location), skill, char.race);
         const target_stress = scripted_values_1.ScriptedValue.rest_target_stress(scripted_values_1.ScriptedValue.rest_tier(char, location), skill, char.race);
         if (target_fatigue < char.get_fatigue())
-            char.set_fatigue(target_fatigue);
+            effects_1.Effect.Set.fatigue(char, target_fatigue, "Rest" /* CHANGE_REASON.REST */);
         if (target_stress < char.get_stress())
-            char.set('stress', target_stress);
+            effects_1.Effect.Set.stress(char, target_stress, "Rest" /* CHANGE_REASON.REST */);
         user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
     },
     start: function (char, cell) {
@@ -73,6 +73,6 @@ exports.rest = {
         const location_owner = data_objects_1.Data.Characters.from_id(location.owner_id);
         if (location_owner == undefined)
             return;
-        system_1.CharacterSystem.transfer_savings(char, location_owner, price);
+        effects_1.Effect.Transfer.savings(char, location_owner, price, "Rest" /* CHANGE_REASON.REST */);
     },
 };

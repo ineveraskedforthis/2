@@ -14,6 +14,7 @@ const AI_CONSTANTS_1 = require("./AI_CONSTANTS");
 const AI_ROUTINE_CRAFTER_1 = require("./AI_ROUTINE_CRAFTER");
 const AI_ROUTINE_URBAN_TRADER_1 = require("./AI_ROUTINE_URBAN_TRADER");
 const data_objects_1 = require("../data/data_objects");
+const effects_1 = require("../effects/effects");
 function rest_budget(character) {
     let budget = character.savings.get();
     if (budget < 50) {
@@ -102,7 +103,7 @@ exports.AI_ACTIONS = {
     EAT: {
         action: (character) => {
             if (character.stash.get(19 /* MATERIAL.MEAT_RAT_FRIED */) > 0) {
-                character.change_hp(10);
+                effects_1.Effect.Change.hp(character, 25, "Eating" /* CHANGE_REASON.EATING */);
                 character.stash.inc(19 /* MATERIAL.MEAT_RAT_FRIED */, -1);
             }
         },

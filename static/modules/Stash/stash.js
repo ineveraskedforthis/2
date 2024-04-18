@@ -39,7 +39,7 @@ export function init_stash(stash_dependent_elements) {
         // updating options
         let option = document.createElement('option');
         option.value = tag;
-        option.innerHTML = tag;
+        option.innerHTML = material.name;
         material_select.appendChild(option);
     }
     const character = globals.character_data;
