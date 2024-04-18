@@ -23,15 +23,29 @@ const empty_stash = new Stash()
 
 // this file does not handle networking
 
+interface MarkerResponseBuyOK {
+    tag: "ok",
+    amount: number
+}
+
+interface MarketResponseBuyNotEnoughMoney {
+    tag: 'not_enough_money'
+}
+
+interface MarkerResponseSell {
+    tag: "ok",
+    amount: number
+}
+
 
 export namespace MarketOrders {
-    export function execute_sell_order(id: market_order_id, amount: number, buyer: Character) {
+    export function execute_sell_order(id: market_order_id, amount: number, buyer: Character) : MarkerResponseBuyOK | MarketResponseBuyNotEnoughMoney {
         const order = Data.MarketOrders.from_id(id)
         const owner = Data.Characters.from_id(order.owner_id)
         const pay = amount * order.price as money
 
         if (order.amount < amount) amount = order.amount
-        if (buyer.savings.get() < pay) return 'not_enough_money'
+        if (buyer.savings.get() < pay) return {tag: 'not_enough_money'}
 
         const material = order.material
 
@@ -45,7 +59,8 @@ export namespace MarketOrders {
         Effect.transaction(owner, buyer,
                                     0 as money  , transaction_stash,
                                     pay         , empty_stash       , CHANGE_REASON.TRADE)
-        return 'ok'
+
+        return {tag: "ok", amount: amount}
     }
 
     export function remove(id: market_order_id) {
@@ -70,7 +85,7 @@ export namespace MarketOrders {
         }
     }
 
-    export function execute_buy_order(id:market_order_id, amount: number, seller: Character) {
+    export function execute_buy_order(id:market_order_id, amount: number, seller: Character) : MarkerResponseSell {
         const order = Data.MarketOrders.from_id(id)
         const owner = Data.Characters.from_id(order.owner_id)
 
@@ -90,7 +105,10 @@ export namespace MarketOrders {
         Effect.transaction(owner, seller,
                                     pay          , empty_stash,
                                     0 as money   , transaction_stash, CHANGE_REASON.TRADE)
-        return 'ok'
+        return {
+            tag: "ok",
+            amount: amount
+        }
     }
 
     export function new_buy_order(material: MATERIAL, amount: number, price: money, owner: Character) {

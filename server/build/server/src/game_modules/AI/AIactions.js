@@ -9,6 +9,7 @@ const crafts_storage_1 = require("../craft/crafts_storage");
 const inventory_events_1 = require("../events/inventory_events");
 const data_objects_1 = require("../data/data_objects");
 const item_1 = require("../../content_wrappers/item");
+const ACTIONS_BASIC_1 = require("./ACTIONS_BASIC");
 var AIactions;
 (function (AIactions) {
     function craft_bulk(character, craft, budget) {
@@ -28,6 +29,9 @@ var AIactions;
             if (item.amount == 0)
                 continue;
             system_1.MarketOrders.remove_by_condition(character, item.material);
+            item.amount -= (0, ACTIONS_BASIC_1.buy_from_market_limits)(character, item.material, item.price, item.amount);
+            if (item.amount <= 0)
+                continue;
             market_1.EventMarket.buy(character, item.material, item.amount, item.price);
         }
         manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[craft.id], character, character.cell_id);
@@ -43,6 +47,9 @@ var AIactions;
             if (item.amount == 0)
                 continue;
             system_1.MarketOrders.remove_by_condition(character, item.material);
+            item.amount -= (0, ACTIONS_BASIC_1.buy_from_market_limits)(character, item.material, item.price, item.amount);
+            if (item.amount <= 0)
+                continue;
             market_1.EventMarket.buy(character, item.material, item.amount, item.price);
         }
     }

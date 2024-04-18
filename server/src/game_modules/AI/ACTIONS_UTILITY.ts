@@ -7,7 +7,7 @@ import { Character } from "../character/character"
 import { ForestPassiveRoutine, SteppePassiveRoutine } from "./AI_ROUTINE_GENERIC";
 import { AIhelper } from "./helpers";
 import { ScriptedValue } from "../events/scripted_values";
-import { buy, coast_walk, home_walk, loot, random_walk, rat_walk, remove_orders, sell_loot, sell_material, update_price_beliefs, urban_walk } from "./ACTIONS_BASIC";
+import { buy_from_market, coast_walk, home_walk, loot, random_walk, rat_walk, remove_orders, sell_loot, sell_material, update_price_beliefs, urban_walk } from "./ACTIONS_BASIC";
 import { simple_constraints } from "./constraints";
 import { AI_TRIGGER } from "./AI_TRIGGERS";
 import { AI_RESERVE } from "./AI_CONSTANTS";
@@ -156,7 +156,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
             }
 
             update_price_beliefs(character)
-            buy(character, MATERIAL.MEAT_RAT_FRIED)
+            buy_from_market(character, MATERIAL.MEAT_RAT_FRIED)
         },
 
         utility: (character: Character) => {
@@ -174,7 +174,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
             }
 
             update_price_beliefs(character)
-            buy(character, MATERIAL.ARROW_BONE)
+            buy_from_market(character, MATERIAL.ARROW_BONE)
         },
 
         utility: (character: Character) => {

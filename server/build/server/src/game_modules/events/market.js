@@ -37,28 +37,36 @@ var EventMarket;
         let result = system_1.MarketOrders.execute_sell_order(order_id, amount, buyer);
         const order = data_objects_1.Data.MarketOrders.from_id(order_id);
         const seller = data_objects_1.Data.Characters.from_id(order.owner_id);
-        if ((seller.user_id == undefined) && (result == 'ok')) {
-            (0, ACTIONS_BASIC_1.roll_price_belief_sell_increase)(seller, order.material, (0, basic_functions_1.trim)(Math.min(amount, order.amount), 1, 100) / 50);
+        if ((seller.user_id == undefined) && (result.tag == 'ok')) {
+            (0, ACTIONS_BASIC_1.roll_price_belief_sell_increase)(seller, order.material, (0, basic_functions_1.trim)(Math.min(amount, result.amount), 1, 100) / 50);
         }
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 8 /* UI_Part.STASH */);
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 9 /* UI_Part.SAVINGS */);
         user_manager_1.UserManagement.add_user_to_update_queue(seller.user_id, 9 /* UI_Part.SAVINGS */);
         user_manager_1.UserManagement.add_user_to_update_queue(seller.user_id, 8 /* UI_Part.STASH */);
         effects_1.Effect.Update.cell_market(buyer.cell_id);
+        if (result.tag == "ok") {
+            return result.amount;
+        }
+        return 0;
     }
     EventMarket.execute_sell_order = execute_sell_order;
     function execute_buy_order(seller, order_id, amount) {
         const result = system_1.MarketOrders.execute_buy_order(order_id, amount, seller);
         const order = data_objects_1.Data.MarketOrders.from_id(order_id);
         const buyer = data_objects_1.Data.Characters.from_id(order.owner_id);
-        if ((seller.user_id == undefined) && (result == 'ok')) {
-            (0, ACTIONS_BASIC_1.roll_price_belief_sell_decrease)(seller, order.material, (0, basic_functions_1.trim)(Math.min(amount, order.amount), 1, 100) / 50);
+        if ((seller.user_id == undefined) && (result.tag == 'ok')) {
+            (0, ACTIONS_BASIC_1.roll_price_belief_sell_decrease)(seller, order.material, (0, basic_functions_1.trim)(Math.min(amount, result.amount), 1, 100) / 50);
         }
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 8 /* UI_Part.STASH */);
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 9 /* UI_Part.SAVINGS */);
         user_manager_1.UserManagement.add_user_to_update_queue(seller.user_id, 9 /* UI_Part.SAVINGS */);
         user_manager_1.UserManagement.add_user_to_update_queue(seller.user_id, 8 /* UI_Part.STASH */);
         effects_1.Effect.Update.cell_market(seller.cell_id);
+        if (result.tag == "ok") {
+            return result.amount;
+        }
+        return 0;
     }
     EventMarket.execute_buy_order = execute_buy_order;
     function buyout_item(seller, buyer, item_index) {

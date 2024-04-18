@@ -11,6 +11,7 @@ import { ItemSystem } from "../systems/items/item_system";
 import { Data } from "../data/data_objects";
 import { is_weapon } from "../../content_wrappers/item";
 import { EQUIP_SLOT } from "@content/content";
+import { buy_from_market_limits } from "./ACTIONS_BASIC";
 
 
 export namespace AIactions {
@@ -34,6 +35,11 @@ export namespace AIactions {
             if (item.amount == 0)
                 continue;
             MarketOrders.remove_by_condition(character, item.material);
+
+            item.amount -= buy_from_market_limits(character, item.material, item.price, item.amount)
+            if (item.amount <= 0)
+                continue;
+
             EventMarket.buy(character, item.material, item.amount, item.price);
         }
 
@@ -50,6 +56,11 @@ export namespace AIactions {
             if (item.amount == 0)
                 continue;
             MarketOrders.remove_by_condition(character, item.material);
+
+            item.amount -= buy_from_market_limits(character, item.material, item.price, item.amount)
+            if (item.amount <= 0)
+                continue;
+
             EventMarket.buy(character, item.material, item.amount, item.price);
         }
     }

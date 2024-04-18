@@ -121,7 +121,7 @@ exports.AI_ACTIONS = {
                 return;
             }
             (0, ACTIONS_BASIC_1.update_price_beliefs)(character);
-            (0, ACTIONS_BASIC_1.buy)(character, 19 /* MATERIAL.MEAT_RAT_FRIED */);
+            (0, ACTIONS_BASIC_1.buy_from_market)(character, 19 /* MATERIAL.MEAT_RAT_FRIED */);
         },
         utility: (character) => {
             if (!AI_TRIGGERS_1.AI_TRIGGER.can_buy(character, 19 /* MATERIAL.MEAT_RAT_FRIED */, character.savings.get()))
@@ -137,7 +137,7 @@ exports.AI_ACTIONS = {
                 return;
             }
             (0, ACTIONS_BASIC_1.update_price_beliefs)(character);
-            (0, ACTIONS_BASIC_1.buy)(character, 0 /* MATERIAL.ARROW_BONE */);
+            (0, ACTIONS_BASIC_1.buy_from_market)(character, 0 /* MATERIAL.ARROW_BONE */);
         },
         utility: (character) => {
             if (!AI_TRIGGERS_1.AI_TRIGGER.can_buy(character, 0 /* MATERIAL.ARROW_BONE */, character.savings.get()))

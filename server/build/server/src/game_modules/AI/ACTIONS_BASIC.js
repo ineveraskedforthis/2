@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.update_price_beliefs = exports.roll_price_belief_sell_decrease = exports.roll_price_belief_sell_increase = exports.rest_outside = exports.rat_go_home = exports.coast_walk = exports.urban_walk = exports.home_walk = exports.rat_walk = exports.random_walk = exports.buy_random = exports.buy = exports.sell_material = exports.sell_all_stash = exports.remove_orders = exports.sell_loot = exports.loot = void 0;
+exports.update_price_beliefs = exports.roll_price_belief_sell_decrease = exports.roll_price_belief_sell_increase = exports.rest_outside = exports.rat_go_home = exports.coast_walk = exports.urban_walk = exports.home_walk = exports.rat_walk = exports.random_walk = exports.buy_random = exports.buy_from_market_limits = exports.sell_to_market_limits = exports.buy_from_market = exports.sell_material = exports.sell_all_stash = exports.remove_orders = exports.sell_loot = exports.loot = void 0;
 const actions_00_1 = require("../actions/actions_00");
 const manager_1 = require("../actions/manager");
 const basic_functions_1 = require("../calculations/basic_functions");
@@ -63,7 +63,7 @@ function sell_material(character, material) {
     return true;
 }
 exports.sell_material = sell_material;
-function buy(character, material) {
+function buy_from_market(character, material) {
     let orders = data_id_1.DataID.Cells.market_order_id_list(character.cell_id);
     let best_order = undefined;
     let best_price = 9999;
@@ -86,7 +86,53 @@ function buy(character, material) {
     }
     return false;
 }
-exports.buy = buy;
+exports.buy_from_market = buy_from_market;
+function sell_to_market_limits(character, material, min_price, max_amount) {
+    let orders = data_id_1.DataID.Cells.market_order_id_list(character.cell_id);
+    let best_order = undefined;
+    let best_price = min_price;
+    for (let item of orders) {
+        let order = data_objects_1.Data.MarketOrders.from_id(item);
+        if (order.typ == 'buy')
+            continue;
+        if (order.material != material)
+            continue;
+        if ((best_price < order.price) && (order.amount > 0)) {
+            best_price = order.price;
+            best_order = order;
+        }
+    }
+    if (best_order == undefined)
+        return 0;
+    if (character.savings.get() >= best_price) {
+        return market_1.EventMarket.execute_buy_order(character, best_order.id, Math.min(Math.floor(character.savings.get() / best_price), max_amount));
+    }
+    return 0;
+}
+exports.sell_to_market_limits = sell_to_market_limits;
+function buy_from_market_limits(character, material, max_price, max_amount) {
+    let orders = data_id_1.DataID.Cells.market_order_id_list(character.cell_id);
+    let best_order = undefined;
+    let best_price = max_price;
+    for (let item of orders) {
+        let order = data_objects_1.Data.MarketOrders.from_id(item);
+        if (order.typ == 'buy')
+            continue;
+        if (order.material != material)
+            continue;
+        if ((best_price > order.price) && (order.amount > 0)) {
+            best_price = order.price;
+            best_order = order;
+        }
+    }
+    if (best_order == undefined)
+        return 0;
+    if (character.savings.get() >= best_price) {
+        return market_1.EventMarket.execute_sell_order(character, best_order.id, Math.min(Math.floor(character.savings.get() / best_price), max_amount));
+    }
+    return 0;
+}
+exports.buy_from_market_limits = buy_from_market_limits;
 function buy_random(character) {
     let orders = data_id_1.DataID.Cells.market_order_id_list(character.cell_id);
     let best_order = undefined;

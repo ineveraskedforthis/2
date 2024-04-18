@@ -35,14 +35,14 @@ export namespace EventMarket {
         return response
     }
 
-    export function execute_sell_order(buyer: Character, order_id: market_order_id, amount: number) {
+    export function execute_sell_order(buyer: Character, order_id: market_order_id, amount: number) : number {
 
         let result = MarketOrders.execute_sell_order(order_id, amount, buyer)
         const order = Data.MarketOrders.from_id(order_id)
         const seller = Data.Characters.from_id(order.owner_id)
 
-        if ((seller.user_id == undefined) && (result == 'ok')) {
-            roll_price_belief_sell_increase(seller, order.material, trim(Math.min(amount, order.amount), 1, 100) / 50)
+        if ((seller.user_id == undefined) && (result.tag == 'ok')) {
+            roll_price_belief_sell_increase(seller, order.material, trim(Math.min(amount, result.amount), 1, 100) / 50)
         }
 
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.STASH)
@@ -51,6 +51,11 @@ export namespace EventMarket {
         UserManagement.add_user_to_update_queue(seller.user_id, UI_Part.STASH)
 
         Effect.Update.cell_market(buyer.cell_id)
+
+        if (result.tag == "ok") {
+            return result.amount
+        }
+        return 0
     }
 
     export function execute_buy_order(seller:Character, order_id: market_order_id, amount: number) {
@@ -58,8 +63,8 @@ export namespace EventMarket {
         const order = Data.MarketOrders.from_id(order_id)
         const buyer = Data.Characters.from_id(order.owner_id)
 
-        if ((seller.user_id == undefined) && (result == 'ok')) {
-            roll_price_belief_sell_decrease(seller, order.material, trim(Math.min(amount, order.amount), 1, 100) / 50)
+        if ((seller.user_id == undefined) && (result.tag == 'ok')) {
+            roll_price_belief_sell_decrease(seller, order.material, trim(Math.min(amount, result.amount), 1, 100) / 50)
         }
 
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.STASH)
@@ -68,6 +73,11 @@ export namespace EventMarket {
         UserManagement.add_user_to_update_queue(seller.user_id, UI_Part.STASH)
 
         Effect.Update.cell_market(seller.cell_id)
+
+        if (result.tag == "ok") {
+            return result.amount
+        }
+        return 0
     }
 
     export function buyout_item(seller: Character, buyer: Character, item_index: number) {

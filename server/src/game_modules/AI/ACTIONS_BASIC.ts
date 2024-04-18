@@ -77,7 +77,7 @@ export function sell_material(character: Character, material: MATERIAL) {
     return true;
 }
 
-export function buy(character: Character, material: MATERIAL) {
+export function buy_from_market(character: Character, material: MATERIAL) {
     let orders = DataID.Cells.market_order_id_list(character.cell_id);
     let best_order = undefined;
     let best_price = 9999;
@@ -101,6 +101,70 @@ export function buy(character: Character, material: MATERIAL) {
         return true;
     }
     return false;
+}
+
+export function sell_to_market_limits(character: Character, material: MATERIAL, min_price: number, max_amount: number) : number {
+    let orders = DataID.Cells.market_order_id_list(character.cell_id);
+    let best_order = undefined;
+    let best_price = min_price;
+    for (let item of orders) {
+        let order = Data.MarketOrders.from_id(item);
+        if (order.typ == 'buy')
+            continue;
+        if (order.material != material)
+            continue;
+        if ((best_price < order.price) && (order.amount > 0)) {
+            best_price = order.price;
+            best_order = order;
+        }
+    }
+
+    if (best_order == undefined)
+        return 0;
+
+    if (character.savings.get() >= best_price) {
+        return EventMarket.execute_buy_order(
+            character,
+            best_order.id,
+            Math.min(
+                Math.floor(character.savings.get() / best_price),
+                max_amount
+            )
+        );
+    }
+    return 0;
+}
+
+export function buy_from_market_limits(character: Character, material: MATERIAL, max_price: number, max_amount: number) : number {
+    let orders = DataID.Cells.market_order_id_list(character.cell_id);
+    let best_order = undefined;
+    let best_price = max_price;
+    for (let item of orders) {
+        let order = Data.MarketOrders.from_id(item);
+        if (order.typ == 'buy')
+            continue;
+        if (order.material != material)
+            continue;
+        if ((best_price > order.price) && (order.amount > 0)) {
+            best_price = order.price;
+            best_order = order;
+        }
+    }
+
+    if (best_order == undefined)
+        return 0;
+
+    if (character.savings.get() >= best_price) {
+        return EventMarket.execute_sell_order(
+            character,
+            best_order.id,
+            Math.min(
+                Math.floor(character.savings.get() / best_price),
+                max_amount
+            )
+        );
+    }
+    return 0;
 }
 
 export function buy_random(character: Character) {

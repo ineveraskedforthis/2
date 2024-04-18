@@ -6,6 +6,7 @@ import { AIactions } from "./AIactions";
 import { update_price_beliefs } from "./ACTIONS_BASIC";
 import { durability } from "../craft/CraftItem";
 import { check_inputs } from "../craft/helpers";
+import { MarketOrders } from "../market/system";
 
 export function decide_bulk_craft(character: Character) {
     let result = []
@@ -13,9 +14,7 @@ export function decide_bulk_craft(character: Character) {
     for (const craft of Object.values(crafts_bulk)) {
         let profit = AItrade.craft_bulk_profitability(character, craft)
         // console.log(`character ${character.get_name()} has profitability of ${profit} for craft ${craft.id}`)
-        if (profit > 0) {
-            result.push({craft: craft, profit: profit})
-        }
+        result.push({craft: craft, profit: profit})
     }
     return result
 }
@@ -24,9 +23,16 @@ function bulk_crafter_routine(character: Character, budget: money) {
     const bulk_crafts = decide_bulk_craft(character)
     let sum_of_squared_profits = 0
     for (let item of bulk_crafts) {
-        sum_of_squared_profits += item.profit * item.profit
+        if (item.profit > 0){
+            sum_of_squared_profits += item.profit * item.profit
+        } else {
+            for (let input of item.craft.input) {
+                MarketOrders.remove_by_condition(character, input.material);
+            }
+        }
     }
     for (let item of bulk_crafts) {
+        if (item.profit <= 0) continue;
         let budget_ratio = item.profit * item.profit / sum_of_squared_profits
         AIactions.craft_bulk(character, item.craft, Math.round(budget * budget_ratio) as money)
     }

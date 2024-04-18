@@ -7,15 +7,14 @@ const AIactions_1 = require("./AIactions");
 const ACTIONS_BASIC_1 = require("./ACTIONS_BASIC");
 const CraftItem_1 = require("../craft/CraftItem");
 const helpers_1 = require("../craft/helpers");
+const system_1 = require("../market/system");
 function decide_bulk_craft(character) {
     let result = [];
     (0, ACTIONS_BASIC_1.update_price_beliefs)(character);
     for (const craft of Object.values(crafts_storage_1.crafts_bulk)) {
         let profit = AI_SCRIPTED_VALUES_1.AItrade.craft_bulk_profitability(character, craft);
         // console.log(`character ${character.get_name()} has profitability of ${profit} for craft ${craft.id}`)
-        if (profit > 0) {
-            result.push({ craft: craft, profit: profit });
-        }
+        result.push({ craft: craft, profit: profit });
     }
     return result;
 }
@@ -24,9 +23,18 @@ function bulk_crafter_routine(character, budget) {
     const bulk_crafts = decide_bulk_craft(character);
     let sum_of_squared_profits = 0;
     for (let item of bulk_crafts) {
-        sum_of_squared_profits += item.profit * item.profit;
+        if (item.profit > 0) {
+            sum_of_squared_profits += item.profit * item.profit;
+        }
+        else {
+            for (let input of item.craft.input) {
+                system_1.MarketOrders.remove_by_condition(character, input.material);
+            }
+        }
     }
     for (let item of bulk_crafts) {
+        if (item.profit <= 0)
+            continue;
         let budget_ratio = item.profit * item.profit / sum_of_squared_profits;
         AIactions_1.AIactions.craft_bulk(character, item.craft, Math.round(budget * budget_ratio));
     }

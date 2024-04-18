@@ -15,7 +15,6 @@ var AuctionResponse;
     AuctionResponse["INVALID_ORDER"] = "invalid_order";
 })(AuctionResponse || (exports.AuctionResponse = AuctionResponse = {}));
 const empty_stash = new stash_1.Stash();
-// this file does not handle networking
 var MarketOrders;
 (function (MarketOrders) {
     function execute_sell_order(id, amount, buyer) {
@@ -25,7 +24,7 @@ var MarketOrders;
         if (order.amount < amount)
             amount = order.amount;
         if (buyer.savings.get() < pay)
-            return 'not_enough_money';
+            return { tag: 'not_enough_money' };
         const material = order.material;
         // shadow operations with imaginary items
         order.amount -= amount;
@@ -34,7 +33,7 @@ var MarketOrders;
         effects_1.Effect.Transfer.to_trade_stash(owner, order.material, -amount);
         //actual transaction
         effects_1.Effect.transaction(owner, buyer, 0, transaction_stash, pay, empty_stash, "Trade" /* CHANGE_REASON.TRADE */);
-        return 'ok';
+        return { tag: "ok", amount: amount };
     }
     MarketOrders.execute_sell_order = execute_sell_order;
     function remove(id) {
@@ -75,7 +74,10 @@ var MarketOrders;
         effects_1.Effect.Transfer.to_trade_savings(owner, -pay);
         //transaction
         effects_1.Effect.transaction(owner, seller, pay, empty_stash, 0, transaction_stash, "Trade" /* CHANGE_REASON.TRADE */);
-        return 'ok';
+        return {
+            tag: "ok",
+            amount: amount
+        };
     }
     MarketOrders.execute_buy_order = execute_buy_order;
     function new_buy_order(material, amount, price, owner) {
