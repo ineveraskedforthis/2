@@ -3,6 +3,7 @@ import { BattleView } from './View/battle_view.js';
 import { BattleStorage, fatten_battle_character } from './Storage/storage.js';
 import { UnitsListWidget } from './Widgets/units_list.js';
 import { globals } from '../globals.js';
+import { ActionsListWidget } from './Widgets/action_list.js';
 var bcp = false;
 BattleView.set_callbacks((event) => {
     let mouse_pos = BattleView.get_mouse_pos_in_canvas(event);
@@ -33,6 +34,14 @@ function HOTKEYS_HANDLER(e) {
 document.addEventListener('keyup', HOTKEYS_HANDLER, false);
 export var BattleImage;
 (function (BattleImage) {
+    function request_actions() {
+        console.log('request actions');
+        socket.emit('req-battle-actions-self');
+        if (BattleView.selected)
+            socket.emit('req-battle-actions-unit', BattleView.selected);
+        if (BattleView.anchor_position)
+            socket.emit('req-battle-actions-position', BattleView.anchor_position);
+    }
     function request_actions_self() {
         console.log('request actions self');
         socket.emit('req-battle-actions-self');
@@ -92,6 +101,7 @@ export var BattleImage;
         for (const unit of keyframe.data) {
             BattleStorage.update_unit_data(unit);
         }
+        request_actions();
     }
     BattleImage.handle_keyframe = handle_keyframe;
     function update(dt) {
@@ -211,88 +221,18 @@ export var BattleImage;
     }
     BattleImage.press = press;
     function add_action(action_type, hotkey) {
-        // console.log('new action')
-        // console.log(action_type)
-        actions.push(action_type);
-        // console.log(action_type)
-        let action_div = document.createElement('div');
-        action_div.classList.add('battle_action');
-        action_div.classList.add(action_type.tag);
-        action_div.id = "battle_action_" + action_type.tag;
-        {
-            let label = document.createElement('div');
-            label.innerHTML = `(${hotkey || ''}) ${action_type.name}`;
-            action_div.appendChild(label);
-        }
-        {
-            let label = document.createElement('div');
-            label.id = action_type.tag + '_ap_cost';
-            action_div.appendChild(label);
-            if (action_type.cost != undefined) {
-                label.innerHTML = 'ap: ' + action_type.cost.toFixed(2);
-            }
-        }
-        {
-            let label = document.createElement('div');
-            label.id = action_type.tag + '_chance_b';
-            label.innerHTML = '???%';
-            action_div.appendChild(label);
-        }
-        {
-            let label = document.createElement('div');
-            label.id = action_type.tag + '_damage_b';
-            label.innerHTML = '???';
-            action_div.appendChild(label);
-        }
         if (hotkey != undefined) {
             key_to_action[hotkey] = action_type.tag;
             key_to_action_type[hotkey] = action_type.target;
         }
-        action_div.onclick = () => send_action(action_type.tag, action_type.target);
-        // action_divs[action_type.name] = action_div
-        let div = document.querySelector('.battle_control');
-        div.appendChild(action_div);
     }
     BattleImage.add_action = add_action;
     function update_action(data, hotkey) {
-        let flag = false;
-        for (let item of actions) {
-            if (item.tag == data.tag) {
-                flag = true;
-                update_action_cost(data.tag, data.cost);
-                update_action_probability(data.tag, data.probability);
-                update_action_damage(data.tag, data.damage);
-                let div = document.querySelector('.battle_control>.' + data.tag);
-                if (!data.possible) {
-                    div.classList.add('disabled');
-                }
-                else {
-                    div.classList.remove('disabled');
-                }
-            }
-        }
-        if (!flag)
+        if (!ActionsListWidget.update_action(data)) {
             add_action(data, hotkey);
+        }
     }
     BattleImage.update_action = update_action;
-    function update_action_probability(tag, value) {
-        // console.log(tag, value)
-        let label = document.getElementById(tag + '_chance_b');
-        label.innerHTML = Math.floor(value * 100).toFixed(1) + '%';
-    }
-    BattleImage.update_action_probability = update_action_probability;
-    function update_action_damage(tag, value) {
-        // console.log(tag, value)
-        let label = document.getElementById(tag + '_damage_b');
-        label.innerHTML = '~' + value.toFixed(2);
-    }
-    BattleImage.update_action_damage = update_action_damage;
-    function update_action_cost(tag, value) {
-        // console.log(tag, value)
-        let label = document.getElementById(tag + '_ap_cost');
-        label.innerHTML = value.toFixed(2);
-    }
-    BattleImage.update_action_cost = update_action_cost;
     function set_current_turn(index, time_passed) {
         console.log('Set current_turn', index);
         BattleView.current_turn = fatten_battle_character(index);

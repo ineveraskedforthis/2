@@ -51,7 +51,7 @@
     overflow-y: scroll;
 }
 
-.battle_control> .battle_action{
+.battle_action{
     border: rgb(143, 6, 6) solid 2px;
     text-align: center;
     color: darkgreen;
@@ -59,16 +59,16 @@
     user-select: none;
 }
 
-.battle_control > .battle_action.disabled {
+.battle_action.disabled {
     background-color: rgba(88, 88, 88, 0.5);
-    color: rgb(0, 0, 0);
+    color: rgb(135, 135, 135);
 }
 
-.battle_control > .battle_action.disabled:hover {
+.battle_action.disabled:hover {
     border: rgb(0, 0, 0) solid 2px;
 }
 
-.battle_control> div:hover{
+div.battle_action:hover{
     border: rgb(21, 240, 39) solid 2px;
 }
 

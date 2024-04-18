@@ -56,6 +56,6 @@ export interface CharacterDataBasic {
 export interface CharacterDataExpanded extends CharacterDataBasic {
     savings: ValueInterface,
     savings_trade: ValueInterface,
-    location_id: Value
+    location_id: Value,
     stash: ValueInterface[]
 }

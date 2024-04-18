@@ -5,26 +5,17 @@ import { socket } from "../Socket/socket.js";
 import { character_id } from "@custom_types/ids.js";
 import { elementById } from "../HTMLwrappers/common.js";
 import { BattleView } from "./View/battle_view.js";
+import { keybinds } from "./Widgets/action_list.js";
 
 
 // export const battle_image = new BattleImageNext();
 const events_queue: BattleKeyframeSocket[] = []
 
-const keybinds: { [key: string]: string } = {
-    'Move': 'q',
-    'MoveTowards': 'w',
-    'Slash': 'e',
-    'Pierce': 'r',
-    'Knock': 't',
-    'MagicBolt': 'a',
-    'Shoot': 's',
-    'Retreat': 'd',
-    'EndTurn': 'f',
-}
+
 
 export function init_battle_control() {
     socket.on('battle-action-set-up', (data: BattleActionData) => {
-        BattleImage.add_action(data, keybinds[data.tag])
+        BattleImage.update_action(data, keybinds[data.tag])
     })
 
     socket.on('battle-action-update', (data: BattleActionData) => {
