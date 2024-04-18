@@ -129,7 +129,6 @@ export namespace ItemSystem {
         damage.fire = power(item) + affix_damage.fire
 
         DmgOps.floor_ip(damage)
-        // console.log(damage)
         return damage
     }
 

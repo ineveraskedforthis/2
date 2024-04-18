@@ -98,6 +98,7 @@ export namespace BattleImage {
         BattleView.anchor_position = undefined
         BattleView.player = undefined
         BattleView.selected = undefined
+        BattleView.current_turn = undefined
 
         BattleStorage.clear()
 
@@ -214,6 +215,7 @@ export namespace BattleImage {
     export function hover(pos: canvas_position) {
         clear_hover()
         BattleStorage.foreach((id, unit) => {
+            if (unit.dead) return;
             let centre = BattleView.battle_to_canvas(unit.position, BattleView.camera)
             if (d2([centre.x, centre.y], [pos.x, pos.y]) < selection_magnet) {
                 set_hover(unit)
@@ -239,6 +241,7 @@ export namespace BattleImage {
     export function press(pos: canvas_position) {
         let selected = false;
         BattleStorage.foreach((id, unit) => {
+            if (unit.dead) return;
             let centre = BattleView.battle_to_canvas(unit.position, BattleView.camera)
             let dx = centre.x - pos.x;
             let dy = centre.y - pos.y;

@@ -267,6 +267,8 @@ export class BattleView {
 
     static draw_selected() {
         if (this.selected_position == undefined) return
+        if (this.selected?.hp == 0) return;
+
         const ctx = this.canvas_context
         const pos = this.selected_position
 
@@ -279,6 +281,8 @@ export class BattleView {
 
     static draw_hovered() {
         if (this.hovered_position == undefined) return
+        if (this.hovered?.hp == 0) return;
+
         const ctx = this.canvas_context
         const pos = this.hovered_position
 
@@ -293,6 +297,8 @@ export class BattleView {
         const unit = this._current_turn_view
         if (unit == undefined) return
         if (this.current_turn_position == undefined) return
+        if (unit.hp == 0) return;
+
         const ctx = this.canvas_context
         const pos = this.current_turn_position
 
@@ -313,6 +319,8 @@ export class BattleView {
         const unit = this._player_view
         if (unit == undefined) return
         if (this.player_position == undefined) return
+        if (unit.hp == 0) return;
+
         const ctx = this.canvas_context
         const pos = this.player_position
 
@@ -372,6 +380,8 @@ export class BattleView {
 
 
     static draw(dt: number, unit: UnitView, image: AnimatedImage) {
+        if (unit.hp == 0) return;
+
         if ((this.player == undefined) && (globals.character_data?.id == unit.id)) {
             this.player = unit
         }

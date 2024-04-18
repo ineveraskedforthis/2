@@ -109,7 +109,6 @@ var ItemSystem;
         // fire damage is always added
         damage.fire = power(item) + affix_damage.fire;
         damage_types_1.DmgOps.floor_ip(damage);
-        // console.log(damage)
         return damage;
     }
     ItemSystem.melee_damage = melee_damage;

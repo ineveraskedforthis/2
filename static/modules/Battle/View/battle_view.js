@@ -200,6 +200,8 @@ export class BattleView {
     static draw_selected() {
         if (this.selected_position == undefined)
             return;
+        if (this.selected?.hp == 0)
+            return;
         const ctx = this.canvas_context;
         const pos = this.selected_position;
         ctx.strokeStyle = "rgba(0, 0, 0, 1)";
@@ -210,6 +212,8 @@ export class BattleView {
     }
     static draw_hovered() {
         if (this.hovered_position == undefined)
+            return;
+        if (this.hovered?.hp == 0)
             return;
         const ctx = this.canvas_context;
         const pos = this.hovered_position;
@@ -224,6 +228,8 @@ export class BattleView {
         if (unit == undefined)
             return;
         if (this.current_turn_position == undefined)
+            return;
+        if (unit.hp == 0)
             return;
         const ctx = this.canvas_context;
         const pos = this.current_turn_position;
@@ -242,6 +248,8 @@ export class BattleView {
         if (unit == undefined)
             return;
         if (this.player_position == undefined)
+            return;
+        if (unit.hp == 0)
             return;
         const ctx = this.canvas_context;
         const pos = this.player_position;
@@ -289,6 +297,8 @@ export class BattleView {
         ctx.stroke();
     }
     static draw(dt, unit, image) {
+        if (unit.hp == 0)
+            return;
         if ((this.player == undefined) && (globals.character_data?.id == unit.id)) {
             this.player = unit;
         }
