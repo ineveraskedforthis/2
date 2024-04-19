@@ -46,9 +46,12 @@ export const move:CharacterMapAction ={
         }
 
         const possible_locations = DataID.Cells.locations(new_cell)
+        const valid_locations = possible_locations.filter((item) => {
+            const object = Data.Locations.from_id(item); return object.has_house_level == 0
+        })
+        const random_index = Math.floor(Math.random() * valid_locations.length)
 
-
-        Event.move(character, DataID.Cells.main_location(new_cell))
+        Event.move(character, valid_locations[random_index])
     },
 
     is_move: true

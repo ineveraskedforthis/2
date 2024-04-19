@@ -85,9 +85,9 @@ function gather_cotton_effect(character) {
 function gather_berries_effect(character) {
     const skill = system_1.CharacterSystem.pure_skill(character, "travelling");
     const amount = Math.floor(skill / 10 + Math.random() * 5);
-    data_objects_1.Data.Locations.from_id(character.location_id).berries -= amount;
+    data_objects_1.Data.Locations.from_id(character.location_id).berries -= 1;
     if (Math.random() < 0.2) {
-        events_1.Event.change_stash(character, 29 /* MATERIAL.BERRY_ZAZ */, 5);
+        events_1.Event.change_stash(character, 29 /* MATERIAL.BERRY_ZAZ */, amount);
     }
     if (Math.random() * Math.random() > skill / 100) {
         effects_1.Effect.Change.skill(character, 'travelling', 1, "Gathering" /* CHANGE_REASON.GATHERING */);

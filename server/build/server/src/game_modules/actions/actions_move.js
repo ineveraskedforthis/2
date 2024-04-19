@@ -43,7 +43,12 @@ exports.move = {
             return;
         }
         const possible_locations = data_id_1.DataID.Cells.locations(new_cell);
-        events_1.Event.move(character, data_id_1.DataID.Cells.main_location(new_cell));
+        const valid_locations = possible_locations.filter((item) => {
+            const object = data_objects_1.Data.Locations.from_id(item);
+            return object.has_house_level == 0;
+        });
+        const random_index = Math.floor(Math.random() * valid_locations.length);
+        events_1.Event.move(character, valid_locations[random_index]);
     },
     is_move: true
 };

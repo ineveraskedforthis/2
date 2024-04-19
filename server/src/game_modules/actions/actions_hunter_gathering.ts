@@ -91,9 +91,10 @@ function gather_berries_effect(character: Character) {
 
     const amount = Math.floor(skill / 10 + Math.random() * 5)
 
-    Data.Locations.from_id(character.location_id).berries -= amount
+    Data.Locations.from_id(character.location_id).berries -= 1
+
     if (Math.random() < 0.2) {
-        Event.change_stash(character, MATERIAL.BERRY_ZAZ, 5)
+        Event.change_stash(character, MATERIAL.BERRY_ZAZ, amount)
     }
 
     if (Math.random() * Math.random() > skill / 100) {
