@@ -58,10 +58,10 @@ var Attack;
     function magic_bolt_base_damage(character, charge_flag) {
         let base_damage = 1;
         if (charge_flag) {
-            base_damage += 5;
+            base_damage += 2;
         }
         if (character._perks.magic_bolt)
-            (base_damage += 3);
+            (base_damage += 2);
         const skill = system_1.CharacterSystem.skill(character, 'magic_mastery');
         return Math.round(base_damage * system_1.CharacterSystem.magic_power(character) / 10 * (1 + skill / 10));
     }
