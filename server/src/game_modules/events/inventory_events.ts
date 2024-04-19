@@ -33,6 +33,12 @@ export namespace EventInventory {
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.INVENTORY)
     }
 
+    export function destroy_in_backpack_by_item_id(character: Character, item: item_id) {
+        console.log("attempt to destroy item with id ", item)
+        const index = character.equip.data.backpack.items.indexOf(item)
+        destroy_in_backpack(character, index)
+    }
+
     export function switch_weapon(character: Character) {
         character.equip.switch_weapon()
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.INVENTORY)

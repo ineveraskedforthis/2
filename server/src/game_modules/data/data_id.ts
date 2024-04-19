@@ -205,6 +205,15 @@ export namespace DataID {
             return result
         }
 
+
+        export function for_each_guest(cell: cell_id, callback: (guest: character_id) => void) {
+            cell_id_location_id_list[cell].forEach((location, index) => {
+                Location.for_each_guest(location, (guest) => {
+                    callback(guest)
+                })
+            })
+        }
+
         export function market_order_id_list(cell: cell_id) {
             let result: market_order_id[] = []
 
@@ -254,6 +263,12 @@ export namespace DataID {
 
         export function guest_list(location: location_id): character_id[] {
             return Array.from(location_id_guests[location])
+        }
+
+        export function for_each_guest(location: location_id, callback: (guest: character_id) => void) {
+            location_id_guests[location].forEach((guest, index) => {
+                callback(guest)
+            })
         }
 
         export function for_each_ownership(callback: (location: location_id, owner: character_id|undefined) => void) {

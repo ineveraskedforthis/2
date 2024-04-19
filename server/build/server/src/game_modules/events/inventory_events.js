@@ -31,6 +31,12 @@ var EventInventory;
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 10 /* UI_Part.INVENTORY */);
     }
     EventInventory.destroy_in_backpack = destroy_in_backpack;
+    function destroy_in_backpack_by_item_id(character, item) {
+        console.log("attempt to destroy item with id ", item);
+        const index = character.equip.data.backpack.items.indexOf(item);
+        destroy_in_backpack(character, index);
+    }
+    EventInventory.destroy_in_backpack_by_item_id = destroy_in_backpack_by_item_id;
     function switch_weapon(character) {
         character.equip.switch_weapon();
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 10 /* UI_Part.INVENTORY */);

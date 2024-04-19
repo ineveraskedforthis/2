@@ -5,6 +5,7 @@ const stash_1 = require("../inventories/stash");
 const data_objects_1 = require("../data/data_objects");
 const data_id_1 = require("../data/data_id");
 const effects_1 = require("../effects/effects");
+const item_1 = require("../../content_wrappers/item");
 var AuctionResponse;
 (function (AuctionResponse) {
     AuctionResponse["NOT_IN_THE_SAME_CELL"] = "not_in_the_same_cell";
@@ -157,6 +158,52 @@ var ItemOrders;
         return { response: AuctionResponse.OK };
     }
     ItemOrders.sell = sell;
+    function count_armour_orders_of_type_of_character(id, character) {
+        let result = 0;
+        for (let order of character.equip.data.backpack.items) {
+            if (order == undefined)
+                continue;
+            const data = data_objects_1.Data.Items.from_id(order);
+            if ((0, item_1.is_armour)(data)) {
+                if (data.prototype.id == id) {
+                    result += 1;
+                }
+            }
+        }
+        return result;
+    }
+    ItemOrders.count_armour_orders_of_type_of_character = count_armour_orders_of_type_of_character;
+    function count_armour_orders_of_type(cell, id) {
+        let result = 0;
+        data_objects_1.Data.Cells.for_each_guest(cell, (character) => {
+            result += count_armour_orders_of_type_of_character(id, character);
+        });
+        return result;
+    }
+    ItemOrders.count_armour_orders_of_type = count_armour_orders_of_type;
+    function count_weapon_orders_of_type_of_character(id, character) {
+        let result = 0;
+        for (let order of character.equip.data.backpack.items) {
+            if (order == undefined)
+                continue;
+            const data = data_objects_1.Data.Items.from_id(order);
+            if ((0, item_1.is_weapon)(data)) {
+                if (data.prototype.id == id) {
+                    result += 1;
+                }
+            }
+        }
+        return result;
+    }
+    ItemOrders.count_weapon_orders_of_type_of_character = count_weapon_orders_of_type_of_character;
+    function count_weapon_orders_of_type(cell, id) {
+        let result = 0;
+        data_objects_1.Data.Cells.for_each_guest(cell, (character) => {
+            result += count_weapon_orders_of_type_of_character(id, character);
+        });
+        return result;
+    }
+    ItemOrders.count_weapon_orders_of_type = count_weapon_orders_of_type;
     function buy(id, buyer, seller) {
         let item = data_objects_1.Data.Items.from_id(seller.equip.data.backpack.items[id]);
         if (item == undefined)

@@ -145,7 +145,7 @@ export namespace ItemSystem {
         const damage = new Damage()
         const ammo_data = MaterialStorage.get(ammo)
 
-        damage.pierce = weapon.prototype.bow_power * ammo_data.cutting_power + ammo_data.magic_power
+        damage.pierce = (weapon.prototype.bow_power * ammo_data.cutting_power + ammo_data.magic_power) * (0.5 + 0.5 * weapon.durability / 100)
         DmgOps.add_ip(damage, affix_damage)
 
         DmgOps.floor_ip(damage)

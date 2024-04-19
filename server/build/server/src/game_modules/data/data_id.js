@@ -185,6 +185,14 @@ var DataID;
             return result;
         }
         Cells.local_character_id_list = local_character_id_list;
+        function for_each_guest(cell, callback) {
+            cell_id_location_id_list[cell].forEach((location, index) => {
+                Location.for_each_guest(location, (guest) => {
+                    callback(guest);
+                });
+            });
+        }
+        Cells.for_each_guest = for_each_guest;
         function market_order_id_list(cell) {
             let result = [];
             local_character_id_list(cell).forEach((character) => {
@@ -235,6 +243,12 @@ var DataID;
             return Array.from(location_id_guests[location]);
         }
         Location.guest_list = guest_list;
+        function for_each_guest(location, callback) {
+            location_id_guests[location].forEach((guest, index) => {
+                callback(guest);
+            });
+        }
+        Location.for_each_guest = for_each_guest;
         function for_each_ownership(callback) {
             location_id_list.forEach((value, index) => {
                 callback(value, owner_id(value));

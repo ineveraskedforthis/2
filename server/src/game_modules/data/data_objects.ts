@@ -501,6 +501,13 @@ export namespace Data {
             cell: CellData
         }
 
+        export function for_each_guest(cell: cell_id, callback: (character: Character) => void) {
+            DataID.Cells.for_each_guest(cell, (character_id) => {
+                const character = character_id_object[character_id]
+                callback(character)
+            })
+        }
+
         export function save(save_path: string) {
             let str = '';
 

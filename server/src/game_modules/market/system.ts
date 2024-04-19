@@ -2,12 +2,13 @@ import { Character } from "../character/character";
 import { CharacterSystem } from "../character/system";
 import { Stash } from "../inventories/stash";
 import { Item } from "../data/entities/item";
-import { item_id, market_order_id } from "@custom_types/ids";
+import { cell_id, item_id, market_order_id } from "@custom_types/ids";
 import { money } from "@custom_types/common";
 import { Data } from "../data/data_objects";
 import { DataID } from "../data/data_id";
-import { MATERIAL } from "@content/content";
+import { ARMOUR, MATERIAL, WEAPON } from "@content/content";
 import { CHANGE_REASON, Effect } from "../effects/effects";
+import { is_armour, is_weapon } from "../../content_wrappers/item";
 
 export enum AuctionResponse {
     NOT_IN_THE_SAME_CELL = 'not_in_the_same_cell',
@@ -181,6 +182,58 @@ export namespace ItemOrders {
         create(seller, item, price, false)
         // seller.equip.data.backpack.remove(backpack_id)
         return {response: AuctionResponse.OK}
+    }
+
+    export function count_armour_orders_of_type_of_character(id: ARMOUR, character: Character) : number {
+        let result = 0
+
+        for (let order of character.equip.data.backpack.items) {
+            if (order == undefined) continue;
+            const data = Data.Items.from_id(order)
+            if (is_armour(data)) {
+                if (data.prototype.id == id) {
+                    result += 1
+                }
+            }
+        }
+
+        return result
+    }
+
+    export function count_armour_orders_of_type(cell: cell_id, id: ARMOUR) {
+        let result = 0
+
+        Data.Cells.for_each_guest(cell, (character) => {
+            result += count_armour_orders_of_type_of_character(id, character)
+        })
+
+        return result
+    }
+
+    export function count_weapon_orders_of_type_of_character(id: WEAPON, character: Character) : number {
+        let result = 0
+
+        for (let order of character.equip.data.backpack.items) {
+            if (order == undefined) continue;
+            const data = Data.Items.from_id(order)
+            if (is_weapon(data)) {
+                if (data.prototype.id == id) {
+                    result += 1
+                }
+            }
+        }
+
+        return result
+    }
+
+    export function count_weapon_orders_of_type(cell: cell_id, id: WEAPON) {
+        let result = 0
+
+        Data.Cells.for_each_guest(cell,(character) => {
+            result += count_weapon_orders_of_type_of_character(id, character)
+        })
+
+        return result
     }
 
     export function buy(id: number, buyer: Character, seller: Character) {

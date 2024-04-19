@@ -435,6 +435,13 @@ var Data;
     })(Characters = Data.Characters || (Data.Characters = {}));
     let Cells;
     (function (Cells) {
+        function for_each_guest(cell, callback) {
+            data_id_1.DataID.Cells.for_each_guest(cell, (character_id) => {
+                const character = character_id_object[character_id];
+                callback(character);
+            });
+        }
+        Cells.for_each_guest = for_each_guest;
         function save(save_path) {
             let str = '';
             cell_id_object.forEach((value, key) => {

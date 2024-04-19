@@ -8,6 +8,9 @@ const ACTIONS_BASIC_1 = require("./ACTIONS_BASIC");
 const CraftItem_1 = require("../craft/CraftItem");
 const helpers_1 = require("../craft/helpers");
 const system_1 = require("../market/system");
+const data_objects_1 = require("../data/data_objects");
+const item_1 = require("../../content_wrappers/item");
+const inventory_events_1 = require("../events/inventory_events");
 function decide_bulk_craft(character) {
     let result = [];
     (0, ACTIONS_BASIC_1.update_price_beliefs)(character);
@@ -42,7 +45,15 @@ function bulk_crafter_routine(character, budget) {
 function decide_item_buy_inputs(character) {
     let result = [];
     for (const item of Object.values(crafts_storage_1.crafts_items)) {
-        if ((0, CraftItem_1.durability)(character, item) > 100) {
+        if (item.output.tag == "armour") {
+            if (system_1.ItemOrders.count_armour_orders_of_type(character.cell_id, item.output.value) >= 3)
+                continue;
+        }
+        if (item.output.tag == "weapon") {
+            if (system_1.ItemOrders.count_weapon_orders_of_type(character.cell_id, item.output.value) >= 3)
+                continue;
+        }
+        if (((0, CraftItem_1.durability)(character, item) > 100)) {
             result.push(item);
         }
     }
@@ -52,7 +63,15 @@ function decide_item_buy_inputs(character) {
 function decide_item_craft(character) {
     let result = [];
     for (const item of Object.values(crafts_storage_1.crafts_items)) {
-        if (((0, CraftItem_1.durability)(character, item) > 120) && ((0, helpers_1.check_inputs)(item.input, character.stash))) {
+        if (item.output.tag == "armour") {
+            if (system_1.ItemOrders.count_armour_orders_of_type(character.cell_id, item.output.value) >= 3)
+                continue;
+        }
+        if (item.output.tag == "weapon") {
+            if (system_1.ItemOrders.count_weapon_orders_of_type(character.cell_id, item.output.value) >= 3)
+                continue;
+        }
+        if (((0, CraftItem_1.durability)(character, item) > 100) && ((0, helpers_1.check_inputs)(item.input, character.stash))) {
             result.push(item);
         }
     }
@@ -63,6 +82,24 @@ function item_crafter_routine(character, budget) {
     (0, ACTIONS_BASIC_1.update_price_beliefs)(character);
     if (Math.random() < 0.1) {
         system_1.MarketOrders.remove_by_character(character);
+    }
+    //get rid of common items
+    const to_get_rid_of = [];
+    for (const item of character.equip.data.backpack.items) {
+        const data = data_objects_1.Data.Items.from_id(item);
+        if ((0, item_1.is_armour)(data)) {
+            if (system_1.ItemOrders.count_armour_orders_of_type(character.cell_id, data.prototype.id) >= 4)
+                if ((Math.random() < 0.1) && (data.affixes.length == 0))
+                    to_get_rid_of.push(item);
+        }
+        if ((0, item_1.is_weapon)(data)) {
+            if (system_1.ItemOrders.count_weapon_orders_of_type(character.cell_id, data.prototype.id) >= 4)
+                if ((Math.random() < 0.1) && (data.affixes.length == 0))
+                    to_get_rid_of.push(item);
+        }
+    }
+    for (const item of to_get_rid_of) {
+        inventory_events_1.EventInventory.destroy_in_backpack_by_item_id(character, item);
     }
     let item = decide_item_buy_inputs(character);
     if (item == undefined)

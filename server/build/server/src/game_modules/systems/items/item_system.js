@@ -124,7 +124,7 @@ var ItemSystem;
         }
         const damage = new Damage_1.Damage();
         const ammo_data = content_1.MaterialStorage.get(ammo);
-        damage.pierce = weapon.prototype.bow_power * ammo_data.cutting_power + ammo_data.magic_power;
+        damage.pierce = (weapon.prototype.bow_power * ammo_data.cutting_power + ammo_data.magic_power) * (0.5 + 0.5 * weapon.durability / 100);
         damage_types_1.DmgOps.add_ip(damage, affix_damage);
         damage_types_1.DmgOps.floor_ip(damage);
         return damage;
