@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fish = exports.hunt = exports.gather_cotton = exports.gather_wood = void 0;
+exports.berries = exports.fish = exports.hunt = exports.gather_cotton = exports.gather_wood = void 0;
 const effects_1 = require("../effects/effects");
 const events_1 = require("../events/events");
 const generator_1 = require("./generator");
@@ -11,6 +11,7 @@ const FATIGUE_COST_WOOD = 5;
 const FATIGUE_COST_COTTON = 1;
 const FATIGUE_COST_HUNT = 5;
 const FATIGUE_COST_FISH = 3;
+const FATIGUE_COST_BERRIES = 10;
 function gather_wood_duration_modifier(character) {
     const slice_damage = system_1.CharacterSystem.melee_damage_raw(character, 'slice');
     const damage_mod = (1 + slice_damage.slice / 50);
@@ -22,6 +23,10 @@ function hunt_duration_modifier(character) {
 }
 function fishing_duration_modifier(char) {
     const skill = system_1.CharacterSystem.skill(char, 'fishing');
+    return (150 - skill) / 100;
+}
+function berry_duration_modifier(char) {
+    const skill = system_1.CharacterSystem.skill(char, 'travelling');
     return (150 - skill) / 100;
 }
 function gather_wood_trigger(character) {
@@ -60,6 +65,15 @@ function fishing_trigger(character) {
         return { response: "Notification:", value: "There is no more fish in the location. Check other locations in map window." };
     }
 }
+function berry_trigger(character) {
+    const data = data_objects_1.Data.Locations.from_id(character.location_id);
+    if (data.berries > 0) {
+        return { response: "OK" };
+    }
+    else {
+        return { response: "Notification:", value: "There are no berries in the location. Check other locations in map window." };
+    }
+}
 function gather_wood_effect(character) {
     events_1.Event.remove_tree(character.location_id);
     events_1.Event.change_stash(character, 31 /* MATERIAL.WOOD_RED */, 1);
@@ -67,6 +81,19 @@ function gather_wood_effect(character) {
 function gather_cotton_effect(character) {
     data_objects_1.Data.Locations.from_id(character.location_id).cotton -= 1;
     events_1.Event.change_stash(character, 2 /* MATERIAL.COTTON */, 1);
+}
+function gather_berries_effect(character) {
+    const skill = system_1.CharacterSystem.pure_skill(character, "travelling");
+    const amount = Math.floor(skill / 10 + Math.random() * 5);
+    data_objects_1.Data.Locations.from_id(character.location_id).berries -= amount;
+    if (Math.random() < 0.2) {
+        events_1.Event.change_stash(character, 29 /* MATERIAL.BERRY_ZAZ */, 5);
+    }
+    if (Math.random() * Math.random() > skill / 100) {
+        effects_1.Effect.Change.skill(character, 'travelling', 1, "Gathering" /* CHANGE_REASON.GATHERING */);
+        effects_1.Effect.Change.stress(character, 1, "Gathering" /* CHANGE_REASON.GATHERING */);
+    }
+    events_1.Event.change_stash(character, 28 /* MATERIAL.BERRY_FIE */, amount);
 }
 function hunt_skill_upgrade_roll(character) {
     const skill = system_1.CharacterSystem.pure_skill(character, 'hunt');
@@ -113,3 +140,4 @@ exports.gather_wood = (0, generator_1.generate_action)(FATIGUE_COST_WOOD, gather
 exports.gather_cotton = (0, generator_1.generate_action)(FATIGUE_COST_COTTON, generic_functions_1.basic_duration_modifier, gather_cotton_trigger, gather_cotton_effect, generic_functions_1.dummy_effect, "Gathering" /* CHANGE_REASON.GATHERING */);
 exports.hunt = (0, generator_1.generate_action)(FATIGUE_COST_HUNT, hunt_duration_modifier, hunt_trigger, hunt_effect, generic_functions_1.dummy_effect, "Hunting" /* CHANGE_REASON.HUNTING */);
 exports.fish = (0, generator_1.generate_action)(FATIGUE_COST_FISH, fishing_duration_modifier, fishing_trigger, fishing_effect, generic_functions_1.dummy_effect, "Fishing" /* CHANGE_REASON.FISHING */);
+exports.berries = (0, generator_1.generate_action)(FATIGUE_COST_BERRIES, berry_duration_modifier, berry_trigger, gather_berries_effect, generic_functions_1.dummy_effect, "Gathering" /* CHANGE_REASON.GATHERING */);

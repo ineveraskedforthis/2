@@ -42,6 +42,7 @@ exports.move = {
             console.log(character.next_cell);
             return;
         }
+        const possible_locations = data_id_1.DataID.Cells.locations(new_cell);
         events_1.Event.move(character, data_id_1.DataID.Cells.main_location(new_cell));
     },
     is_move: true

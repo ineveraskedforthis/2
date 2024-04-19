@@ -1,7 +1,7 @@
 import { CharacterView } from "@custom_types/responses"
 import { CharacterDataExpanded } from "./Types/character"
 
-export const local_actions = ['fish', 'gather_wood', 'gather_cotton', 'hunt', 'clean', 'rest'] as const
+export const local_actions = ['fish', 'gather_wood', 'gather_cotton', 'hunt', 'clean', 'rest', 'gather_berries'] as const
 export type local_action = typeof local_actions[number]
 export type action = 'move' | 'continue_move' | local_action
 
@@ -10,6 +10,7 @@ export function is_action_repeatable(action: action) {
         case "fish":return true
         case "gather_wood":return true
         case "gather_cotton":return true
+        case "gather_berries": return true
         case "hunt":return true
         case "clean":return false
         case "rest":return false

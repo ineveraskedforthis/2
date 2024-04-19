@@ -1,9 +1,10 @@
-export const local_actions = ['fish', 'gather_wood', 'gather_cotton', 'hunt', 'clean', 'rest'];
+export const local_actions = ['fish', 'gather_wood', 'gather_cotton', 'hunt', 'clean', 'rest', 'gather_berries'];
 export function is_action_repeatable(action) {
     switch (action) {
         case "fish": return true;
         case "gather_wood": return true;
         case "gather_cotton": return true;
+        case "gather_berries": return true;
         case "hunt": return true;
         case "clean": return false;
         case "rest": return false;

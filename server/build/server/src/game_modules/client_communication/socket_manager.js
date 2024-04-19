@@ -68,6 +68,7 @@ class SocketManager {
             socket.on('fish', () => actions_1.HandleAction.act(user, actions_00_1.CharacterAction.FISH));
             socket.on('gather_wood', () => actions_1.HandleAction.act(user, actions_00_1.CharacterAction.GATHER_WOOD));
             socket.on('gather_cotton', () => actions_1.HandleAction.act(user, actions_00_1.CharacterAction.GATHER_COTTON));
+            socket.on('gather_berries', () => actions_1.HandleAction.act(user, actions_00_1.CharacterAction.GATHER_BERRIES));
             socket.on('craft', (msg) => {
                 if (typeof (msg) != 'string')
                     return;

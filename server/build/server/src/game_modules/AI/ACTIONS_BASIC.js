@@ -142,7 +142,7 @@ function buy_random(character) {
         if (order.typ == 'buy')
             continue;
         const material = content_1.MaterialStorage.get(order.material);
-        if (material.category != 8 /* MATERIAL_CATEGORY.FOOD */)
+        if ((material.category != 8 /* MATERIAL_CATEGORY.FOOD */) && (material.category != 9 /* MATERIAL_CATEGORY.FRUIT */))
             continue;
         if ((best_price > order.price) && (order.amount > 0)) {
             best_price = order.price;

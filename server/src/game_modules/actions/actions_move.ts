@@ -45,6 +45,9 @@ export const move:CharacterMapAction ={
             return
         }
 
+        const possible_locations = DataID.Cells.locations(new_cell)
+
+
         Event.move(character, DataID.Cells.main_location(new_cell))
     },
 

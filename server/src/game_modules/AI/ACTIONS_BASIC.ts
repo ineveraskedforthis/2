@@ -177,7 +177,7 @@ export function buy_random(character: Character) {
         if (order.typ == 'buy')
             continue;
         const material = MaterialStorage.get(order.material)
-        if (material.category != MATERIAL_CATEGORY.FOOD)
+        if ((material.category != MATERIAL_CATEGORY.FOOD) && (material.category != MATERIAL_CATEGORY.FRUIT))
             continue;
         if ((best_price > order.price) && (order.amount > 0)) {
             best_price = order.price;

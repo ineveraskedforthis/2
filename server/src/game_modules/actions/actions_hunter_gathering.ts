@@ -12,6 +12,7 @@ const FATIGUE_COST_WOOD = 5
 const FATIGUE_COST_COTTON = 1
 const FATIGUE_COST_HUNT = 5
 const FATIGUE_COST_FISH = 3
+const FATIGUE_COST_BERRIES = 10
 
 function gather_wood_duration_modifier(character: Character) {
     const slice_damage = CharacterSystem.melee_damage_raw(character, 'slice')
@@ -26,6 +27,11 @@ function hunt_duration_modifier(character: Character) {
 
 function fishing_duration_modifier(char: Character) {
     const skill = CharacterSystem.skill(char, 'fishing')
+    return (150 - skill) / 100;
+}
+
+function berry_duration_modifier(char: Character) {
+    const skill = CharacterSystem.skill(char, 'travelling')
     return (150 - skill) / 100;
 }
 
@@ -61,6 +67,14 @@ function fishing_trigger(character: Character) : TriggerResponse {
         return { response: "Notification:", value: "There is no more fish in the location. Check other locations in map window."}
     }
 }
+function berry_trigger(character: Character) : TriggerResponse {
+    const data = Data.Locations.from_id(character.location_id)
+    if (data.berries > 0) {
+        return { response: "OK" }
+    } else {
+        return { response: "Notification:", value: "There are no berries in the location. Check other locations in map window."}
+    }
+}
 
 function gather_wood_effect(character: Character) {
     Event.remove_tree(character.location_id)
@@ -70,6 +84,24 @@ function gather_wood_effect(character: Character) {
 function gather_cotton_effect(character: Character) {
     Data.Locations.from_id(character.location_id).cotton -= 1
     Event.change_stash(character, MATERIAL.COTTON, 1)
+}
+
+function gather_berries_effect(character: Character) {
+    const skill = CharacterSystem.pure_skill(character, "travelling")
+
+    const amount = Math.floor(skill / 10 + Math.random() * 5)
+
+    Data.Locations.from_id(character.location_id).berries -= amount
+    if (Math.random() < 0.2) {
+        Event.change_stash(character, MATERIAL.BERRY_ZAZ, 5)
+    }
+
+    if (Math.random() * Math.random() > skill / 100) {
+        Effect.Change.skill(character, 'travelling', 1, CHANGE_REASON.GATHERING)
+        Effect.Change.stress(character, 1, CHANGE_REASON.GATHERING)
+    }
+
+    Event.change_stash(character, MATERIAL.BERRY_FIE, amount)
 }
 
 function hunt_skill_upgrade_roll(character: Character) {
@@ -154,4 +186,13 @@ export const fish = generate_action(
     fishing_effect,
     dummy_effect,
     CHANGE_REASON.FISHING
+)
+
+export const berries = generate_action(
+    FATIGUE_COST_BERRIES,
+    berry_duration_modifier,
+    berry_trigger,
+    gather_berries_effect,
+    dummy_effect,
+    CHANGE_REASON.GATHERING
 )

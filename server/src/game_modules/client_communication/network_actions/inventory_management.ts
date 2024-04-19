@@ -34,7 +34,7 @@ export namespace InventoryCommands {
         if (!MaterialConfiguration.is_valid_string_id(id)) return
         // console.log(3)
         const material = MaterialStorage.from_string(id);
-        if (material.category != MATERIAL_CATEGORY.FOOD) return
+        if ((material.category != MATERIAL_CATEGORY.FOOD) && (material.category != MATERIAL_CATEGORY.FRUIT)) return
         // console.log(4)
 
         if (character.stash.get(material.id) == 0) Alerts.generic_user_alert(user, "alert", "You don't have this item")
@@ -42,9 +42,9 @@ export namespace InventoryCommands {
 
         character.stash.inc(material.id, -1)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH)
-        Effect.Change.hp(character, Math.round(material.density * 20 + material.magic_power * 5), CHANGE_REASON.EATING)
-        Effect.Change.stress(character, -Math.round(material.density * 5 + material.magic_power * 10), CHANGE_REASON.EATING)
-        Effect.Change.fatigue(character, -Math.round(material.density * 20 + material.magic_power * 5), CHANGE_REASON.EATING)
+        Effect.Change.hp(character, Math.round(material.unit_size * material.density * 20 + material.magic_power * 5 + 1), CHANGE_REASON.EATING)
+        Effect.Change.stress(character, -Math.round(material.unit_size * material.density * 5 + material.magic_power * 10 + 1), CHANGE_REASON.EATING)
+        Effect.Change.fatigue(character, -Math.round(material.unit_size * material.density * 20 + material.magic_power * 5 + 1), CHANGE_REASON.EATING)
     }
 
     export function equip(sw: SocketWrapper, msg: number) {

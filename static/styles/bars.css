@@ -59,20 +59,19 @@
 }
 
 .bar_data{
-	position: absolute;
-	height: 100%;
-	width: 50%;
-	left: 105%;
+	height: 20px;
+	width: max-content;
+	/* left: 105%; */
 	text-align: left;
-	color: rgb(0, 0, 0);
+	color: rgb(50, 50, 50);
 	margin-right: 3px;
 	font-stretch: extra-expanded;
 	font: 1.1rem 'LeagueMonoVariable', sans-serif;
 	text-shadow:
-		-1px -1px 0 rgb(255, 255, 255),
-		1px -1px 0 rgb(255, 255, 255),
-		-1px 1px 0 rgb(255, 255, 255),
-		1px 1px 0 rgb(255, 255, 255);
+		-1px 0px 0 rgb(215, 215, 215),
+		1px 0px 0 rgb(215, 215, 215),
+		0px 1px 0 rgb(215, 215, 215),
+		0px -1px 0 rgb(215, 215, 215);
 }
 
 /* VERTICAL BAR END */

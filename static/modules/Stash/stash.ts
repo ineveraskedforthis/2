@@ -78,7 +78,7 @@ export function update_stash(data: number[]) {
 export function process_stash_click(tag: material_string_id) {
     console.log(tag);
     const material = MaterialStorage.from_string(tag)
-    if (material.category == MATERIAL_CATEGORY.FOOD) {
+    if ((material.category == MATERIAL_CATEGORY.FOOD) || (material.category == MATERIAL_CATEGORY.FRUIT)) {
         console.log('eating')
         socket.emit('eat', tag)
     }

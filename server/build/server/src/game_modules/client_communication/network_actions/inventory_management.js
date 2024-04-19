@@ -35,7 +35,7 @@ var InventoryCommands;
             return;
         // console.log(3)
         const material = content_1.MaterialStorage.from_string(id);
-        if (material.category != 8 /* MATERIAL_CATEGORY.FOOD */)
+        if ((material.category != 8 /* MATERIAL_CATEGORY.FOOD */) && (material.category != 9 /* MATERIAL_CATEGORY.FRUIT */))
             return;
         // console.log(4)
         if (character.stash.get(material.id) == 0)
@@ -43,9 +43,9 @@ var InventoryCommands;
         // console.log(5)
         character.stash.inc(material.id, -1);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.STASH */);
-        effects_1.Effect.Change.hp(character, Math.round(material.density * 20 + material.magic_power * 5), "Eating" /* CHANGE_REASON.EATING */);
-        effects_1.Effect.Change.stress(character, -Math.round(material.density * 5 + material.magic_power * 10), "Eating" /* CHANGE_REASON.EATING */);
-        effects_1.Effect.Change.fatigue(character, -Math.round(material.density * 20 + material.magic_power * 5), "Eating" /* CHANGE_REASON.EATING */);
+        effects_1.Effect.Change.hp(character, Math.round(material.unit_size * material.density * 20 + material.magic_power * 5 + 1), "Eating" /* CHANGE_REASON.EATING */);
+        effects_1.Effect.Change.stress(character, -Math.round(material.unit_size * material.density * 5 + material.magic_power * 10 + 1), "Eating" /* CHANGE_REASON.EATING */);
+        effects_1.Effect.Change.fatigue(character, -Math.round(material.unit_size * material.density * 20 + material.magic_power * 5 + 1), "Eating" /* CHANGE_REASON.EATING */);
     }
     InventoryCommands.eat = eat;
     function equip(sw, msg) {
