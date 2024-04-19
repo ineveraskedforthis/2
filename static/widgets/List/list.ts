@@ -226,7 +226,7 @@ export class List<Item> implements ListInterface<Item> {
             line.classList.add("table-row");
             line.classList.add("line_" + item_index);
             line.classList.add(... this._per_line_class);
-            line.classList.add(... this._per_line_class_by_item(item));
+            ((item: Item) => (line.classList.add(... this._per_line_class_by_item(item))))(item);
 
             ((table: List<Item>, item_index: number, line, item) => {
                 line.onclick = () => {

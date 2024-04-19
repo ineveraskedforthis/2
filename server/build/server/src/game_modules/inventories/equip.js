@@ -43,6 +43,15 @@ class Equip {
         }
         this.data.backpack.transfer_all(target.equip.data.backpack);
     }
+    is_empty() {
+        let result = true;
+        for (let slot of content_1.EquipSlotConfiguration.SLOT) {
+            if (this.data.slots[slot] != undefined) {
+                result = false;
+            }
+        }
+        return result && this.data.backpack.is_empty();
+    }
     get weapon() {
         return this.data.slots[0 /* EQUIP_SLOT.WEAPON */] ? data_objects_1.Data.Items.from_id(this.data.slots[0 /* EQUIP_SLOT.WEAPON */]) : undefined;
     }

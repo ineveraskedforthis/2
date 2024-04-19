@@ -7,7 +7,7 @@ import { set_up_character_creation_UI } from './modules/CharacterCreation/main.j
 import { set_up_character_model, update_equip_image } from './modules/CharacterImage/main.js';
 import { CharacterInfoCorner } from './modules/CharacterInfo/main.js';
 import { CharacterScreen } from './modules/CharacterScreen/character_screen.js';
-import { init_character_list_interactions, update_characters_list } from './modules/CharactersList/main.js';
+import { init_character_list_interactions } from './modules/CharactersList/main.js';
 import { backpack_list } from './modules/Equipment/backpack.js';
 import { elementById } from './modules/HTMLwrappers/common.js';
 import { init_market_items, market_items } from './modules/Market/items_market.js';
@@ -148,15 +148,6 @@ socket.on('equip-update', (msg: EquipSocket) => {
     equip_list.data = equip_data
     backpack_list.data = msg.backpack.items
 });
-
-{
-    let test_data = [
-        {name: 'Someone',   id: 100, dead: false},
-        {name: 'Noone',     id: 200, dead: true},
-        {name: 'Who?',      id: 300, dead: true},
-        {name: "He",        id: 400, dead: false}]
-    update_characters_list(test_data)
-}
 
 // UI animations update loop
 var delta = 0;

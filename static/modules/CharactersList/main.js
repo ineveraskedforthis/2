@@ -1,6 +1,7 @@
-import { elementById } from "../HTMLwrappers/common.js";
+import { elementById, select, selectOne } from "../HTMLwrappers/common.js";
 import { globals } from "../globals.js";
 import { socket } from "../Socket/socket.js";
+import { List } from "../../widgets/List/list.js";
 export function init_character_list_interactions() {
     socket.on('cell-characters', data => { update_characters_list(data); });
     elementById("attack_selected_character").onclick = attack_selected_character;
@@ -25,43 +26,49 @@ function rob_selected_charater() {
     }
     socket.emit('rob-character', globals.selected_character);
 }
+const columns = [
+    {
+        header_text: "Name",
+        type: "string",
+        value: (item) => item.name,
+        custom_style: ["flex-3"]
+    },
+    {
+        header_text: "Race",
+        type: "string",
+        value: (item) => item.race,
+        custom_style: ["flex-2"]
+    },
+    {
+        header_text: "",
+        type: "string",
+        value: (item) => item.robbed ? "x" : "o",
+        custom_style: ["flex-0-0-30px"]
+    }
+];
+const character_list = new List(elementById('characters_list'));
+character_list.columns = columns;
+character_list.onclick = (item, line) => {
+    select_character(item.id);
+};
+character_list.per_line_class_by_item = (item) => {
+    let result = ["generic-button", 'ListCharacterId_' + item.id];
+    if (item.dead) {
+        result.push("text-red");
+    }
+    return result;
+};
 export function update_characters_list(data) {
-    // console.log('update characters_list');
-    // console.log(data);
-    let list_div = elementById('characters_list');
-    globals.local_characters = data;
-    list_div.innerHTML = '';
-    let flag_remove_selection = true;
-    for (let item of data) {
-        let character_div = document.createElement('div');
-        let character_name = document.createElement('div');
-        character_name.innerHTML = item.name;
-        character_div.appendChild(character_name);
-        character_div.id = 'ListCharacterId_' + item.id;
-        character_div.classList.add('list_item');
-        if (item.dead) {
-            character_div.classList.add('red-text');
-        }
-        ((id) => character_div.onclick = () => {
-            select_character(id);
-        })(item.id);
-        if (item.id == globals.selected_character) {
-            flag_remove_selection = true;
-        }
-        list_div.appendChild(character_div);
-    }
-    if (flag_remove_selection) {
-        globals.selected_character = undefined;
-    }
+    character_list.data = data;
 }
 function select_character(id) {
     if (globals.selected_character != undefined) {
-        let character_div = document.getElementById('ListCharacterId_' + globals.selected_character);
-        if (character_div != undefined) {
-            character_div.classList.remove('selected');
+        let character_div = select('.ListCharacterId_' + globals.selected_character);
+        for (const item of character_div) {
+            item.classList.remove('selected');
         }
     }
     globals.selected_character = id;
-    let character_div = elementById('ListCharacterId_' + id);
+    let character_div = selectOne('.ListCharacterId_' + id);
     character_div.classList.add('selected');
 }

@@ -271,6 +271,10 @@ export namespace CharacterSystem {
         return total
     }
 
+    export function is_empty_inventory(target: {stash: Stash, savings: Savings, equip: Equip}): boolean {
+        return (target.savings.get() == 0) && target.stash.is_empty() && target.equip.is_empty()
+    }
+
     export function transfer_all(origin:{stash: Stash, savings: Savings, equip: Equip}, target: {stash: Stash, savings: any, equip: any}) {
         origin.stash.transfer_all(target.stash)
         origin.savings.transfer_all(target.savings)

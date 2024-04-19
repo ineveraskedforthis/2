@@ -110,7 +110,7 @@ export class List {
             line.classList.add("table-row");
             line.classList.add("line_" + item_index);
             line.classList.add(...this._per_line_class);
-            line.classList.add(...this._per_line_class_by_item(item));
+            ((item) => (line.classList.add(...this._per_line_class_by_item(item))))(item);
             ((table, item_index, line, item) => {
                 line.onclick = () => {
                     if (table._onclick)

@@ -15,6 +15,7 @@ import { DataID } from "./data/data_id";
 import { Data } from "./data/data_objects";
 import { CellData } from "./map/cell_interface";
 import { CharacterView } from "@custom_types/responses";
+import { CharacterSystem } from "./character/system";
 
 
 export namespace Convert {
@@ -32,7 +33,9 @@ export namespace Convert {
         return {
             name: data.name,
             dead: data.dead(),
-            id: data.id
+            id: data.id,
+            race: data.race,
+            robbed: CharacterSystem.is_empty_inventory(data)
         }
     }
 

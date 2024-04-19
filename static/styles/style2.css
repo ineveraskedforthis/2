@@ -702,3 +702,7 @@ div {
 .highlighted {
     border: 1px solid yellow;
 }
+
+.text-red {
+    color: crimson
+}

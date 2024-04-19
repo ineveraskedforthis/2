@@ -437,12 +437,23 @@ export namespace Event {
     }
 
     export function rob_the_dead(robber: Character, target: Character) {
-        if (robber.cell_id != target.cell_id) return
-        if (!target.dead()) return
+        if (robber.cell_id != target.cell_id) {
+            Alerts.alert(robber, "Target is too far away")
+            return
+        }
+        if (!target.dead()) {
+            Alerts.alert(robber, "You can rob only dead people")
+            return
+        }
+        if (CharacterSystem.is_empty_inventory(target)) {
+            Alerts.alert(robber, "Target's inventory is empty")
+            return
+        }
 
         CharacterSystem.transfer_all(target, robber)
         UserManagement.add_user_to_update_queue(robber.user_id, UI_Part.STASH)
         UserManagement.add_user_to_update_queue(robber.user_id, UI_Part.INVENTORY)
+        UserManagement.add_user_to_update_queue(robber.user_id, UI_Part.LOCAL_CHARACTERS)
     }
 
     export function kill(killer: Character, victim: Character) {
@@ -478,6 +489,7 @@ export namespace Event {
 
         DataID.Character.unset_all_ownership(victim.id)
         UserManagement.add_user_to_update_queue(killer.user_id, UI_Part.STASH)
+        UserManagement.add_user_to_update_queue(killer.user_id, UI_Part.LOCAL_CHARACTERS)
     }
 
     export function death(character: Character) {

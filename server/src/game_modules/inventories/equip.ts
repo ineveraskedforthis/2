@@ -66,6 +66,16 @@ export class Equip {
         this.data.backpack.transfer_all(target.equip.data.backpack)
     }
 
+    is_empty(): boolean {
+        let result = true;
+        for (let slot of EquipSlotConfiguration.SLOT) {
+            if (this.data.slots[slot] != undefined) {
+                result = false
+            }
+        }
+        return result && this.data.backpack.is_empty()
+    }
+
     get weapon(): Weapon|undefined {
         return this.data.slots[EQUIP_SLOT.WEAPON] ? Data.Items.from_id(this.data.slots[EQUIP_SLOT.WEAPON]) as Weapon : undefined
     }

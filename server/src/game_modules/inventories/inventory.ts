@@ -28,6 +28,19 @@ export class Inventory{
         }
     }
 
+    is_empty() : boolean {
+        let result = true;
+
+        for (let i = 0; i < this.items.length; i++) {
+            let item = this.items[i]
+            if (item != undefined) {
+                result = false
+            }
+        }
+
+        return result
+    }
+
     remove(i: number) {
         this.items.splice(i, 1)
     }

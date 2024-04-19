@@ -394,13 +394,22 @@ var Event;
         }
     }
     function rob_the_dead(robber, target) {
-        if (robber.cell_id != target.cell_id)
+        if (robber.cell_id != target.cell_id) {
+            alerts_1.Alerts.alert(robber, "Target is too far away");
             return;
-        if (!target.dead())
+        }
+        if (!target.dead()) {
+            alerts_1.Alerts.alert(robber, "You can rob only dead people");
             return;
+        }
+        if (system_2.CharacterSystem.is_empty_inventory(target)) {
+            alerts_1.Alerts.alert(robber, "Target's inventory is empty");
+            return;
+        }
         system_2.CharacterSystem.transfer_all(target, robber);
         user_manager_1.UserManagement.add_user_to_update_queue(robber.user_id, 8 /* UI_Part.STASH */);
         user_manager_1.UserManagement.add_user_to_update_queue(robber.user_id, 10 /* UI_Part.INVENTORY */);
+        user_manager_1.UserManagement.add_user_to_update_queue(robber.user_id, 13 /* UI_Part.LOCAL_CHARACTERS */);
     }
     Event.rob_the_dead = rob_the_dead;
     function kill(killer, victim) {
@@ -434,6 +443,7 @@ var Event;
         }
         data_id_1.DataID.Character.unset_all_ownership(victim.id);
         user_manager_1.UserManagement.add_user_to_update_queue(killer.user_id, 8 /* UI_Part.STASH */);
+        user_manager_1.UserManagement.add_user_to_update_queue(killer.user_id, 13 /* UI_Part.LOCAL_CHARACTERS */);
     }
     Event.kill = kill;
     function death(character) {

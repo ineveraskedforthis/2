@@ -251,6 +251,10 @@ var CharacterSystem;
         return total;
     }
     CharacterSystem.damage = damage;
+    function is_empty_inventory(target) {
+        return (target.savings.get() == 0) && target.stash.is_empty() && target.equip.is_empty();
+    }
+    CharacterSystem.is_empty_inventory = is_empty_inventory;
     function transfer_all(origin, target) {
         origin.stash.transfer_all(target.stash);
         origin.savings.transfer_all(target.savings);

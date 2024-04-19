@@ -6,6 +6,7 @@ const user_manager_1 = require("./client_communication/user_manager");
 const VALUES_1 = require("./battle/VALUES");
 const data_id_1 = require("./data/data_id");
 const data_objects_1 = require("./data/data_objects");
+const system_1 = require("./character/system");
 var Convert;
 (function (Convert) {
     function reputation_to_socket(reputation) {
@@ -21,7 +22,9 @@ var Convert;
         return {
             name: data.name,
             dead: data.dead(),
-            id: data.id
+            id: data.id,
+            race: data.race,
+            robbed: system_1.CharacterSystem.is_empty_inventory(data)
         };
     }
     Convert.character_id_to_character_view = character_id_to_character_view;

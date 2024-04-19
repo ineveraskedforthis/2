@@ -30,11 +30,15 @@ export type CellDisplay = {
     urbanisation: number,
     rat_lair: boolean
 }
+
 export interface CharacterView {
     id: number;
     name: string;
     dead: boolean;
+    robbed: boolean;
+    race: string;
 }
+
 export interface BulkOrderView {
     typ: 'sell'|'buy',
     tag: MATERIAL,
