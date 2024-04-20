@@ -73,12 +73,14 @@ export namespace BattleImage {
         socket.emit('req-battle-actions-position', target)
     }
 
-    export function load(data: BattleData) {
+    export function load(data: BattleData, battle_in_progress: boolean) {
         console.log('load battle')
         console.log(data)
-        BattleView.regenerate_tiles()
+        if (!battle_in_progress) {
+            BattleView.regenerate_tiles();
+            reset()
+        }
 
-        reset()
         for (let [_, unit] of Object.entries(data)) {
             load_unit(unit)
         }

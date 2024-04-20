@@ -56,11 +56,13 @@ export var BattleImage;
         console.log('request actions position');
         socket.emit('req-battle-actions-position', target);
     }
-    function load(data) {
+    function load(data, battle_in_progress) {
         console.log('load battle');
         console.log(data);
-        BattleView.regenerate_tiles();
-        reset();
+        if (!battle_in_progress) {
+            BattleView.regenerate_tiles();
+            reset();
+        }
         for (let [_, unit] of Object.entries(data)) {
             load_unit(unit);
         }

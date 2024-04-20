@@ -15,7 +15,7 @@ export function init_battle_control() {
         BattleImage.update_action(data, keybinds[data.tag]);
     });
     socket.on('battle-in-process', bCallback.update_battle_process);
-    socket.on('battle-update-units', data => BattleImage.load(data));
+    socket.on('battle-update-units', data => BattleImage.load(data, battle_is_on));
     socket.on('current-unit-turn', bCallback.link_current_turn);
     socket.on('battle-event', bCallback.event);
     socket.on('battle-remove-unit', BattleImage.unload_unit_by_id);
@@ -28,7 +28,7 @@ var bCallback;
     }
     bCallback.link_current_turn = link_current_turn;
     function update_battle_state(data) {
-        BattleImage.load(data);
+        BattleImage.load(data, battle_is_on);
     }
     bCallback.update_battle_state = update_battle_state;
     function update_battle_process(flag) {

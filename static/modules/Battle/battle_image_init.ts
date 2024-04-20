@@ -23,7 +23,7 @@ export function init_battle_control() {
     })
 
     socket.on('battle-in-process',          bCallback.update_battle_process)
-    socket.on('battle-update-units',        data => BattleImage.load(data))
+    socket.on('battle-update-units',        data => BattleImage.load(data, battle_is_on))
     socket.on('current-unit-turn',          bCallback.link_current_turn)
     socket.on('battle-event',               bCallback.event)
     socket.on('battle-remove-unit',         BattleImage.unload_unit_by_id)
@@ -37,7 +37,7 @@ namespace bCallback {
     }
 
     export function update_battle_state(data: BattleData) {
-        BattleImage.load(data)
+        BattleImage.load(data, battle_is_on)
     }
 
     export function update_battle_process(flag: boolean) {
