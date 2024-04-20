@@ -6,13 +6,13 @@
     height: 20px;
 }
 
-.table-25px-rows-flex {
+.table-30px-rows-flex {
     width: 100%;
     height: 100%;
 }
 
-.table-25px-rows-flex > div {
-    height: 25px;
+.table-30px-rows-flex > div {
+    height: 30px;
 }
 
 

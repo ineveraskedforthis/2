@@ -112,12 +112,12 @@ export class List<Item> implements ListInterface<Item> {
     private _per_line_class_by_item: (item: Item) => string[]
 
 
-    constructor(container: HTMLElement) {
+    constructor(container: HTMLElement, wrapper_class: string = "table-30px-rows-flex") {
         this.container = container
 
         this.wrapper = document.createElement("div")
         this.wrapper.classList.add("wrapper")
-        this.wrapper.classList.add("table-25px-rows-flex")
+        this.wrapper.classList.add(wrapper_class)
 
         container.appendChild(this.wrapper)
 

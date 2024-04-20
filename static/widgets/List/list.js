@@ -14,11 +14,11 @@ function is_active_column(column) {
     return (column.type == "string") && ("onclick" in column);
 }
 export class List {
-    constructor(container) {
+    constructor(container, wrapper_class = "table-30px-rows-flex") {
         this.container = container;
         this.wrapper = document.createElement("div");
         this.wrapper.classList.add("wrapper");
-        this.wrapper.classList.add("table-25px-rows-flex");
+        this.wrapper.classList.add(wrapper_class);
         container.appendChild(this.wrapper);
         this._sorting_sequence = [];
         this._data = [];
