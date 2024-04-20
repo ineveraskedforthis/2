@@ -147,6 +147,7 @@ var CharactersHeap;
             unit.next_turn_after = unit.next_turn_after - dt;
         }
         const to_join = [];
+        const response = [];
         for (let index = 0; index < battle.queue.length; index++) {
             battle.queue[index].delay -= dt;
             if (battle.queue[index].delay < 0)
@@ -156,7 +157,9 @@ var CharactersHeap;
             const unit = battle.queue[index];
             battle.queue.splice(index, 1);
             add_unit(battle, data_objects_1.Data.Characters.from_id(unit.character));
+            response.push(unit.character);
         }
+        return response;
     }
     CharactersHeap.update = update;
 })(CharactersHeap || (exports.CharactersHeap = CharactersHeap = {}));

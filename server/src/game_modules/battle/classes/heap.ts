@@ -136,7 +136,7 @@ export namespace CharactersHeap {
         return tmp
     }
 
-    export function update(battle: Battle, dt: number) {
+    export function update(battle: Battle, dt: number): character_id[] {
         for (let i = 0; i < battle.last; i++) {
             const id = battle.heap[i]
             if (id == undefined) continue;
@@ -145,6 +145,7 @@ export namespace CharactersHeap {
         }
 
         const to_join: number[] = []
+        const response : character_id[] = []
 
         for (let index = 0; index < battle.queue.length; index++) {
             battle.queue[index].delay -= dt;
@@ -155,7 +156,10 @@ export namespace CharactersHeap {
             const unit = battle.queue[index]
             battle.queue.splice(index, 1)
             add_unit(battle, Data.Characters.from_id(unit.character))
+            response.push(unit.character)
         }
+
+        return response
     }
 }
 

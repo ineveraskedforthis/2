@@ -106,7 +106,9 @@ export namespace BattleEvent {
             return false
         }
         let time_passed = next_unit.next_turn_after
-        CharactersHeap.update(battle, time_passed)
+        for (const item of CharactersHeap.update(battle, time_passed)) {
+            Alerts.battle_event_simple(battle, 'unit_join', Data.Characters.from_id(item))
+        }
 
         // send updates
         Alerts.battle_event_simple(battle, 'end_turn', unit)

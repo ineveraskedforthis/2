@@ -10,6 +10,7 @@ const basic_functions_1 = require("../calculations/basic_functions");
 const user_manager_1 = require("../client_communication/user_manager");
 const VALUES_1 = require("./VALUES");
 const heap_1 = require("./classes/heap");
+const data_objects_1 = require("../data/data_objects");
 // export const MOVE_COST = 3
 const COST = {
     ATTACK: 3,
@@ -96,7 +97,9 @@ var BattleEvent;
             return false;
         }
         let time_passed = next_unit.next_turn_after;
-        heap_1.CharactersHeap.update(battle, time_passed);
+        for (const item of heap_1.CharactersHeap.update(battle, time_passed)) {
+            alerts_1.Alerts.battle_event_simple(battle, 'unit_join', data_objects_1.Data.Characters.from_id(item));
+        }
         // send updates
         alerts_1.Alerts.battle_event_simple(battle, 'end_turn', unit);
         alerts_1.Alerts.battle_update_unit(battle, unit);
