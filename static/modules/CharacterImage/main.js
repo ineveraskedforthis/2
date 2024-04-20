@@ -34,6 +34,7 @@ export function draw_npc_by_index(data, step, index, canvas_context, height) {
 export function update_local_npc_images(data) {
     const canvas = elementById("super_cool_canvas");
     const context = canvas.getContext("2d");
+    context.resetTransform();
     context.clearRect(0, 0, canvas.width, canvas.height);
     draw_npc_by_index(data, (window.screen.width - 400) / 7, 0, context, canvas.height);
 }
