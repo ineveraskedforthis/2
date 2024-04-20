@@ -302,7 +302,7 @@ div {
     top: 100px;
     width: 100%;
     height: calc(100% - 100px);
-    background: rgba(91, 33, 33, 0.91);
+    background: rgb(91, 33, 33);
     /* color: rgb(13, 228, 77); */
     color: whitesmoke;
 }

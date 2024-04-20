@@ -1,12 +1,13 @@
 /* eslint-disable no-redeclare */
 /*global images, battle_image*/
 
-import { CellDisplay } from '../../shared/responses.js';
-import {get_pos_in_canvas} from './common.js';
-import { action, globals, is_action_repeatable, local_action, local_actions } from './globals.js';
-import { socket } from "./Socket/socket.js";
-import {location_descriptions, section_descriptions} from './localisation.js';
-import { elementById, select } from './HTMLwrappers/common.js';
+import { CellDisplay } from '../../../shared/responses.js';
+import { get_pos_in_canvas } from '../common.js';
+import { globals, is_action_repeatable, local_action, local_actions } from '../globals.js';
+import { socket } from "../Socket/socket.js";
+import { elementById, select } from '../HTMLwrappers/common.js';
+import { ImageStorage, ImageStorageEntry } from './ImageStorage/image_storage.js'
+
 
 function st(a: [number, number]) {
     return a[0] + ' ' + a[1]
@@ -47,7 +48,7 @@ export function init_map_control(map: Map) {
         globals.prev_mouse_x = null;
         globals.prev_mouse_y = null;
         globals.map_zoom = 1
-        map.last_time_down = Date.now()
+        map.last_time_down = globals.now
     }
 
     map.canvas.onmousemove = event => {
@@ -132,28 +133,24 @@ const tile_tags = [
 
 type tile_tag = typeof tile_tags[number]
 
-let tiles: HTMLImageElement[] = []
-
 function load_image(tag: tile_tag) {
-    const image = new Image;
-    image.src = `static/img/tiles/${tag}.png`;
-    const index = tiles.push(image) - 1;
-    return [tag, index]
+    return [tag, ImageStorage.load_image(`static/img/tiles/${tag}.png`)]
 }
-
-let tag_to_index: { [tag in tile_tag]: number } = Object.fromEntries(tile_tags.map(load_image))
-
+let tag_to_tile: { [tag in tile_tag]: ImageStorageEntry } = Object.fromEntries(tile_tags.map(load_image))
 function tile(tag: tile_tag) {
-    return tiles[tag_to_index[tag]]
+    return tag_to_tile[tag]
 }
-
-
 
 
 export class Map {
-    time: number;
     last_time_down: number;
+
     canvas: HTMLCanvasElement;
+    context: CanvasRenderingContext2D;
+
+    buffer: OffscreenCanvas;
+    buffer_context: OffscreenCanvasRenderingContext2D;
+
     container: HTMLElement;
     hex_side: number;
     camera: [number, number];
@@ -179,24 +176,24 @@ export class Map {
 
 
     constructor(canvas: HTMLCanvasElement, container: HTMLElement) {
-        this.time = 0
         this.last_time_down = 0
 
         this.canvas = canvas;
-        canvas.width = container.clientWidth - 2
-        canvas.height = container.clientHeight - 2
+        canvas.width = container.clientWidth
+        canvas.height = container.clientHeight
+
+
+        this.context = this.canvas.getContext('2d')!;
+        this.buffer = new OffscreenCanvas(canvas.width, canvas.height);
+        this.buffer_context = this.buffer.getContext('2d')!;
 
         this.container = container;
 
         this.hex_side = 23;
         this.camera = [50, 600];
         this.hex_shift = [-100, -680];
-        // this.hovered = null;
         this.selected = [0, 0];
         this.curr_pos = [0, 0];
-        // this.curr_territory = undefined;
-        // this.curr_section = undefined;
-        // this.sections = undefined;
 
         this.move_flag = false // does player follow some path currently?
         this.movement_progress = 0
@@ -206,37 +203,17 @@ export class Map {
         this.forest = []
         this.urban = []
         this.rat_lairs = []
-        // this.visit_spotted = []
-        // this.description = document.createElement('div');
-        // this.container.appendChild(this.description);
-
         this.path = {}
         this.real_path = []
         this.path_progress = 0
     }
 
     update_canvas_size() {
-        this.canvas.width = this.container.clientWidth - 2
-        this.canvas.height = this.container.clientHeight - 2
+        this.canvas.width = this.container.clientWidth
+        this.canvas.height = this.container.clientHeight
+        this.buffer.width = this.container.clientWidth
+        this.buffer.height = this.container.clientHeight
     }
-
-    // update_probability(data) {
-    //     let text= Math.floor(data.value * 100) + '%'
-
-    //     // let chance_label_map = document.getElementById(data.tag + '_chance')
-    //     // chance_label_map.innerHTML = text
-
-    //     let chance_label_desktop = document.getElementById(data.tag + '_chance_desktop')
-    //     chance_label_desktop.innerHTML = text
-    // }
-
-
-
-    // mark_visited(data) {
-    //     this.visit_spotted = data
-    //     // console.log(this.visit_spotted)
-    // }
-
 
     load_terrain(data: { x: number, y: number, ter: CellDisplay}) {
         if (this.terrain[data.x] == undefined) {
@@ -255,57 +232,24 @@ export class Map {
         this.terrain = []
     }
 
-    // toogle_territory(tag) {
-    //     this.fog_of_war[tag] = !this.fog_of_war[tag];
-    // }
+    draw() {
+        const ctx = this.buffer_context
+        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    // explore(data) {
-    //     // console.log('explore')
-    //     // console.log(data)
-    //     for (let i in data) {
-    //         if (terr_id[i] in this.fog_of_war) {
-    //             // console.log(terr_id[i])
-    //             this.fog_of_war[terr_id[i]] = !data[i]
-    //         }
-    //     }
-    // }
 
-    draw(dt: number) {
-        this.time += dt
-        var ctx = this.canvas.getContext('2d')!;
-        ctx.clearRect(0, 0, 2000, 2000);
-        // ctx.drawImage(images['map'], 0 - this.camera[0], 0 - this.camera[1], 2000, 2000)
-        // for (i in this.fog_of_war) {
-        //     if (this.fog_of_war[i]) {
-        //         ctx.drawImage(images['fog_' + i], 0 - this.camera[0], 0 - this.camera[1], 2000, 2000)
-        //     }
-        // }
         for (var i = -2; i < 30; i++) {
             for (var j = 0; j < 30; j++) {
-                const position: [number, number] = [i, j]
-                if (this.hovered != null && this.hovered[0] == i && this.hovered[1] == j) {
-                    this.draw_hex(ctx, position, 'fill', '(0, 255, 0, 0.6)', 0);
-                } else if (this.curr_pos[0] == i && this.curr_pos[1] == j) {
-                    this.draw_hex(ctx, position, 'fill', '(0, 0, 255, 0.6)', 0);
-                    // this.draw_hex(i, j, 'circle', '(0, 255, 0, 1)');
-                } else if (this.selected != null && this.selected[0] == i && this.selected[1] == j) {
-                    this.draw_hex(ctx, position, 'fill', '(255, 255, 0, 0.6)', 0);
-                } else {
-                    // if ((get_territory_tag(i, j) == this.curr_territory) & (this.curr_territory != undefined) & (this.sections != undefined)) {
-                    //     let color = this.get_section_color(this.get_section(i, j))
-                    //     if (color != undefined) {
-                    //         this.draw_hex(i, j, 'fill', color);
-                    //     }
-                    // }
-                    this.draw_hex(ctx, position, 'fill', '(0, 0, 0, 0)', 0);
-                }
+                this.draw_hex(ctx, [i,j]);
+                this.draw_hex_features(ctx, [i, j]);
             }
         }
 
-        for (var i = -2; i < 30; i++) {
-            for (var j = 0; j < 30; j++) {
-                this.draw_hex_features(ctx, [i, j]);
-            }
+        this.draw_fill(ctx, this.curr_pos, '(0, 0, 255, 0.6)')
+        if (this.selected) {
+            this.draw_fill(ctx, this.selected, '(255, 255, 0, 0.6)');
+        }
+        if (this.hovered) {
+            this.draw_fill(ctx, this.hovered, '(0, 255, 0, 0.6)');
         }
 
         this.draw_player_circle(ctx)
@@ -313,10 +257,6 @@ export class Map {
 
         ctx.fillStyle = "#000000";
         ctx.font = 'bold 20px sans-serif';
-        // for (let i in this.visit_spotted) {
-        //     let centre = this.get_hex_centre(this.visit_spotted[i].x, this.visit_spotted[i].y)
-        //     ctx.fillText(`??`, centre[0] - 10, centre[1]);
-        // }
 
         if (this.selected != undefined){
             ctx.strokeStyle = 'rgb(0, 255, 0)'
@@ -335,27 +275,11 @@ export class Map {
                 }
                 cur = this.path[tmp]
             }
-
         }
+
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+        this.context.drawImage(this.buffer, 0, 0);
     }
-
-    // get_section(x, y) {
-    //     let tmp = x + '_' + y;
-    //     for (let i in this.sections.hexes) {
-    //         if (this.sections.hexes[i].indexOf(tmp) > -1) {
-    //             return i
-    //         }
-    //     }
-    //     return 'unknown'
-    // }
-
-    // get_section_color(tag) {
-    //     if (tag in this.sections.colors) {
-    //         let color = this.sections.colors[tag];
-    //         return '(' + color[0] + ', ' + color[1] + ', ' + color[2] + `, 0.3)`
-    //     }
-    //     return undefined;
-    // }
 
     get_hex_centre([i, j]: [number, number]): [number, number] {
         var h = this.hex_side * Math.sqrt(3) / 2;
@@ -365,29 +289,35 @@ export class Map {
         return [tx, ty]
     }
 
-    draw_player_circle(ctx: CanvasRenderingContext2D) {
+    draw_player_circle(ctx: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D) {
+        let c = this.get_hex_centre(this.curr_pos)
         if (this.move_flag) {
-            let c = this.get_hex_centre(this.curr_pos)
             if (this.move_target != undefined) {
                 let b = this.get_hex_centre(this.move_target)
                 ctx.strokeStyle = 'rgba' + '(200, 200, 0, 1)';
-                this.draw_pentagon(ctx, c[0] * (1 - this.movement_progress) + b[0] * this.movement_progress, c[1] * (1 - this.movement_progress) + b[1] * this.movement_progress, 10)
-
+                this.draw_pentagon(
+                    ctx,
+                    c[0] * (1 - this.movement_progress) + b[0] * this.movement_progress,
+                    c[1] * (1 - this.movement_progress) + b[1] * this.movement_progress,
+                    '(200, 200, 0, 1)',
+                    10
+                )
             }
         } else {
-            this.draw_hex(ctx, this.curr_pos, 'pentagon', '(200, 200, 0, 1)', 10);
+            this.draw_pentagon(ctx, c[0], c[1], '(200, 200, 0, 1)', 10);
         }
     }
 
-    draw_selected_circle(ctx: CanvasRenderingContext2D) {
-        this.draw_hex(ctx, this.selected, 'pentagon', '(0, 100, 100, 1)', 20);
+    draw_selected_circle(ctx: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D) {
+        let c = this.get_hex_centre(this.selected)
+        this.draw_pentagon(ctx, c[0], c[1], '(0, 100, 100, 1)', 20);
     }
 
-    draw_pentagon(ctx: CanvasRenderingContext2D, x: number, y: number, r: number) {
+    draw_pentagon(ctx: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D, x: number, y: number, color: string, r: number) {
+        ctx.strokeStyle = 'rgba' + color;
+
         let epsilon = 6 * Math.PI / 5
-        // let xi = 2 * Math.PI / 5
-        let start = this.time
-        // let shift = globals.action_ratio
+        let start = globals.now / 1000
 
         ctx.beginPath();
         ctx.moveTo(x + Math.cos(start) * r, y + Math.sin(start) * r);
@@ -405,45 +335,10 @@ export class Map {
         ctx.stroke();
     }
 
-
-    draw_hex(ctx: CanvasRenderingContext2D, [i, j]: [number, number], mode: 'pentagon' | 'circle' | 'fill', color: string, r: number) {
+    draw_stroke(ctx: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D, [i, j]: [number, number], color: string) {
         var h = this.hex_h;
         var w = this.hex_w;
         var [center_x, center_y] = this.hex_center_camera_adjusted([i, j])
-
-        if (mode == 'pentagon') {
-            ctx.strokeStyle = 'rgba' + color;
-            this.draw_pentagon(ctx, center_x, center_y, r)
-            return
-        }
-
-        if (mode == 'circle') {
-            ctx.strokeStyle = 'rgba' + color;
-            ctx.beginPath();
-            ctx.arc(center_x, center_y, 5, 0, Math.PI * 2, true);
-            ctx.stroke();
-            return
-        }
-
-        if (this.terrain[i] == undefined || this.terrain[i][j] == undefined) {
-            return
-        }
-
-        // draw terrain
-        if (this.terrain[i][j] == 'sea') {
-            ctx.drawImage(tile('sea'), center_x - this.hex_side, center_y - h)
-        } else if (this.terrain[i][j] == 'city') {
-            ctx.drawImage(tile('city_colour'), center_x - this.hex_side, center_y - h)
-        } else if (this.terrain[i][j] == 'steppe') {
-            ctx.drawImage(tile('red_steppe'), center_x - this.hex_side, center_y - h)
-        } else if (this.terrain[i][j] == 'coast') {
-            ctx.drawImage(tile('coast'), center_x - this.hex_side, center_y - h)
-        } else if (this.terrain[i][j] == 'rupture') {
-            ctx.drawImage(tile('rupture'), center_x - this.hex_side, center_y - h)
-        } else {
-            // no terrain, abort immediately
-            return
-        }
 
         ctx.fillStyle = 'rgba' + color;
         ctx.beginPath();
@@ -453,16 +348,51 @@ export class Map {
         ctx.lineTo(center_x - this.hex_side, center_y);
         ctx.lineTo(center_x - w, center_y + h);
         ctx.lineTo(center_x + w, center_y + h);
-        if (mode == 'fill') {
-            ctx.fill();
-        } else if (mode == 'stroke') {
-            ctx.lineTo(center_x + this.hex_side, center_y);
-            ctx.stroke()
+
+        ctx.lineTo(center_x + this.hex_side, center_y);
+        ctx.stroke()
+    }
+
+    draw_fill(ctx: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D, [i, j]: [number, number], color: string) {
+        var h = this.hex_h;
+        var w = this.hex_w;
+        var [center_x, center_y] = this.hex_center_camera_adjusted([i, j])
+
+        ctx.fillStyle = 'rgba' + color;
+        ctx.beginPath();
+        ctx.moveTo(center_x + this.hex_side, center_y);
+        ctx.lineTo(center_x + w, center_y - h);
+        ctx.lineTo(center_x - w, center_y - h);
+        ctx.lineTo(center_x - this.hex_side, center_y);
+        ctx.lineTo(center_x - w, center_y + h);
+        ctx.lineTo(center_x + w, center_y + h);
+        ctx.fill();
+    }
+
+    draw_hex(ctx: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D, [i, j]: [number, number]) {
+        var [center_x, center_y] = this.hex_center_camera_adjusted([i, j])
+
+        if (this.terrain[i] == undefined || this.terrain[i][j] == undefined) {
+            return
         }
 
-        // ctx.fillStyle = 'rgba(0, 0, 0, 1)';
-        // ctx.font = '10px Times New Roman';
-        // ctx.fillText(`${i} ${j}`, center_x - w, center_y + h / 2);
+        const target_x = center_x - this.hex_side;
+        const target_y = center_y - this.hex_h;
+
+
+        if (this.terrain[i][j] == 'sea') {
+            ImageStorage.draw_image(ctx, tile('sea'), target_x, target_y)
+        } else if (this.terrain[i][j] == 'city') {
+            ImageStorage.draw_image(ctx, tile('city_colour'), target_x, target_y)
+        } else if (this.terrain[i][j] == 'steppe') {
+            ImageStorage.draw_image(ctx, tile('red_steppe'), target_x, target_y)
+        } else if (this.terrain[i][j] == 'coast') {
+            ImageStorage.draw_image(ctx, tile('coast'), target_x, target_y)
+        } else if (this.terrain[i][j] == 'rupture') {
+            ImageStorage.draw_image(ctx, tile('rupture'), target_x, target_y)
+        } else {
+            return
+        }
     }
 
     hex_center([i, j]: [number, number]) {
@@ -479,7 +409,7 @@ export class Map {
         return [center_x - this.camera[0] - this.hex_shift[0], center_y - this.camera[1] - this.hex_shift[1]]
     }
 
-    draw_hex_features(ctx: CanvasRenderingContext2D, [i, j]: [number, number]) {
+    draw_hex_features(ctx: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D, [i, j]: [number, number]) {
         var h = this.hex_h;
         var w = this.hex_w;
         var [center_x, center_y] = this.hex_center_camera_adjusted([i, j])
@@ -496,30 +426,26 @@ export class Map {
         let rats = this.rat_lairs[i][j]
         ctx.strokeStyle = 'black';
 
+        const target_x = center_x - this.hex_side
+        const target_y = center_y - h
+
         if (rats) {
-            ctx.drawImage(tile('rats'), center_x - this.hex_side, center_y - h)
+            ImageStorage.draw_image(ctx, tile('rats'), target_x, target_y)
         }
 
         // ctx.fillText(forestation, center_x - this.hex_side, center_y - h);
         for (let iteration = 0; iteration < forestation / 100; iteration++) {
             const noise_x = Math.cos(iteration + i + j) * 10
             const noise_y = Math.cos(iteration * 10 + i * 5 + j * 3) * 10
-
-            ctx.drawImage(tile('forest_1'), center_x - this.hex_side + noise_x, center_y - h + noise_y)
+            ImageStorage.draw_image(ctx, tile('forest_1'), target_x + noise_x, target_y + noise_y)
         }
 
         if ((urbanisation >= 8)) {
-            ctx.drawImage(tile('city_colour'), center_x - this.hex_side, center_y - h)
-            ctx.drawImage(tile('city_colour'), center_x - this.hex_side, center_y - h)
-            ctx.drawImage(tile('city_colour'), center_x - this.hex_side, center_y - h)
-            ctx.drawImage(tile('new_urban_3'), center_x - this.hex_side, center_y - h)
+            ImageStorage.draw_image(ctx, tile('new_urban_3'), target_x, target_y)
         } else if ((urbanisation >= 4)) {
-            ctx.drawImage(tile('city_colour'), center_x - this.hex_side, center_y - h)
-            ctx.drawImage(tile('city_colour'), center_x - this.hex_side, center_y - h)
-            ctx.drawImage(tile('new_urban_2'), center_x - this.hex_side, center_y - h)
+            ImageStorage.draw_image(ctx, tile('new_urban_2'), target_x, target_y)
         } else if ((urbanisation >= 1)) {
-            ctx.drawImage(tile('city_colour'), center_x - this.hex_side, center_y - h)
-            ctx.drawImage(tile('new_urban_1'), center_x - this.hex_side, center_y - h)
+            ImageStorage.draw_image(ctx, tile('new_urban_1'), target_x, target_y)
         }
     }
 
@@ -556,12 +482,6 @@ export class Map {
 
     select_hex([i, j]: [number, number]) {
         this.selected = [i, j];
-        // let tag = get_territory_tag([i, j]);
-        // if (this.fog_of_war[tag] == true) {
-        //     tag = 'unknown'
-        // }
-        // let section_tag = this.get_section(i, j)
-        // this.description.innerHTML = i + ' ' + j + ' ' + DESCRIPTIONS[tag] + '<br>' + section_descriptions[section_tag];
         let local_description = document.getElementById('local_description')!
         local_description.innerHTML = '<img src="static/img/starting_tiles_image_downsized.png" width="300">'
 
@@ -569,11 +489,8 @@ export class Map {
         this.real_path = []
         this.path_progress = 0
         let cur: [number, number]|undefined = this.selected
-        // console.log(this.path)
-        // console.log(cur)
 
         while ((cur != undefined)) {
-            // console.log(cur)
             let tmp: string|undefined = st(cur)
             this.real_path.push(cur)
             cur = this.path[tmp]
@@ -690,13 +607,6 @@ export class Map {
 }
 
 
-
-
-
-
-
-
-
 function send_move_action(map: Map, action: 'move' | 'continue_move') {
     console.log(action)
     let selected = map.selected
@@ -722,14 +632,6 @@ function send_move_action(map: Map, action: 'move' | 'continue_move') {
         if (next_cell == undefined) return
         socket.emit('move', coord_to_x_y(next_cell))
     }
-    // else if ((map.real_path.length > 1) && ((map.move_flag == true) || (map.movement_progress > 0.99))) {
-    //     map.move_flag = true
-    //     map.path_progress = 1
-    //     map.path = map.create_path()
-    //     const next_cell = map.real_path[map.path_progress + 1]
-    //     map.move_target = next_cell
-    //     socket.emit('move', coord_to_x_y(next_cell))
-    // }
 }
 
 function send_local_cell_action(map: Map, action: local_action|undefined) {
@@ -832,7 +734,7 @@ export function draw_map_related_stuff(map: Map, delta: number) {
 
     if (document.getElementById('actual_game_scene')!.style.visibility == 'visible') {
         if (!document.getElementById('map_tab')!.classList.contains('hidden')){
-            map.draw(delta);
+            map.draw();
         }
     }
 }

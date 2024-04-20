@@ -19,7 +19,7 @@ import { init_game_scene, login, reg } from './modules/ViewManagement/scene.js';
 import { tab } from './modules/ViewManagement/tab.js';
 import { socket } from "./modules/Socket/socket.js";
 import { loadImages } from './modules/load_images.js';
-import { draw_map_related_stuff, init_map } from './modules/map.js';
+import { draw_map_related_stuff, init_map } from './modules/Map/map.js';
 import { init_detailed_character_statistics } from './request_perks.js';
 import { globals } from './modules/globals.js';
 import { AnimatedValue, Value, animated_values_storage } from './modules/Values/collection.js';
@@ -127,17 +127,28 @@ socket.on('equip-update', (msg) => {
 // UI animations update loop
 var delta = 0;
 var previous = undefined;
+var current_tick = 0;
+var zero = undefined;
+// var FRAMES = 0
 function draw(time) {
+    // FRAMES++;
     if (previous == undefined) {
         previous = time;
     }
+    if (zero == undefined) {
+        zero = time;
+    }
+    current_tick += time - previous;
+    if (current_tick > 15) {
+        globals.now = Date.now();
+        current_tick -= 15;
+        for (const value of animated_values_storage) {
+            value.update_display();
+        }
+    }
     delta = (time - previous) / 1000;
     previous = time;
-    globals.now = Date.now();
     draw_map_related_stuff(map, delta);
-    for (const value of animated_values_storage) {
-        value.update_display();
-    }
     if (elementById('actual_game_scene').style.visibility == 'visible') {
         if (!elementById('battle_tab').classList.contains('hidden')) {
             BattleImage.draw(delta);
