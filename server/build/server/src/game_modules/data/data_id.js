@@ -297,7 +297,7 @@ var DataID;
         }
         Reputation.get = get;
         function set(character, faction, reputation) {
-            //console.log(character, 'is now a', reputation, 'of', faction)
+            console.log(character, 'is now a', reputation, 'of', faction);
             character_id_faction_id_reputation[character][faction] = reputation;
         }
         Reputation.set = set;
@@ -339,10 +339,8 @@ var DataID;
          */
         function set_a_X_b(a, X, b) {
             for (const faction of faction_id_list) {
-                if (get(a, faction) == 'member') {
-                    if (get(b, faction) == X) {
-                        set(b, faction, X);
-                    }
+                if ((get(a, faction) == 'member') || (get(a, faction) == 'leader')) {
+                    set(b, faction, X);
                 }
             }
             return false;

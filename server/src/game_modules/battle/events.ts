@@ -31,12 +31,19 @@ function sanitize_movement_target(unit: Character, available_points: action_poin
 }
 
 export namespace BattleEvent {
-    export function NewUnit(battle: Battle, unit: Character) {
-        unit.next_turn_after = CharactersHeap.get_max(battle) + 1 + Math.floor(Math.random() * 50)
-        CharactersHeap.add_unit(battle, unit)
-        Alerts.new_unit(battle, unit)
-        if (battle.grace_period > 0) battle.grace_period = 5
-        Alerts.battle_event_simple(battle, 'unit_join', unit)
+    export function NewUnit(battle: Battle, unit: Character, delay: number) {
+        if (delay == 0) {
+            CharactersHeap.add_unit(battle, unit)
+            Alerts.new_unit(battle, unit)
+            Alerts.battle_event_simple(battle, 'unit_join', unit)
+            if (battle.grace_period > 0) battle.grace_period = 5
+        } else {
+            battle.queue.push({
+                delay: delay,
+                character: unit.id
+            })
+            Alerts.new_queuer(battle, unit, delay)
+        }
     }
 
     export function Leave(battle: Battle, unit: Character|undefined) {

@@ -256,6 +256,14 @@ export namespace Alerts {
         }
     }
 
+    export function new_queuer(battle: Battle, new_unit: Character, delay: number) {
+        for (let unit of battle.heap) {
+            if (unit == undefined) continue;
+            const character = Data.Characters.from_id(unit);
+            Alerts.alert(character, new_unit.get_name() + " will join the battle in " + delay + " units of time")
+        }
+    }
+
     export function remove_unit(battle: Battle, removed_unit: Character) {
         for (let unit of battle.heap) {
             if (unit == undefined) continue;

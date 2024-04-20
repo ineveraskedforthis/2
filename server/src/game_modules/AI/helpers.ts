@@ -67,7 +67,7 @@ export namespace AIhelper {
                 let team = check_team_to_join(agent, battle)
                 if (team == 'no_interest') continue
                 else {
-                    BattleSystem.add_figther(battle, agent, team)
+                    BattleSystem.add_figther(battle, agent, team, 100)
                     return true
                 }
             }

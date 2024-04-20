@@ -234,6 +234,15 @@ var Alerts;
         }
     }
     Alerts.new_unit = new_unit;
+    function new_queuer(battle, new_unit, delay) {
+        for (let unit of battle.heap) {
+            if (unit == undefined)
+                continue;
+            const character = data_objects_1.Data.Characters.from_id(unit);
+            Alerts.alert(character, new_unit.get_name() + " will join the battle in " + delay + " units of time");
+        }
+    }
+    Alerts.new_queuer = new_queuer;
     function remove_unit(battle, removed_unit) {
         for (let unit of battle.heap) {
             if (unit == undefined)

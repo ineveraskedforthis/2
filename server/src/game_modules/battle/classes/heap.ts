@@ -38,6 +38,10 @@ export namespace CharactersHeap {
             }
         })
 
+        for (const item of battle.queue) {
+            if (max < item.delay) max = item.delay;
+        }
+
         return max
     }
 
@@ -138,6 +142,19 @@ export namespace CharactersHeap {
             if (id == undefined) continue;
             const unit = Data.Characters.from_id(id)
             unit.next_turn_after = unit.next_turn_after - dt
+        }
+
+        const to_join: number[] = []
+
+        for (let index = 0; index < battle.queue.length; index++) {
+            battle.queue[index].delay -= dt;
+            if (battle.queue[index].delay < 0) to_join.push(index)
+        }
+
+        for (const index of to_join) {
+            const unit = battle.queue[index]
+            battle.queue.splice(index, 1)
+            add_unit(battle, Data.Characters.from_id(unit.character))
         }
     }
 }

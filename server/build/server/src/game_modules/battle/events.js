@@ -25,13 +25,21 @@ function sanitize_movement_target(unit, available_points, target) {
 }
 var BattleEvent;
 (function (BattleEvent) {
-    function NewUnit(battle, unit) {
-        unit.next_turn_after = heap_1.CharactersHeap.get_max(battle) + 1 + Math.floor(Math.random() * 50);
-        heap_1.CharactersHeap.add_unit(battle, unit);
-        alerts_1.Alerts.new_unit(battle, unit);
-        if (battle.grace_period > 0)
-            battle.grace_period = 5;
-        alerts_1.Alerts.battle_event_simple(battle, 'unit_join', unit);
+    function NewUnit(battle, unit, delay) {
+        if (delay == 0) {
+            heap_1.CharactersHeap.add_unit(battle, unit);
+            alerts_1.Alerts.new_unit(battle, unit);
+            alerts_1.Alerts.battle_event_simple(battle, 'unit_join', unit);
+            if (battle.grace_period > 0)
+                battle.grace_period = 5;
+        }
+        else {
+            battle.queue.push({
+                delay: delay,
+                character: unit.id
+            });
+            alerts_1.Alerts.new_queuer(battle, unit, delay);
+        }
     }
     BattleEvent.NewUnit = NewUnit;
     function Leave(battle, unit) {

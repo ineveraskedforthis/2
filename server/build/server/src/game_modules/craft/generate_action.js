@@ -11,8 +11,9 @@ function generate_check_funtion(inputs) {
     return (char, cell) => {
         if (char.in_battle())
             return types_1.NotificationResponse.InBattle;
-        if ((0, helpers_1.check_inputs)(inputs, char.stash))
+        if ((0, helpers_1.check_inputs)(inputs, char.stash)) {
             return { response: 'OK' };
+        }
         return { response: "Not enough resources", value: inputs.map((value) => {
                 return {
                     required_amount: value.amount,

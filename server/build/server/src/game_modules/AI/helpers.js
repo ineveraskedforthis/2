@@ -64,7 +64,7 @@ var AIhelper;
                 if (team == 'no_interest')
                     continue;
                 else {
-                    system_1.BattleSystem.add_figther(battle, agent, team);
+                    system_1.BattleSystem.add_figther(battle, agent, team, 100);
                     return true;
                 }
             }

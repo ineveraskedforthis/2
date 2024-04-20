@@ -9,7 +9,6 @@ const alerts_1 = require("../client_communication/network_actions/alerts");
 const user_manager_1 = require("../client_communication/user_manager");
 const data_objects_1 = require("../data/data_objects");
 const heap_1 = require("./classes/heap");
-var last_character_id = 0;
 function time_distance(a, b) {
     return b - a;
 }
@@ -29,8 +28,7 @@ var BattleSystem;
     BattleSystem.get_empty_team = get_empty_team;
     // team 0 is a defender and spawns at the center
     // other teams spawn around center
-    function create_unit(character, team, battle) {
-        last_character_id = last_character_id + 1;
+    function create_unit(character, team, battle, delay) {
         // deciding position
         if (team == 0) {
             const dx = Math.random() * 2 - 1;
@@ -51,15 +49,15 @@ var BattleSystem;
         character.team = team;
         character.action_points_left = 3;
         character.action_points_max = 10;
-        character.next_turn_after = heap_1.CharactersHeap.get_max(battle) + Math.floor((Math.random() * 50));
+        character.next_turn_after = heap_1.CharactersHeap.get_max(battle) + delay;
     }
     BattleSystem.create_unit = create_unit;
-    function add_figther(battle, character, team) {
+    function add_figther(battle, character, team, delay) {
         if (character.in_battle())
             return;
-        const unit = create_unit(character, team, battle);
+        const unit = create_unit(character, team, battle, delay);
         character.battle_id = battle.id;
-        events_1.BattleEvent.NewUnit(battle, character);
+        events_1.BattleEvent.NewUnit(battle, character, character.next_turn_after);
         console.log(`${character.get_name()} joins battle ${battle.id}`);
         alerts_1.Alerts.battle_update_data(battle);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 22 /* UI_Part.BATTLE */);
@@ -164,7 +162,7 @@ var BattleSystem;
         const battle = systems_communication_1.Convert.character_to_battle(target);
         if (battle == undefined)
             return;
-        add_figther(battle, character, target.team);
+        add_figther(battle, character, target.team, 100);
     }
     BattleSystem.support_in_battle = support_in_battle;
     function start_battle(attacker, defender) {
@@ -188,12 +186,12 @@ var BattleSystem;
         const battle = systems_communication_1.Convert.character_to_battle(defender);
         if ((battle != undefined)) {
             let team = BattleSystem.get_empty_team(battle);
-            add_figther(battle, attacker, team);
+            add_figther(battle, attacker, team, 100);
         }
         else {
             const battle = data_objects_1.Data.Battles.create();
-            add_figther(battle, defender, 0);
-            add_figther(battle, attacker, 1);
+            add_figther(battle, defender, 0, 0);
+            add_figther(battle, attacker, 1, 0);
         }
     }
     BattleSystem.start_battle = start_battle;
@@ -211,6 +209,12 @@ var BattleSystem;
             character.battle_id = undefined;
             user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 22 /* UI_Part.BATTLE */);
         }
+        for (const unit of battle.queue) {
+            const character = data_objects_1.Data.Characters.from_id(unit.character);
+            character.battle_id = undefined;
+            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 22 /* UI_Part.BATTLE */);
+        }
+        battle.queue = [];
     }
     BattleSystem.stop_battle = stop_battle;
 })(BattleSystem || (exports.BattleSystem = BattleSystem = {}));

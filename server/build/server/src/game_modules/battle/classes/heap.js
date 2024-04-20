@@ -36,6 +36,10 @@ var CharactersHeap;
                 max = unit.next_turn_after;
             }
         });
+        for (const item of battle.queue) {
+            if (max < item.delay)
+                max = item.delay;
+        }
         return max;
     }
     CharactersHeap.get_max = get_max;
@@ -141,6 +145,17 @@ var CharactersHeap;
                 continue;
             const unit = data_objects_1.Data.Characters.from_id(id);
             unit.next_turn_after = unit.next_turn_after - dt;
+        }
+        const to_join = [];
+        for (let index = 0; index < battle.queue.length; index++) {
+            battle.queue[index].delay -= dt;
+            if (battle.queue[index].delay < 0)
+                to_join.push(index);
+        }
+        for (const index of to_join) {
+            const unit = battle.queue[index];
+            battle.queue.splice(index, 1);
+            add_unit(battle, data_objects_1.Data.Characters.from_id(unit.character));
         }
     }
     CharactersHeap.update = update;

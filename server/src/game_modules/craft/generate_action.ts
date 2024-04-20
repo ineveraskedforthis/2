@@ -12,8 +12,9 @@ export function generate_check_funtion(inputs: box[]): MapActionTriggerTargeted 
     return (char: Character, cell: cell_id) : TriggerResponse => {
         if (char.in_battle())
             return NotificationResponse.InBattle;
-        if (check_inputs(inputs, char.stash))
+        if (check_inputs(inputs, char.stash)) {
             return { response: 'OK' };
+        }
         return { response: "Not enough resources", value: inputs.map((value) => {return {
             required_amount: value.amount,
             required_thing: MaterialStorage.get(value.material).name

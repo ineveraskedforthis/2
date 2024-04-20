@@ -12,12 +12,9 @@ import { Data } from "../data/data_objects"
 import { CharactersHeap } from "./classes/heap"
 import { character_id } from "@custom_types/ids"
 
-var last_character_id = 0 as character_id
-
 function time_distance(a: ms, b: ms) {
     return b - a as ms
 }
-
 
 export namespace BattleSystem {
     export function get_empty_team(battle: Battle) {
@@ -33,9 +30,7 @@ export namespace BattleSystem {
 
     // team 0 is a defender and spawns at the center
     // other teams spawn around center
-    export function create_unit(character: Character, team: number, battle: Battle) {
-        last_character_id = last_character_id + 1 as character_id
-
+    export function create_unit(character: Character, team: number, battle: Battle, delay: number) {
         // deciding position
         if (team == 0) {
             const dx = Math.random() * 2 - 1
@@ -57,16 +52,16 @@ export namespace BattleSystem {
         character.team = team
         character.action_points_left = 3 as action_points
         character.action_points_max = 10 as action_points
-        character.next_turn_after = CharactersHeap.get_max(battle) + Math.floor((Math.random() * 50))
+        character.next_turn_after = CharactersHeap.get_max(battle) + delay
     }
 
-    export function add_figther(battle: Battle, character: Character, team: number) {
+    export function add_figther(battle: Battle, character: Character, team: number, delay: number) {
         if (character.in_battle()) return
 
-        const unit = create_unit(character, team, battle)
+        const unit = create_unit(character, team, battle, delay)
         character.battle_id = battle.id
 
-        BattleEvent.NewUnit(battle, character)
+        BattleEvent.NewUnit(battle, character, character.next_turn_after)
 
         console.log(`${character.get_name()} joins battle ${battle.id}`)
         Alerts.battle_update_data(battle)
@@ -100,6 +95,7 @@ export namespace BattleSystem {
             if (battle.stopped) {
                 return
             }
+
 
             const unit = battle_finished(battle)
             if (unit === true) {
@@ -174,7 +170,7 @@ export namespace BattleSystem {
         const battle = Convert.character_to_battle(target)
         if (battle == undefined) return
 
-        add_figther(battle, character, target.team)
+        add_figther(battle, character, target.team, 100)
     }
 
     export function start_battle(attacker: Character, defender: Character) {
@@ -190,11 +186,11 @@ export namespace BattleSystem {
         const battle = Convert.character_to_battle(defender)
         if ((battle != undefined)) {
             let team = BattleSystem.get_empty_team(battle)
-            add_figther(battle, attacker, team)
+            add_figther(battle, attacker, team, 100)
         } else {
             const battle = Data.Battles.create()
-            add_figther(battle, defender, 0)
-            add_figther(battle, attacker, 1)
+            add_figther(battle, defender, 0, 0)
+            add_figther(battle, attacker, 1, 0)
         }
     }
 
@@ -205,12 +201,18 @@ export namespace BattleSystem {
         for (let unit of battle.heap) {
             if (unit != undefined) to_delete.push(unit)
         }
-
         for (let unit of to_delete) {
             const character = Data.Characters.from_id(unit)
             CharactersHeap.delete_unit(battle, character)
             character.battle_id = undefined
             UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)
         }
+
+        for (const unit of battle.queue) {
+            const character = Data.Characters.from_id(unit.character)
+            character.battle_id = undefined
+            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)
+        }
+        battle.queue = []
     }
 }

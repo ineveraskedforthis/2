@@ -6,6 +6,7 @@ class Battle {
     constructor(id) {
         this.last = 0;
         this.heap = [];
+        this.queue = [];
         if (id == undefined) {
             this.id = data_id_1.DataID.Battle.new_id();
         }

@@ -2,14 +2,21 @@ import { character_id } from "@custom_types/ids";
 import { BattleKeyframeSocket, battle_id, ms } from "../../../../../shared/battle_data";
 import { DataID } from "../../data/data_id";
 
+interface DelayedJoin {
+    delay: number,
+    character: character_id
+}
+
 interface BattleHeap {
     last: number;
     heap: (character_id|undefined)[];
+    queue: DelayedJoin[]
 }
 
 export class Battle implements BattleHeap {
     last: number;
     heap: (character_id|undefined)[];
+    queue: DelayedJoin[];
 
     id: battle_id;
     waiting_for_input: boolean;
@@ -25,6 +32,7 @@ export class Battle implements BattleHeap {
     constructor(id: battle_id|undefined ) {
         this.last = 0
         this.heap = []
+        this.queue = []
 
         if (id == undefined) {
             this.id = DataID.Battle.new_id()
