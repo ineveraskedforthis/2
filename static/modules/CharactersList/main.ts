@@ -3,6 +3,7 @@ import { globals } from "../globals.js"
 import { socket } from "../Socket/socket.js";
 import { CharacterView } from "@custom_types/responses.js";
 import { Column, List } from "../../widgets/List/list.js";
+import { update_local_npc_images } from "../CharacterImage/main.js";
 
 
 export function init_character_list_interactions() {
@@ -68,6 +69,7 @@ character_list.per_line_class_by_item = (item) => {
 
 export function update_characters_list(data: CharacterView[]) {
     character_list.data = data
+    update_local_npc_images(data)
 }
 
 function select_character(id: number) {

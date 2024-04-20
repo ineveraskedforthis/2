@@ -74,6 +74,12 @@ div {
     overflow-y: scroll;
 }
 
+#character_image_display{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
 #bg_fade {
     position: absolute;
     top: 0;

@@ -6,7 +6,7 @@ import { Perks } from '../shared/character.js'
 import { money } from '../shared/common.js';
 import { elementById } from './modules/HTMLwrappers/common.js';
 import { EQUIP_SLOT, EquipSlotStorage, MATERIAL, MaterialStorage, equip_slot_string_id } from '@content/content.js';
-import { EQUIPMENT_TAGS } from './modules/CharacterImage/main.js';
+import { EQUIPMENT_TAGS } from "./modules/CharacterImage/equip_strings.js";
 
 
 // export const slots_front_end = ['weapon', 'secondary', 'amulet', 'mail', 'greaves', 'left_pauldron', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'belt', 'robe', 'shirt', 'pants'] as const

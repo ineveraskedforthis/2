@@ -1,5 +1,5 @@
 import { UnitSocket } from "../../../shared/battle_data";
-import { ItemOrderData } from "../../../shared/inventory";
+import { ItemOrderData, equip } from "../../../shared/inventory";
 import { Battle } from "./battle/classes/battle";
 import { Character } from "./character/character";
 import { ItemSystem } from "./systems/items/item_system";
@@ -16,6 +16,7 @@ import { Data } from "./data/data_objects";
 import { CellData } from "./map/cell_interface";
 import { CharacterView } from "@custom_types/responses";
 import { CharacterSystem } from "./character/system";
+import { EquipSlotConfiguration, EquipSlotStorage } from "@content/content";
 
 
 export namespace Convert {
@@ -30,12 +31,19 @@ export namespace Convert {
 
     export function character_id_to_character_view(id: character_id): CharacterView {
         const data = Data.Characters.from_id(id)
+
+        const equip_slots : equip = {}
+        for (let slot of EquipSlotConfiguration.SLOT) {
+            equip_slots[EquipSlotStorage.get(slot).id_string] = ItemSystem.data_from_id(data.equip.data.slots[slot])
+        }
         return {
             name: data.name,
             dead: data.dead(),
             id: data.id,
             race: data.race,
-            robbed: CharacterSystem.is_empty_inventory(data)
+            robbed: CharacterSystem.is_empty_inventory(data),
+            equip: equip_slots,
+            body: data.model
         }
     }
 

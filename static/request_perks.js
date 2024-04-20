@@ -3,7 +3,7 @@ import { socket } from "./modules/Socket/socket.js";
 import { SKILL_NAMES } from './SKILL_NAMES.js';
 import { elementById } from './modules/HTMLwrappers/common.js';
 import { EquipSlotStorage, MaterialStorage } from './content.js';
-import { EQUIPMENT_TAGS } from './modules/CharacterImage/main.js';
+import { EQUIPMENT_TAGS } from "./modules/CharacterImage/equip_strings.js";
 // export const slots_front_end = ['weapon', 'secondary', 'amulet', 'mail', 'greaves', 'left_pauldron', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'belt', 'robe', 'shirt', 'pants'] as const
 // tmp.typ = this.typ;
 // tmp.tag = this.tag;

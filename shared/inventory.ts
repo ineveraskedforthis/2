@@ -36,6 +36,11 @@ export type backpack = {
 
 export type equip = Partial<Record<equip_slot_string_id, ItemData>>
 
+export interface CharacterImageData {
+    equip: equip,
+    body: string
+}
+
 export type EquipSocket = {
     equip: equip
     backpack: backpack;

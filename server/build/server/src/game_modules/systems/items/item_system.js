@@ -6,6 +6,7 @@ const damage_types_1 = require("../../damage_types");
 const Damage_1 = require("../../Damage");
 const content_1 = require("../../../.././../game_content/src/content");
 const item_1 = require("../../../content_wrappers/item");
+const data_objects_1 = require("../../data/data_objects");
 const empty_resists = new Damage_1.Damage();
 var ItemSystem;
 (function (ItemSystem) {
@@ -221,5 +222,12 @@ var ItemSystem;
         }
     }
     ItemSystem.data = data;
+    function data_from_id(item_id) {
+        if (item_id == undefined)
+            return undefined;
+        const item = data_objects_1.Data.Items.from_id(item_id);
+        return data(item);
+    }
+    ItemSystem.data_from_id = data_from_id;
 })(ItemSystem || (exports.ItemSystem = ItemSystem = {}));
 

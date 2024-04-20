@@ -1,4 +1,3 @@
-import { set_body_type } from "../CharacterImage/main.js";
 import { elementById, inputById, selectById } from "../HTMLwrappers/common.js";
 var character_display = {
     eyes: 1,
@@ -88,7 +87,6 @@ function set_faction(faction) {
         race = 'graci';
     if (faction == 'elodino_free')
         race = 'elo';
-    set_body_type(race);
     hover_faction(faction);
 }
 function hover_faction(faction) {

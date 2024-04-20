@@ -2,6 +2,7 @@ import { EQUIP_SLOT, MATERIAL } from "@content/content";
 import { Perks, reputation_level } from "./character";
 import { ReputationData, ReputationDataSocket, Terrain, money } from "./common";
 import { cell_id, character_id, location_id, market_order_id } from "./ids";
+import { equip } from "./inventory";
 
 export type PerksResponse = {
     name: string,
@@ -37,6 +38,8 @@ export interface CharacterView {
     dead: boolean;
     robbed: boolean;
     race: string;
+    equip: equip,
+    body: string
 }
 
 export interface BulkOrderView {

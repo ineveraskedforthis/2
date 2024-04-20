@@ -7,6 +7,7 @@ const VALUES_1 = require("./battle/VALUES");
 const data_id_1 = require("./data/data_id");
 const data_objects_1 = require("./data/data_objects");
 const system_1 = require("./character/system");
+const content_1 = require("../.././../game_content/src/content");
 var Convert;
 (function (Convert) {
     function reputation_to_socket(reputation) {
@@ -19,12 +20,18 @@ var Convert;
     Convert.reputation_to_socket = reputation_to_socket;
     function character_id_to_character_view(id) {
         const data = data_objects_1.Data.Characters.from_id(id);
+        const equip_slots = {};
+        for (let slot of content_1.EquipSlotConfiguration.SLOT) {
+            equip_slots[content_1.EquipSlotStorage.get(slot).id_string] = item_system_1.ItemSystem.data_from_id(data.equip.data.slots[slot]);
+        }
         return {
             name: data.name,
             dead: data.dead(),
             id: data.id,
             race: data.race,
-            robbed: system_1.CharacterSystem.is_empty_inventory(data)
+            robbed: system_1.CharacterSystem.is_empty_inventory(data),
+            equip: equip_slots,
+            body: data.model
         };
     }
     Convert.character_id_to_character_view = character_id_to_character_view;
@@ -198,3 +205,4 @@ var Unlink;
     }
     Unlink.user_data_and_character = user_data_and_character;
 })(Unlink || (exports.Unlink = Unlink = {}));
+

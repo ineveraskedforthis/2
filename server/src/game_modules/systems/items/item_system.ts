@@ -8,6 +8,8 @@ import { AttackObj } from "../../attack/class";
 import { EQUIP_SLOT, ImpactStorage, MATERIAL, MaterialStorage } from "@content/content";
 import { is_armour, is_weapon } from "../../../content_wrappers/item";
 import { ItemData } from "@custom_types/inventory";
+import { item_id } from "@custom_types/ids";
+import { Data } from "../../data/data_objects";
 
 const empty_resists = new Damage()
 
@@ -258,4 +260,13 @@ export namespace ItemSystem {
         }
     }
 
+    export function data_from_id(item_id: item_id):ItemData
+    export function data_from_id(item_id: undefined):undefined
+    export function data_from_id(item_id: item_id|undefined):ItemData|undefined
+    export function data_from_id(item_id: item_id|undefined):ItemData|undefined
+    {
+        if (item_id == undefined) return undefined
+        const item = Data.Items.from_id(item_id)
+        return data(item)
+    }
 }

@@ -4,7 +4,7 @@ import { init_authentication_control } from './modules/Auth/login.js';
 import { BattleImage } from './modules/Battle/battle_image.js';
 import { init_battle_control } from './modules/Battle/battle_image_init.js';
 import { set_up_character_creation_UI } from './modules/CharacterCreation/main.js';
-import { set_up_character_model, update_equip_image } from './modules/CharacterImage/main.js';
+import { set_up_character_model } from './modules/CharacterImage/main.js';
 import { CharacterInfoCorner } from './modules/CharacterInfo/main.js';
 import { CharacterScreen } from './modules/CharacterScreen/character_screen.js';
 import { init_character_list_interactions } from './modules/CharactersList/main.js';
@@ -127,8 +127,7 @@ socket.on('session', msg => {localStorage.setItem('session', msg)})
 socket.on('reset_session', () => {localStorage.setItem('session', 'null')})
 socket.on('char-info-detailed', msg => character_screen.update(msg))
 socket.on('equip-update', (msg: EquipSocket) => {
-    update_equip_image(msg.equip)
-
+    // update_equip_image(msg.equip)
     //console.log('equip update')
     //console.log(msg)
 
