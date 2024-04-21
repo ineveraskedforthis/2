@@ -571,10 +571,10 @@ div {
 
 
 #main_menu {
+    position: absolute;
     width: 40%;
     left: 30%;
-    height: 50%;
-    top: 40%;
+    top: 80%;
 }
 
 .main_menu_button {

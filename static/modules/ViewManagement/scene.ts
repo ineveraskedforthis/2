@@ -26,9 +26,6 @@ function show_char_creation() {
     document.getElementById('page_1')!.style.visibility = 'inherit';
 }
 
-function show_main_menu() {
-    show_scene("main_menu")
-}
 
 function show_game() {
     console.log('show game')
@@ -51,8 +48,7 @@ export function login(msg: string) {
         my_alert(msg);
     } else if (msg == 'ok') {
         console.log('login success')
-        // tactic_screen.reset_tactic()
-        show_main_menu();
+        socket.emit('play');
     }
     let tutorial_stage = localStorage.getItem('tutorial');
     if (tutorial_stage == null) {
@@ -67,14 +63,10 @@ export function reg(msg: string) {
         // tactic_screen.reset_tactic()
         // show_char_creation();
         console.log('registration success')
-        show_main_menu();
+        socket.emit('play');
     }
 }
 
-// Main menu:
-document.getElementById('to_character_creation')!.onclick = () => {
-    socket.emit('play');
-}
 
 export function init_game_scene(map: DependencyUICanvas) {
     socket.on('no-character', show_char_creation)
