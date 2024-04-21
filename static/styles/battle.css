@@ -48,7 +48,6 @@
 #battle_tab > .battle_control{
     flex: 1 1 20%;
     z-index: 3;
-    overflow-y: scroll;
 }
 
 .battle_action{

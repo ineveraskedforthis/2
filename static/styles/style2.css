@@ -92,10 +92,6 @@ div {
     flex: 3
 }
 
-.scroll-y {
-    overflow-y: scroll;
-}
-
 #character_image_display{
     position: absolute;
     width: 100%;
@@ -350,12 +346,7 @@ div {
     flex-wrap: wrap;
     padding: 5px;
     overflow-x: hidden;
-    overflow-y: scroll;
     height: 100%;
-}
-
-.overflow-y {
-    overflow-y: scroll;
 }
 
 .goods_type_stash {

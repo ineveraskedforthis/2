@@ -47,7 +47,6 @@
 }
 
 #auction_house_tab {
-    overflow-y: scroll;
     height: calc(100% - 20px);
 }
 

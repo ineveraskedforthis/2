@@ -13,7 +13,6 @@
 .market_goods_list {
     height: calc(100% - 20px);
     width: 100%;
-    overflow-y: scroll;
 }
 
 .goods_list_header {

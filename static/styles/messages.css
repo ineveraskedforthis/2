@@ -72,22 +72,23 @@
 }
 
 /* Works on Firefox */
-.messages_display {
+.scroll-y {
+    overflow-y: scroll;
     scrollbar-width: thin;
-    scrollbar-color: rgba(78, 11, 11, 0.7) rgba(255, 255, 255, 0);
+    scrollbar-color: rgba(135, 19, 19, 0.8) rgba(255, 255, 255, 0);
 }
 
   /* Works on Chrome, Edge, and Safari */
-.messages_display::-webkit-scrollbar {
+.scroll-y::-webkit-scrollbar {
     width: 12px;
 }
 
-.messages_display::-webkit-scrollbar-track {
+.scroll-y::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0);
 }
 
-.messages_display::-webkit-scrollbar-thumb {
-    background-color: rgba(78, 11, 11, 0.7);
+.scroll-y::-webkit-scrollbar-thumb {
+    background-color: rgba(135, 19, 19, 0.8);
 }
 
 .send_message_frame {

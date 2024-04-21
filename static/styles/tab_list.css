@@ -55,10 +55,6 @@
     overflow-y: hidden;
 }
 
-.scrollable {
-    overflow-y: scroll;
-}
-
 
 .control_button {
     background-image: url(/static/img/tab_buttons/attack_button.png);

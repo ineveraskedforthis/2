@@ -64,13 +64,6 @@
 }
 
 
-#backpacks_collection {
-    /* position: absolute; */
-    width: 100%;
-    height: 275px;
-    overflow-y: auto;
-}
-
 #cs_first_column{
     height: 100%;
     width: 15%;
