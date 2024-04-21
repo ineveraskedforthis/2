@@ -15,6 +15,56 @@ export function buy_sell_callback(order_id, amount) {
 export function clear_callback(order_id) {
     return () => socket.emit('clear-order', order_id);
 }
+const columns_mini = [
+    {
+        header_text: "Icon",
+        value: (item) => MaterialStorage.get(item.tag).id_string,
+        type: "string",
+        //width_style: "30px",
+        image_path: (item) => material_icon_url(MaterialStorage.get(item.tag).id_string),
+        custom_style: ['goods-icon', "flex-0-0-30px"]
+    },
+    {
+        header_text: "Price",
+        value: (item) => item.price,
+        type: "number",
+        custom_style: ["flex-1-0-5"]
+    },
+    {
+        header_text: "Type",
+        value: (item) => item.typ,
+        type: "string",
+        custom_style: ["flex-1-0-5"]
+    },
+    {
+        value: (item) => "1",
+        onclick: (item) => buy_sell_callback(item.id, 1),
+        viable: (item) => {
+            const character = globals.character_data;
+            if (character == undefined)
+                return false;
+            if (item.typ == "sell")
+                return (1 * item.price <= character.savings.value);
+            return (character.stash[item.tag].value >= 1);
+        },
+        type: "string",
+        custom_style: ["flex-0-0-50px"]
+    },
+    {
+        value: (item) => "10",
+        onclick: (item) => buy_sell_callback(item.id, 10),
+        viable: (item) => {
+            const character = globals.character_data;
+            if (character == undefined)
+                return false;
+            if (item.typ == "sell")
+                return (1 * item.price <= character.savings.value);
+            return (character.stash[item.tag].value >= 1);
+        },
+        type: "string",
+        custom_style: ["flex-0-0-50px"]
+    }
+];
 const columns = [
     {
         header_text: "Icon",
@@ -135,6 +185,11 @@ export function new_market_bulk() {
     market_bulk.filter = material_id_filter();
     return market_bulk;
 }
+export function new_market_mini(container) {
+    const market = new List(container);
+    market.columns = columns_mini;
+    return market;
+}
 export function init_market_bulk_infrastructure(market_bulk) {
     if (FILTER_STATE.per_good.length > 0) {
         return;
@@ -192,9 +247,6 @@ export function init_market_bulk_infrastructure(market_bulk) {
         let item = JSON.parse(inputById('create_auction_order_item').value);
         let price = inputById('create_auction_order_price').value;
         socket.emit('sell-item', { index: Number(item.index), item_type: item.type, price: Number(price) });
-    });
-    socket.on('market-data', data => {
-        market_bulk.data = data;
     });
     return market_bulk;
 }

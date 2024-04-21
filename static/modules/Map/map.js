@@ -3,7 +3,7 @@
 import { get_pos_in_canvas } from '../common.js';
 import { globals, is_action_repeatable, local_actions } from '../globals.js';
 import { socket } from "../Socket/socket.js";
-import { elementById, select } from '../HTMLwrappers/common.js';
+import { select } from '../HTMLwrappers/common.js';
 import { ImageStorage } from './ImageStorage/image_storage.js';
 function st(a) {
     return a[0] + ' ' + a[1];
@@ -521,62 +521,63 @@ function send_move_action(map, action) {
         socket.emit('move', coord_to_x_y(next_cell));
     }
 }
-function send_local_cell_action(map, action) {
+function send_local_cell_action(action) {
     console.log(action);
     if (action == undefined)
         return;
-    socket.emit(action, { x: map.curr_pos[0], y: map.curr_pos[1] });
+    socket.emit(action);
     globals.last_action = action;
 }
-function set_local_actions(actions, map) {
-    let desktop_container = document.getElementById('desktop_actions');
-    for (let action_tag of actions) {
-        // let map_button = document.getElementById(action_tag + '_button');
-        // ((button, map_manager, action_tag) =>
-        //         button.onclick = () => map_manager.send_cell_action(action_tag)
-        // )(map_button, this, action_tag);
-        let desktop_button = document.createElement('div');
-        desktop_button.id = action_tag + '_button_desktop';
-        desktop_button.classList.add('desktop_action_button');
-        {
-            let label = document.createElement('div');
-            label.innerHTML = action_tag;
-            label.classList.add('label_button');
-            desktop_button.appendChild(label);
-        }
-        {
-            let chance_label = document.createElement('div');
-            chance_label.innerHTML = '100%';
-            chance_label.id = action_tag + '_chance_desktop';
-            chance_label.classList.add('probability');
-            desktop_button.appendChild(chance_label);
-        }
-        if (is_action_repeatable(action_tag)) {
-            let repeat_button = document.createElement('div');
-            repeat_button.innerHTML = '&#8635;';
-            repeat_button.classList.add('repeat_button');
-            ((button, map_manager, action_tag, global_blob) => button.onclick = () => {
-                console.log(global_blob);
-                if (global_blob.keep_doing == action_tag) {
-                    global_blob.keep_doing = undefined;
-                    button.classList.remove("highlighted");
-                }
-                else {
-                    for (const other_button of select(".repeat_button")) {
-                        other_button.classList.remove("highlighted");
+function set_local_actions(actions) {
+    const containers = select('.actions-display');
+    for (const container of containers) {
+        for (let action_tag of actions) {
+            // let map_button = document.getElementById(action_tag + '_button');
+            // ((button, map_manager, action_tag) =>
+            //         button.onclick = () => map_manager.send_cell_action(action_tag)
+            // )(map_button, this, action_tag);
+            let desktop_button = document.createElement('div');
+            desktop_button.id = action_tag + '_button_desktop';
+            desktop_button.classList.add('desktop_action_button');
+            {
+                let label = document.createElement('div');
+                label.innerHTML = action_tag;
+                label.classList.add('label_button');
+                desktop_button.appendChild(label);
+            }
+            {
+                let chance_label = document.createElement('div');
+                chance_label.innerHTML = '100%';
+                chance_label.id = action_tag + '_chance_desktop';
+                chance_label.classList.add('probability');
+                desktop_button.appendChild(chance_label);
+            }
+            if (is_action_repeatable(action_tag)) {
+                let repeat_button = document.createElement('div');
+                repeat_button.innerHTML = '&#8635;';
+                repeat_button.classList.add('repeat_button');
+                ((button, action_tag, global_blob) => button.onclick = () => {
+                    console.log(global_blob);
+                    if (global_blob.keep_doing == action_tag) {
+                        global_blob.keep_doing = undefined;
+                        button.classList.remove("highlighted");
                     }
-                    button.classList.add("highlighted");
-                    global_blob.keep_doing = action_tag;
-                    //send_local_cell_action(map_manager, action_tag);
-                }
-            })(repeat_button, map, action_tag, globals);
-            desktop_button.appendChild(repeat_button);
+                    else {
+                        for (const other_button of select(".repeat_button")) {
+                            other_button.classList.remove("highlighted");
+                        }
+                        button.classList.add("highlighted");
+                        global_blob.keep_doing = action_tag;
+                    }
+                })(repeat_button, action_tag, globals);
+                desktop_button.appendChild(repeat_button);
+            }
+            ((button, action_tag) => button.onclick = () => send_local_cell_action(action_tag))(desktop_button, action_tag);
+            container.appendChild(desktop_button);
         }
-        ((button, map_manager, action_tag) => button.onclick = () => send_local_cell_action(map_manager, action_tag))(desktop_button, map, action_tag);
-        desktop_container.appendChild(desktop_button);
     }
 }
-export function draw_map_related_stuff(map, delta) {
+export function draw_map_related_stuff(maps, delta) {
     if (globals.action_in_progress) {
         globals.action_time += delta;
         globals.action_ratio = globals.action_time / globals.action_total_time;
@@ -591,19 +592,23 @@ export function draw_map_related_stuff(map, delta) {
             console.log('keep doing?');
             console.log(globals.keep_doing);
             if (globals.keep_doing != undefined) {
-                send_local_cell_action(map, globals.keep_doing);
+                for (const map of maps)
+                    send_local_cell_action(globals.keep_doing);
             }
             //do the movement again if you are not at destination already
-            if (map.move_flag) {
-                send_move_action(map, 'continue_move');
-            }
+            for (const map of maps)
+                if (map.move_flag) {
+                    send_move_action(map, 'continue_move');
+                }
             // map.move_flag = false
         }
         else {
             let bar = div.querySelector('span');
             bar.style.width = Math.min(Math.floor(globals.action_time / globals.action_total_time * 10000) / 100, 100) + '%';
-            if (map.move_flag) {
-                map.movement_progress = globals.action_ratio;
+            for (const map of maps) {
+                if (map.move_flag) {
+                    map.movement_progress = globals.action_ratio;
+                }
             }
         }
     }
@@ -615,13 +620,13 @@ export function draw_map_related_stuff(map, delta) {
             }
         }
     }
-    if (document.getElementById('actual_game_scene').style.visibility == 'visible') {
-        if (!document.getElementById('map_tab').classList.contains('hidden')) {
+    for (const map of maps) {
+        if (map.container.offsetParent !== null) {
             map.draw();
         }
     }
 }
-function restart_action_bar(map, time, is_move) {
+function restart_action_bar(maps, time, is_move) {
     // console.log('???')
     globals.action_total_time = time;
     globals.action_in_progress = true;
@@ -631,23 +636,40 @@ function restart_action_bar(map, time, is_move) {
     let bar = div.querySelector('span');
     bar.style.width = '0%';
     if (is_move) {
-        map.move_flag = true;
-        map.movement_progress = 0;
+        for (const map of maps) {
+            map.move_flag = true;
+            map.movement_progress = 0;
+        }
         globals.action_total_time += 0.1;
         globals.action_total_time *= 1.1;
     }
 }
 export function init_map() {
-    const map = new Map(elementById('map_canvas'), elementById('map_column'));
-    init_map_control(map);
-    set_local_actions(local_actions, map);
+    const maps = [];
+    console.log('loading canvases');
+    for (const map_canvas of select(".map-canvas")) {
+        console.log("canvas found");
+        const map = new Map(map_canvas, map_canvas.parentElement);
+        maps.push(map);
+        init_map_control(map);
+    }
+    set_local_actions(local_actions);
     socket.on('map-pos', msg => {
         console.log('map-pos');
-        let location = map.set_curr_pos([msg.x, msg.y], msg.teleport_flag);
-        console.log(location);
+        for (const map of maps) {
+            map.set_curr_pos([msg.x, msg.y], msg.teleport_flag);
+        }
     });
-    socket.on('map-data-display', data => map.load_terrain(data));
-    socket.on('map-data-reset', data => map.reset());
-    socket.on('action-ping', data => restart_action_bar(map, data.time, data.is_move));
-    return map;
+    socket.on('map-data-display', data => {
+        for (const map of maps) {
+            map.load_terrain(data);
+        }
+    });
+    socket.on('map-data-reset', data => {
+        for (const map of maps) {
+            map.reset();
+        }
+    });
+    socket.on('action-ping', data => restart_action_bar(maps, data.time, data.is_move));
+    return maps;
 }

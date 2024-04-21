@@ -39,8 +39,6 @@ export function login(msg) {
     }
     else if (msg == 'ok') {
         console.log('login success');
-        // tactic_screen.reset_tactic()
-        // show_main_menu();
         socket.emit('play');
     }
     let tutorial_stage = localStorage.getItem('tutorial');
@@ -56,13 +54,12 @@ export function reg(msg) {
         // tactic_screen.reset_tactic()
         // show_char_creation();
         console.log('registration success');
-        // show_main_menu();
         socket.emit('play');
     }
 }
-export function init_game_scene(map) {
+export function init_game_scene(maps) {
     socket.on('no-character', show_char_creation);
     socket.on('loading_completed', show_game);
     socket.on('char-removed', show_char_creation);
-    tab.load_all(socket, map);
+    tab.load_all(socket, maps);
 }

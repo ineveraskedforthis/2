@@ -1,8 +1,42 @@
 import { socket } from "../Socket/socket.js";
 import { List } from "../../widgets/List/list.js";
-import { elementById } from "../HTMLwrappers/common.js";
+import { elementById, selectHTMLs } from "../HTMLwrappers/common.js";
 import { globals } from "../globals.js";
 import { image_url } from "../BackgroundImage/background_image.js";
+const columns_mini = [
+    {
+        header_text: "Id:",
+        type: "number",
+        value: item => item.id,
+        custom_style: ["flex-0-0-80px"]
+    },
+    {
+        header_text: "Enter",
+        type: "string",
+        value(item) {
+            return "Enter";
+        },
+        onclick: (item) => enter_location(item.id),
+        viable: (item) => true,
+        custom_style: ["flex-1-0-5"]
+    },
+    {
+        header_text: "Pop.",
+        type: "number",
+        value: (item) => item.guests,
+        custom_style: ["flex-0-0-50px"]
+    },
+    {
+        header_text: "",
+        type: "string",
+        value: (item) => {
+            if (globals.character_data?.location_id.value == item.id)
+                return "X";
+            return "";
+        },
+        custom_style: ["flex-0-0-30px"]
+    }
+];
 const columns = [
     {
         header_text: "id",
@@ -33,6 +67,12 @@ const columns = [
         custom_style: ["flex-1-0-5"]
     },
     {
+        header_text: "Pop.",
+        type: "number",
+        value: (item) => item.guests,
+        custom_style: ["flex-0-0-50px"]
+    },
+    {
         header_text: "Your location",
         type: "string",
         value: (item) => {
@@ -43,13 +83,25 @@ const columns = [
         custom_style: ["flex-1-0-5"]
     }
 ];
+const lists = [];
 export function init_locations() {
     const locations_list = new List(elementById("location-list"));
     locations_list.columns = columns;
     elementById('claim-location-button').onclick = create_plot;
+    for (const container of selectHTMLs('.locations-display-mini')) {
+        lists.push(new_mini_location_list(container));
+    }
     socket.on('locations-info', (data) => {
         locations_list.data = data;
+        for (const item of lists) {
+            item.data = data;
+        }
     });
+    return locations_list;
+}
+export function new_mini_location_list(container) {
+    const locations_list = new List(container);
+    locations_list.columns = columns_mini;
     return locations_list;
 }
 function create_plot() {

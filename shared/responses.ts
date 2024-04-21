@@ -33,7 +33,7 @@ export type CellDisplay = {
 }
 
 export interface CharacterView {
-    id: number;
+    id: character_id;
     name: string;
     dead: boolean;
     robbed: boolean;

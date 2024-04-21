@@ -13,6 +13,34 @@ function send_switch_weapon_request(socket: Socket) {
     socket.emit('switch-weapon')
 }
 
+const columns_mini:Column<EquipSlotData>[] = [
+    {
+        header_text: "Name",
+        value: (item) => {
+            const name = document.createElement('div')
+            const name_string = item.item.name
+            name.innerHTML = name_string
+            name.classList.add('item_tier_' + Math.min(item.item.affixes, 4))
+            name.classList.add('centered-box')
+            name.classList.add('width-125')
+            return name
+        },
+        type: "html",
+        custom_style: ["flex-1-0-5"]
+    },
+
+    {
+        value: (item) => "X",
+        onclick: (item) => () => {socket.emit('unequip', item.equip_slot)},
+        viable: (item) => {
+            return true
+        },
+        type: "string",
+        custom_style: ["flex-0-0-5"]
+    },
+
+
+]
 
 const columns:Column<EquipSlotData>[] = [
     {
@@ -56,16 +84,12 @@ const columns:Column<EquipSlotData>[] = [
         custom_style: ["flex-1-0-5"]
     },
 
-
-
-
     {
         header_text: "Durability",
         value: (item) => item.item.durability,
         type: "number",
         custom_style: ["flex-0-0-5"]
     },
-
 
 
     {
@@ -76,8 +100,8 @@ const columns:Column<EquipSlotData>[] = [
     },
 ]
 
-columns.push({
-    header_text: "Dmg:",
+const dmg_col : Column<EquipSlotData> = {
+    header_text: "D",
     value: (item) => {
         let total = 0
         for (let d of damage_types) {
@@ -86,8 +110,12 @@ columns.push({
         return total
     },
     type: "number",
-    custom_style: ["flex-0-0-5"]
-})
+    custom_style: ["flex-0-0-50px"]
+}
+
+
+columns.push(dmg_col)
+columns_mini.push(dmg_col)
 
 
 for (let d of damage_types) {
@@ -101,8 +129,8 @@ for (let d of damage_types) {
     )
 }
 
-columns.push({
-    header_text: "Res:",
+const res_col : Column<EquipSlotData> = {
+    header_text: "R",
     value: (item) => {
         let total = 0
         for (let d of damage_types) {
@@ -111,8 +139,11 @@ columns.push({
         return total
     },
     type: "number",
-    custom_style: ["flex-0-0-5"]
-})
+    custom_style: ["flex-0-0-50px"]
+}
+
+columns.push(res_col)
+columns_mini.push(res_col)
 
 for (let d of damage_types) {
     columns.push(
@@ -126,11 +157,17 @@ for (let d of damage_types) {
 }
 
 
-export function init_equipment_screen(socket: Socket) {
-    const equip_list = new List<EquipSlotData>(elementById('equip'))
+export function init_equipment_screen(container: HTMLElement, socket: Socket) {
+    const equip_list = new List<EquipSlotData>(container)
     equip_list.columns = columns
 
     elementById('send_switch_weapon_request').onclick = () => send_switch_weapon_request(socket)
 
+    return equip_list
+}
+
+export function init_equipment_screen_mini(container: HTMLElement) {
+    const equip_list = new List<EquipSlotData>(container)
+    equip_list.columns = columns_mini
     return equip_list
 }

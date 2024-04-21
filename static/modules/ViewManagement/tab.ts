@@ -1,7 +1,7 @@
 import { Socket } from "../../../shared/battle_data"
 import { DependencyUI, DependencyUICanvas } from "../Types/character"
 
-export const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'market']
+export const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'market', 'sauce']
 
 interface tab_property {
     top: string,
@@ -66,8 +66,8 @@ export namespace tab {
         }
     }
 
-    export function load_all(socket: Socket|undefined, map: DependencyUICanvas) {
-        canvases.push(map)
+    export function load_all(socket: Socket|undefined, maps: DependencyUICanvas[]) {
+        canvases.push(... maps)
 
         tabs_properties = JSON.parse(localStorage.getItem('tabs_properties')!)
 

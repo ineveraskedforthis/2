@@ -65,7 +65,7 @@ const craft_columns : Column<CraftBulkTemplate|CraftItemTemplate>[] = [
     },
 
     {
-        header_text: "Durability",
+        header_text: "Dur.",
         type: "number",
         value: (item) => {
             if (is_item_craft(item)) {
@@ -78,7 +78,7 @@ const craft_columns : Column<CraftBulkTemplate|CraftItemTemplate>[] = [
 
             return 0
         },
-        custom_style: ["flex-1-0-5"]
+        custom_style: ["flex-0-0-50px"]
     },
 
     {
@@ -94,12 +94,12 @@ const craft_columns : Column<CraftBulkTemplate|CraftItemTemplate>[] = [
         viable(item) {
             return true;
         },
-        custom_style: ["flex-0-0-5"]
+        custom_style: ["flex-0-0-30px"]
     }
 ]
 
-export function new_craft_table() {
-    const craft_list = new List<CraftBulkTemplate|CraftItemTemplate>(elementById('craft_list'))
+export function new_craft_table(container: HTMLElement) {
+    const craft_list = new List<CraftBulkTemplate|CraftItemTemplate>(container)
     craft_list.columns = craft_columns
     return craft_list
 }
@@ -112,7 +112,13 @@ export function update_craft_item_div(craft_list: List<CraftBulkTemplate|CraftIt
 }
 
 export function new_craft_bulk(craft_list: List<CraftBulkTemplate|CraftItemTemplate>, data: TaggedCraftBulk) {
+
     if (inputs_amount_data[data.tag] != undefined) {
+        const index_of = craft_list.data.findIndex((item) => (item.id == data.tag))
+        if (index_of == -1) {
+            craft_list.data.push(data.value)
+            craft_list.update_display()
+        }
         return
     }
 
@@ -130,13 +136,16 @@ export function new_craft_bulk(craft_list: List<CraftBulkTemplate|CraftItemTempl
         output_amount_data[data.tag].push(value)
         value.value = item.amount
     }
-
-    craft_list.data.push(data.value)
-    craft_list.update_display()
 }
 
 export function new_craft_item(craft_list: List<CraftBulkTemplate|CraftItemTemplate>, data: TaggedCraftItem) {
     if (durability_data[data.tag] != undefined) {
+        const index_of = craft_list.data.findIndex((item) => (item.id == data.tag))
+        if (index_of == -1) {
+            craft_list.data.push(data.value)
+            craft_list.update_display()
+        }
+
         return
     }
 

@@ -184,7 +184,7 @@
                 </div>
             </div>
 
-            <div id="messages_frame" class="game_frame chat_display_true">
+            <div id="messages_frame" class="game_frame chat_display_true chat-display">
                 <div id="hide_chat_button" class="hide_chat_button">&#9660;</div>
                 <div class="container">
                     <div class="header noselect">
@@ -198,26 +198,26 @@
                         <div class="border_sep"></div>
                         <div id="open_5_button" class="chat_button">Chat 51</div>
                     </div>
-                    <div id='list_of_messages'>
-                        <div id='log' class="messages_display hidden">
+                    <div id='desktop-list_of_messages' class='list_of_messages'>
+                        <div id='log' class="messages_display log hidden">
                         </div>
-                        <div id="chat" class="messages_display">
+                        <div id="chat" class="messages_display chat">
                         </div>
-                        <div id="log-attack"class="messages_display hidden">
+                        <div id="log-attack" class="messages_display log-attack hidden">
                         </div>
                     </div>
-                    <form id='send_message_frame' class="send_message_frame">
-                        <input id='message_field', type="text", placeholder='New message'>
-                        <input type='submit', id='send_message_button', value= 'Send' >
+                    <form id='desktop-send_message_frame' class="send_message_frame">
+                        <input id='message_field' class="message_field" type="text", placeholder='New message'>
+                        <input type='submit', id='send_message_button' class="generic-button" value= 'Send' >
                     </form>
                 </div>
             </div>
 
-            <div id = "desktop_actions" class="game_frame">
+            <div id = "desktop_actions" class="game_frame actions-display">
                 <div class="large-font"> Activities: </div>
             </div>
 
-            <div id="tab_list_frame" class="game_frame noselect">
+            <div id="tab_list_frame" class="game_frame noselect container-horizontal">
                 <!-- <div id = "battle_button", class = 'control_button tooltip'><span class="tooltiptext">Attack</span></div> -->
                 <div id = "market_button", class = 'control_button tooltip'><span class="tooltiptext">Market</span></div>
                 <!-- <div id = "tactics_button", class = 'control_button tooltip'><span class="tooltiptext">Tactics</span></div> -->
@@ -228,6 +228,7 @@
                 <div id = "stash_button", class = 'control_button tooltip'><span class="tooltiptext">Stash</span></div>
                 <!-- <div id = "backpack_button", class = 'control_button tooltip'><span class="tooltiptext">Backpack</span></div> -->
                 <div id = "craft_button", class = 'control_button tooltip'><span class="tooltiptext">Craft</span></div>
+                <div id = "sauce_button", class = 'control_button generic-button'></div>
             </div>
 
             <div id = "action_progress_bar" class = "hidden">
@@ -253,11 +254,7 @@
                     </div>
                 </div>
                 <div id="craft_management" class="container-horizontal tab_content">
-                    <div class="container-vertical flex-1">
-                        <div id = "craft-tag-item" class="height-50 align-center highlight hover press">Items</div>
-                        <div id = "craft-tag-bulk" class="height-50 align-center highlight hover press">Bulk</div>
-                    </div>
-                    <div id="craft_list" class="container-vertical scroll-y flex-3 align-right">
+                    <div id="craft_list" class="container-vertical scroll-y flex-3 align-right craft-display">
                     </div>
                 </div>
                 <div class="corner bottom"></div>
@@ -271,7 +268,7 @@
                 </div>
 
                 <div id = 'stash_container' class = 'container-vertical tab_content'>
-                    <div id = "goods_stash"></div>
+                    <div class = "stash-display"></div>
 
                     <div> Savings: </div>
                     <div class = "savings_value"></div>
@@ -298,7 +295,7 @@
                                     <div id='local_description'></div>
                                 </div>
                             </div>
-                            <canvas id='map_canvas' width=1000 height=800 oncontextmenu="return false;"></canvas>
+                            <canvas class='map-canvas' width=1000 height=800 oncontextmenu="return false;"></canvas>
                         </div>
                         <div id = 'locations_column' class = "flex-2 width-20pc height-full container-vertical margin-0001r border-round">
                             <div id="selected-location-image" class="flex-3 height-30pc margin-0020r border-round background-solid background-cover"></div>
@@ -334,12 +331,12 @@
                             </div>
 
                             <div class="container-vertical margin-0020r border-round padding-0020r flex-2">
-                                <div id="attack_selected_character" class="generic-button flex-0-0-5"> Attack </div>
-                                <div id="rob_selected_character" class="generic-button flex-0-0-5"> Rob the dead. </div>
-                                <div id="support_selected_character" class="generic-button flex-0-0-5"> Support in battle. </div>
+                                <div class="attack-selected generic-button flex-0-0-5"> Attack </div>
+                                <div class="rob-selected generic-button flex-0-0-5"> Rob the dead. </div>
+                                <div class="support-selected generic-button flex-0-0-5"> Support in battle. </div>
                                 <div id="request_perks_selected_charater" class="generic-button flex-0-0-5"> Talk. </div>
 
-                                <div id="characters_list" class="flex-3"></div>
+                                <div id="characters_list" class="flex-3 characters-display-mini"></div>
 
                             </div>
                         </div>
@@ -494,7 +491,7 @@
                     </div>
                     <p class = "tab_label"> Equipment: </p>
                     <button id="send_switch_weapon_request">Switch weapon</button>
-                    <div id = 'equip', class = 'character_screen_frame'>
+                    <div id = 'equip', class = 'character_screen_frame equip-display'>
 
                     </div>
                 </div>
@@ -517,6 +514,69 @@
 
                 <!-- <div class="corner top"></div> -->
                 <div class="corner bottom"></div>
+            </div>
+
+
+            <div id="sauce_tab" class="game_tab hidden noselect">
+                <div id="sauce-wrapper">
+                    <div id="sauce-craft" class="sauce-box craft-display scroll-y"></div>
+
+                    <div id="sauce-shop" class="sauce-box shop-display-mini scroll-y"></div>
+
+                    <div id="sauce-stash" class="sauce-box stash-display scroll-y"></div>
+
+                    <div id="sauce-inventory" class="container-vertical sauce-box">
+                        <div id="sauce-backpack" class="sauce-box flex-1 backpack-display-mini scroll-y"></div>
+                        <div id="sauce-equip" class="sauce-box flex-1 equip-display-mini scroll-y"></div>
+                    </div>
+
+                    <div id="sauce-movement" class="sauce-box">
+                        <div class="width-fill height-fill container-vertical sauce-box">
+                            <div id="sauce-map" class="sauce-box flex-2 map-diplay-mini">
+                                <canvas class='map-canvas' width=1000 height=800 oncontextmenu="return false;"></canvas>
+                            </div>
+                            <div class="container-horizontal sauce-box flex-0-0-30px">
+                                <div class="attack-selected generic-button flex-1"> Attack</div>
+                                <div class="rob-selected generic-button flex-1"> Rob </div>
+                                <div class="support-selected generic-button flex-1"> Support </div>
+                            </div>
+
+                            <div class="container-horizontal sauce-box flex-1">
+                                <div class="sauce-box flex-1 actions-display scroll-y height-20rem"></div>
+                                <div id="sauce-locations" class="sauce-box flex-1 locations-display-mini scroll-y height-20rem"></div>
+                                <div id="sauce-local-characters" class="sauce-box flex-1 characters-display-mini scroll-y height-20rem"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sauce-chat-container" class="sauce-box chat-display">
+                        <div class="container height-full">
+                            <div class="header noselect">
+                                <div id="sauce-open_chat_button" class="selected chat_button">Chat</div>
+                                <div class="border_sep"></div>
+                                <div id="sauce-open_log_button" class="chat_button">Logs</div>
+                                <div class="border_sep"></div>
+                                <div id="sauce-open_log-attack_button" class="chat_button">Attacks</div>
+                                <div class="border_sep"></div>
+                                <div id="sauce-open_4_button" class="chat_button">Chat 4</div>
+                                <div class="border_sep"></div>
+                                <div id="sauce-open_5_button" class="chat_button">Chat 51</div>
+                            </div>
+                            <div class='list_of_messages'>
+                                <div id="sauce-log" class="log messages_display hidden">
+                                </div>
+                                <div id="sauce-chat" class="chat messages_display">
+                                </div>
+                                <div id="sauce-log-attack" class="messages_display hidden">
+                                </div>
+                            </div>
+                            <form id='send_message_frame' class="send_message_frame">
+                                <input id='sauce-message_field' class="message_field", type="text", placeholder='New message'>
+                                <input type='submit', id='sauce-send_message_button' class="generic-button", value= 'Send' >
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
 
 

@@ -10,22 +10,21 @@
     flex-direction: row;
 }
 
-#messages_frame > .container {
-    width: 50%;
-    height: 100%;    
+.chat-display > .container {
+    height: 100%;
     display: flex;
     flex: auto;
     flex-direction: column;
 }
 
-#messages_frame > .container > .header {
+.chat-display > .container > .header {
     /* position: absolute; */
     height: 30px;
     display: flex;
     flex-direction: row;
 }
 
-#messages_frame > .container > .header > .border_sep {
+.chat-display > .container > .header > .border_sep {
 
     border-right: 0px solid rgba(244, 219, 216, 1);
     margin-left: 4px;
@@ -36,7 +35,7 @@
     transform: translateY(-50%);
 }
 
-#messages_frame > .container > .header > .chat_button {
+.chat-display > .container > .header > .chat_button {
     background: rgba(51, 7, 7, 0.7);
     background-repeat: no-repeat;
     background-position: center;
@@ -47,15 +46,15 @@
     width: 20%;
 }
 
-#messages_frame > .container > .header > div:hover {
+.chat-display > .container > .header > div:hover {
     background: linear-gradient(177deg, rgba(110, 26, 26, 0.7) 0%, rgba(51, 7, 7, 0.7) 55%);
 }
 
-#messages_frame > .container > .header > div.selected {
+.chat-display > .container > .header > div.selected {
     background: linear-gradient(rgb(163, 102, 102) 0%, rgba(51, 7, 7, 0.7) 15%);
 }
 
-#list_of_messages {
+.list_of_messages {
     height: 80%;
     width: 100%;
     padding-top: 4px;
@@ -77,21 +76,21 @@
     scrollbar-width: thin;
     scrollbar-color: rgba(78, 11, 11, 0.7) rgba(255, 255, 255, 0);
 }
-  
+
   /* Works on Chrome, Edge, and Safari */
 .messages_display::-webkit-scrollbar {
     width: 12px;
 }
-  
+
 .messages_display::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0);
 }
-  
+
 .messages_display::-webkit-scrollbar-thumb {
     background-color: rgba(78, 11, 11, 0.7);
 }
 
-#send_message_frame {
+.send_message_frame {
     height: 10%;
     width: 100%;
     display: flex;
@@ -99,7 +98,7 @@
     flex: auto;
 }
 
-#message_field {
+.message_field {
     /* position: absolute; */
     background: rgba(78, 11, 11, 0.7);
     color: rgba(255, 255, 255, 1);
@@ -110,24 +109,17 @@
     padding-left: 8px;
 }
 
-#message_field:focus {
+.message_field:focus {
     background: linear-gradient(0deg, rgb(163, 102, 102) 0%, rgba(51, 7, 7, 0.7) 15%);
     outline: none;
 }
 
-#send_message_button {
-    /* position: absolute; */
-    background: rgba(78, 11, 11, 0.7);
-    color: rgba(255, 255, 255, 1);
+.send_message_button {
     flex: 1;
     height: 100%;
     padding: 0%;
     border: 0px;
     margin-left: 4px;
-}
-
-#send_message_button:hover {
-    background: linear-gradient(177deg, rgba(110, 26, 26, 0.7) 0%, rgba(51, 7, 7, 0.7) 55%);
 }
 
 #hide_chat_button{

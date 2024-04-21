@@ -1,5 +1,5 @@
 import { set_up_header_with_strings } from '../../headers.js';
-import { elementById, inputById } from '../HTMLwrappers/common.js';
+import { elementById, inputById, select } from '../HTMLwrappers/common.js';
 import { globals } from '../globals.js';
 import { socket } from "../Socket/socket.js";
 import { my_alert } from './my_alert.js';
@@ -11,6 +11,11 @@ export function init_messages_interactions() {
         { element: 'open_log_button', connected_element: 'log' },
         { element: 'open_log-attack_button', connected_element: 'log-attack' }
     ]);
+    set_up_header_with_strings([
+        { element: 'sauce-open_chat_button', connected_element: 'sauce-chat' },
+        { element: 'sauce-open_log_button', connected_element: 'sauce-log' },
+        { element: 'sauce-open_log-attack_button', connected_element: 'sauce-log-attack' }
+    ]);
     elementById('send_message_button').onclick = (event) => {
         event.preventDefault();
         let message_field = inputById('message_field');
@@ -18,11 +23,18 @@ export function init_messages_interactions() {
         message_field.value = '';
         socket.emit('new-message', message);
     };
+    elementById('sauce-send_message_button').onclick = (event) => {
+        event.preventDefault();
+        let message_field = inputById('sauce-message_field');
+        let message = message_field.value;
+        message_field.value = '';
+        socket.emit('new-message', message);
+    };
     elementById('hide_chat_button').onclick = (event) => {
-        let chat_box = elementById('messages_frame');
-        let msg_box = elementById('list_of_messages');
-        let send_box = elementById('send_message_frame');
-        let but = elementById('hide_chat_button');
+        let chat_box = elementById('desktop-messages_frame');
+        let msg_box = elementById('desktop-list_of_messages');
+        let send_box = elementById('desktop-send_message_frame');
+        let but = elementById('desktop-hide_chat_button');
         if (chat_box.classList.contains('chat_display_true')) {
             chat_box.classList.toggle('chat_display_true');
             chat_box.style.height = "40px";
@@ -49,21 +61,25 @@ export function init_messages_interactions() {
     });
 }
 export function new_log_message(msg) {
-    new_message_to_box('log', msg);
+    new_message_to_box('.messages_display.log', msg);
     console.log(msg);
 }
 export function new_message_to_box(target, log_message) {
-    var log = elementById(target);
-    var new_line = document.createElement('p');
-    var text = document.createTextNode(log_message);
-    if (target != 'chat')
-        new_line.style.whiteSpace = 'pre-line';
-    new_line.append(text);
-    log.appendChild(new_line);
-    log.scrollTop = log.scrollHeight;
+    var log = select(target);
+    console.log(log);
+    for (const item of log) {
+        var new_line = document.createElement('p');
+        var text = document.createTextNode(log_message);
+        if (target != '.messages_display.chat')
+            new_line.style.whiteSpace = 'pre-line';
+        new_line.append(text);
+        item.appendChild(new_line);
+        item.scrollTop = item.scrollHeight;
+    }
 }
 function new_message(msg) {
-    new_message_to_box('chat', msg.user + ': ' + msg.msg);
+    console.log(msg);
+    new_message_to_box('.messages_display.chat', msg.user + ': ' + msg.msg);
 }
 const damage_types = ['fire', 'blunt', 'pierce', 'slice'];
 function new_log_attack_message(msg) {
@@ -77,5 +93,5 @@ function new_log_attack_message(msg) {
         log_message += `${tag}: ${msg.attack.damage[tag]}, ${msg.res[tag]}, ${Math.max(0, msg.attack.damage[tag] - msg.res[tag])} \n`;
     }
     log_message += `total damage: ${msg.total} \n`;
-    new_message_to_box('log-attack', log_message);
+    new_message_to_box('.messages_display.log-attack', log_message);
 }

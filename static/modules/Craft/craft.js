@@ -1,6 +1,5 @@
 import { div } from "../../widgets/Div/custom_div.js";
 import { List } from "../../widgets/List/list.js";
-import { elementById } from "../HTMLwrappers/common.js";
 import { socket } from "../Socket/socket.js";
 import { material_icon_url } from "../Stash/stash.js";
 import { BulkAmount, Value, value_class_name } from "../Values/collection.js";
@@ -55,7 +54,7 @@ const craft_columns = [
         custom_style: ["flex-1-0-5"]
     },
     {
-        header_text: "Durability",
+        header_text: "Dur.",
         type: "number",
         value: (item) => {
             if (is_item_craft(item)) {
@@ -66,7 +65,7 @@ const craft_columns = [
             }
             return 0;
         },
-        custom_style: ["flex-1-0-5"]
+        custom_style: ["flex-0-0-50px"]
     },
     {
         header_text: "Craft",
@@ -81,11 +80,11 @@ const craft_columns = [
         viable(item) {
             return true;
         },
-        custom_style: ["flex-0-0-5"]
+        custom_style: ["flex-0-0-30px"]
     }
 ];
-export function new_craft_table() {
-    const craft_list = new List(elementById('craft_list'));
+export function new_craft_table(container) {
+    const craft_list = new List(container);
     craft_list.columns = craft_columns;
     return craft_list;
 }
@@ -97,6 +96,11 @@ export function update_craft_item_div(craft_list, message) {
 }
 export function new_craft_bulk(craft_list, data) {
     if (inputs_amount_data[data.tag] != undefined) {
+        const index_of = craft_list.data.findIndex((item) => (item.id == data.tag));
+        if (index_of == -1) {
+            craft_list.data.push(data.value);
+            craft_list.update_display();
+        }
         return;
     }
     inputs_amount_data[data.tag] = [];
@@ -111,11 +115,14 @@ export function new_craft_bulk(craft_list, data) {
         output_amount_data[data.tag].push(value);
         value.value = item.amount;
     }
-    craft_list.data.push(data.value);
-    craft_list.update_display();
 }
 export function new_craft_item(craft_list, data) {
     if (durability_data[data.tag] != undefined) {
+        const index_of = craft_list.data.findIndex((item) => (item.id == data.tag));
+        if (index_of == -1) {
+            craft_list.data.push(data.value);
+            craft_list.update_display();
+        }
         return;
     }
     inputs_amount_data[data.tag] = [];

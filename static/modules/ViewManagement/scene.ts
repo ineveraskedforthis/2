@@ -68,10 +68,10 @@ export function reg(msg: string) {
 }
 
 
-export function init_game_scene(map: DependencyUICanvas) {
+export function init_game_scene(maps: DependencyUICanvas[]) {
     socket.on('no-character', show_char_creation)
     socket.on('loading_completed', show_game)
     socket.on('char-removed', show_char_creation)
 
-    tab.load_all(socket, map)
+    tab.load_all(socket, maps)
 }

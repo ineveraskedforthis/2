@@ -6,6 +6,33 @@ import { elementById, selectById } from "../HTMLwrappers/common.js"
 import { socket } from "../Socket/socket.js"
 import { generate_item_name } from "../StringGeneration/string_generation.js"
 
+const columns_mini:Column<ItemBackpackData>[] = [
+    {
+        header_text: "Name",
+        value: (item) => {
+            const name = document.createElement('div')
+            const name_string = item.name
+            name.innerHTML = name_string
+            name.classList.add('item_tier_' + Math.min(item.affixes, 4))
+            name.classList.add('centered-box')
+            name.classList.add('width-125')
+            return name
+        },
+        type: "html",
+        custom_style: ["flex-1-0-5"]
+    },
+
+    {
+        value: (item) => "E",
+        onclick: (item) => () => {socket.emit('equip', item.backpack_index)},
+        viable: (item) => {
+            return true
+        },
+        type: "string",
+        custom_style: ["flex-0-0-5"]
+    },
+]
+
 const columns:Column<ItemBackpackData>[] = [
     {
         header_text: "Item type",
@@ -101,8 +128,8 @@ const columns:Column<ItemBackpackData>[] = [
     },
 ]
 
-columns.push({
-    header_text: "Dmg:",
+const dmg_col: Column<ItemBackpackData> = {
+    header_text: "D",
     value: (item) => {
         let total = 0
         for (let d of damage_types) {
@@ -111,8 +138,11 @@ columns.push({
         return total
     },
     type: "number",
-    custom_style: ["flex-0-0-5"]
-})
+    custom_style: ["flex-0-0-50px"]
+}
+
+columns.push(dmg_col)
+columns_mini.push(dmg_col)
 
 
 for (let d of damage_types) {
@@ -126,8 +156,8 @@ for (let d of damage_types) {
     )
 }
 
-columns.push({
-    header_text: "Res:",
+const res_col: Column<ItemBackpackData> = {
+    header_text: "R",
     value: (item) => {
         let total = 0
         for (let d of damage_types) {
@@ -136,8 +166,11 @@ columns.push({
         return total
     },
     type: "number",
-    custom_style: ["flex-0-0-5"]
-})
+    custom_style: ["flex-0-0-50px"]
+}
+
+columns.push(res_col)
+columns_mini.push(res_col)
 
 for (let d of damage_types) {
     columns.push(
@@ -150,5 +183,14 @@ for (let d of damage_types) {
     )
 }
 
-export const backpack_list = new List<ItemBackpackData>(elementById('backpack_tab'))
-backpack_list.columns = columns
+export function create_backpack_list(container: HTMLElement) {
+    const backpack_list = new List<ItemBackpackData>(container)
+    backpack_list.columns = columns
+    return backpack_list
+}
+
+export function create_backpack_list_mini(container: HTMLElement) {
+    const backpack_list = new List<ItemBackpackData>(container)
+    backpack_list.columns = columns_mini
+    return backpack_list
+}

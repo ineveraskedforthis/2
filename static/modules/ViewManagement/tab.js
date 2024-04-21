@@ -1,4 +1,4 @@
-export const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'market'];
+export const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'market', 'sauce'];
 // global state
 const tabs_queue = [];
 const tabs_position = {};
@@ -52,8 +52,8 @@ export var tab;
         }
     }
     tab_1.load = load;
-    function load_all(socket, map) {
-        canvases.push(map);
+    function load_all(socket, maps) {
+        canvases.push(...maps);
         tabs_properties = JSON.parse(localStorage.getItem('tabs_properties'));
         if (tabs_properties == null) {
             tabs_properties = {};
