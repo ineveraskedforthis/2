@@ -97,19 +97,13 @@ for (const container of selectHTMLs(".craft-display")) {
 
 
 socket.on('craft-bulk-complete', (msg: TaggedCraftBulk) => {
-    for (const craft_table of craft_tables) {
-        new_craft_bulk(craft_table, msg);
-    }
+    new_craft_bulk(craft_tables, msg);
 });
 socket.on('craft-item', (msg: CraftItemUpdateView) => {
-    for (const craft_table of craft_tables) {
-        update_craft_item_div(craft_table, msg);
-    }
+    update_craft_item_div(craft_tables, msg);
 });
 socket.on('craft-item-complete', (msg: TaggedCraftItem) => {
-    for (const craft_table of craft_tables) {
-        new_craft_item(craft_table, msg);
-    }
+    new_craft_item(craft_tables, msg);
 });
 
 

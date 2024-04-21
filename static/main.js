@@ -78,19 +78,13 @@ for (const container of selectHTMLs(".craft-display")) {
     craft_tables.push(new_craft_table(container));
 }
 socket.on('craft-bulk-complete', (msg) => {
-    for (const craft_table of craft_tables) {
-        new_craft_bulk(craft_table, msg);
-    }
+    new_craft_bulk(craft_tables, msg);
 });
 socket.on('craft-item', (msg) => {
-    for (const craft_table of craft_tables) {
-        update_craft_item_div(craft_table, msg);
-    }
+    update_craft_item_div(craft_tables, msg);
 });
 socket.on('craft-item-complete', (msg) => {
-    for (const craft_table of craft_tables) {
-        new_craft_item(craft_table, msg);
-    }
+    new_craft_item(craft_tables, msg);
 });
 socket.on("character_data", (msg) => {
     globals.character_data = {

@@ -104,21 +104,16 @@ export function new_craft_table(container: HTMLElement) {
     return craft_list
 }
 
-export function update_craft_item_div(craft_list: List<CraftBulkTemplate|CraftItemTemplate>, message: CraftItemUpdateView) {
+export function update_craft_item_div(craft_list: List<CraftBulkTemplate|CraftItemTemplate>[], message: CraftItemUpdateView) {
     if (durability_data[message.tag] == undefined) {
-        durability_data[message.tag] = new Value(socket, message.tag + `_craft_durability`, [craft_list])
+        durability_data[message.tag] = new Value(socket, message.tag + `_craft_durability`, craft_list)
     }
     durability_data[message.tag].value = message.value
 }
 
-export function new_craft_bulk(craft_list: List<CraftBulkTemplate|CraftItemTemplate>, data: TaggedCraftBulk) {
+export function new_craft_bulk(craft_list: List<CraftBulkTemplate|CraftItemTemplate>[], data: TaggedCraftBulk) {
 
     if (inputs_amount_data[data.tag] != undefined) {
-        const index_of = craft_list.data.findIndex((item) => (item.id == data.tag))
-        if (index_of == -1) {
-            craft_list.data.push(data.value)
-            craft_list.update_display()
-        }
         return
     }
 
@@ -136,16 +131,15 @@ export function new_craft_bulk(craft_list: List<CraftBulkTemplate|CraftItemTempl
         output_amount_data[data.tag].push(value)
         value.value = item.amount
     }
+
+    for (const item of craft_list) {
+        item.data.push(data.value)
+        item.update_display()
+    }
 }
 
-export function new_craft_item(craft_list: List<CraftBulkTemplate|CraftItemTemplate>, data: TaggedCraftItem) {
+export function new_craft_item(craft_list: List<CraftBulkTemplate|CraftItemTemplate>[], data: TaggedCraftItem) {
     if (durability_data[data.tag] != undefined) {
-        const index_of = craft_list.data.findIndex((item) => (item.id == data.tag))
-        if (index_of == -1) {
-            craft_list.data.push(data.value)
-            craft_list.update_display()
-        }
-
         return
     }
 
@@ -157,8 +151,11 @@ export function new_craft_item(craft_list: List<CraftBulkTemplate|CraftItemTempl
         value.value = item.amount
     }
 
-    durability_data[data.tag] = new Value(socket, data.tag + "_craft_durability", [craft_list])
+    durability_data[data.tag] = new Value(socket, data.tag + "_craft_durability", craft_list)
 
-    craft_list.data.push(data.value)
-    craft_list.update_display()
+    for (const item of craft_list) {
+        item.data.push(data.value)
+        item.update_display()
+    }
+
 }

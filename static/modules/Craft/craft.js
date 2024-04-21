@@ -90,17 +90,12 @@ export function new_craft_table(container) {
 }
 export function update_craft_item_div(craft_list, message) {
     if (durability_data[message.tag] == undefined) {
-        durability_data[message.tag] = new Value(socket, message.tag + `_craft_durability`, [craft_list]);
+        durability_data[message.tag] = new Value(socket, message.tag + `_craft_durability`, craft_list);
     }
     durability_data[message.tag].value = message.value;
 }
 export function new_craft_bulk(craft_list, data) {
     if (inputs_amount_data[data.tag] != undefined) {
-        const index_of = craft_list.data.findIndex((item) => (item.id == data.tag));
-        if (index_of == -1) {
-            craft_list.data.push(data.value);
-            craft_list.update_display();
-        }
         return;
     }
     inputs_amount_data[data.tag] = [];
@@ -115,14 +110,13 @@ export function new_craft_bulk(craft_list, data) {
         output_amount_data[data.tag].push(value);
         value.value = item.amount;
     }
+    for (const item of craft_list) {
+        item.data.push(data.value);
+        item.update_display();
+    }
 }
 export function new_craft_item(craft_list, data) {
     if (durability_data[data.tag] != undefined) {
-        const index_of = craft_list.data.findIndex((item) => (item.id == data.tag));
-        if (index_of == -1) {
-            craft_list.data.push(data.value);
-            craft_list.update_display();
-        }
         return;
     }
     inputs_amount_data[data.tag] = [];
@@ -131,8 +125,10 @@ export function new_craft_item(craft_list, data) {
         inputs_amount_data[data.tag].push(value);
         value.value = item.amount;
     }
-    durability_data[data.tag] = new Value(socket, data.tag + "_craft_durability", [craft_list]);
-    craft_list.data.push(data.value);
-    craft_list.update_display();
+    durability_data[data.tag] = new Value(socket, data.tag + "_craft_durability", craft_list);
+    for (const item of craft_list) {
+        item.data.push(data.value);
+        item.update_display();
+    }
 }
 
