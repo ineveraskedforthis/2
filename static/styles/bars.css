@@ -58,11 +58,7 @@
 	height: 100%;
 }
 
-.bar_data{
-	height: 20px;
-	width: max-content;
-	/* left: 105%; */
-	text-align: left;
+.large-font{
 	color: rgb(50, 50, 50);
 	margin-right: 3px;
 	font-stretch: extra-expanded;
@@ -72,6 +68,13 @@
 		1px 0px 0 rgb(215, 215, 215),
 		0px 1px 0 rgb(215, 215, 215),
 		0px -1px 0 rgb(215, 215, 215);
+}
+
+.bar_data{
+	height: 20px;
+	width: max-content;
+	/* left: 105%; */
+	text-align: left;
 }
 
 /* VERTICAL BAR END */

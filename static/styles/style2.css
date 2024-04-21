@@ -275,11 +275,11 @@ div {
     display: inline-block;
 }
 
-#desktop_actions > div:hover {
+.desktop_action_button:hover {
     background: linear-gradient(177deg, rgba(110, 26, 26, 0.7) 0%, rgba(51, 7, 7, 0.7) 55%);
 }
 
-#desktop_actions > div:active {
+.desktop_action_button:active {
     background: linear-gradient(rgb(163, 102, 102) 0%, rgba(51, 7, 7, 0.7) 15%);
 }
 
