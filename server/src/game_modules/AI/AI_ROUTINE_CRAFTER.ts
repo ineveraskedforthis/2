@@ -10,6 +10,7 @@ import { ItemOrders, MarketOrders } from "../market/system";
 import { Data } from "../data/data_objects";
 import { is_armour, is_weapon } from "../../content_wrappers/item";
 import { EventInventory } from "../events/inventory_events";
+import { CharacterSystem } from "../character/system";
 
 export function decide_bulk_craft(character: Character) {
     let result = []
@@ -80,6 +81,10 @@ function decide_item_craft(character: Character) {
 }
 
 function item_crafter_routine(character: Character, budget: money) {
+    if (character.equip.data.backpack.items.length > 8) {
+        CharacterSystem.open_shop(character)
+    }
+
     update_price_beliefs(character)
 
     if (Math.random() < 0.1) {

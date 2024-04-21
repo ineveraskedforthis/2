@@ -10,4 +10,8 @@ var NotificationResponse;
         response: "Notification:",
         value: "You are in battle."
     };
+    NotificationResponse.ShopOpened = {
+        response: "Notification:",
+        value: "Can't move with shop"
+    };
 })(NotificationResponse || (exports.NotificationResponse = NotificationResponse = {}));

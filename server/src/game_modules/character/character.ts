@@ -37,6 +37,8 @@ export class Character {
     skinned?: boolean;
     bones_removed?: boolean;
 
+    open_shop: boolean;
+
     _skills: SkillList;
     _perks: PerksTable;
     _traits: TraitsTable;
@@ -132,6 +134,7 @@ export class Character {
         this.action_points_left = 0 as action_points
         this.action_points_max = 10 as action_points
 
+        this.open_shop = false
 
         this.next_turn_after = 1
         this.position = {

@@ -11,6 +11,7 @@ const system_1 = require("../market/system");
 const data_objects_1 = require("../data/data_objects");
 const item_1 = require("../../content_wrappers/item");
 const inventory_events_1 = require("../events/inventory_events");
+const system_2 = require("../character/system");
 function decide_bulk_craft(character) {
     let result = [];
     (0, ACTIONS_BASIC_1.update_price_beliefs)(character);
@@ -79,6 +80,9 @@ function decide_item_craft(character) {
     return result[index];
 }
 function item_crafter_routine(character, budget) {
+    if (character.equip.data.backpack.items.length > 8) {
+        system_2.CharacterSystem.open_shop(character);
+    }
     (0, ACTIONS_BASIC_1.update_price_beliefs)(character);
     if (Math.random() < 0.1) {
         system_1.MarketOrders.remove_by_character(character);

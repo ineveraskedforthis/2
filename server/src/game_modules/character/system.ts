@@ -328,4 +328,14 @@ export namespace CharacterSystem {
     export function battle_update(character: Character) {
 
     }
+
+    export function open_shop(character: Character) {
+        character.open_shop = true;
+        character.equip.data.backpack.limit = 100
+    }
+
+    export function close_shop(character: Character) {
+        character.open_shop = false,
+        character.equip.data.backpack.limit = 10
+    }
 }

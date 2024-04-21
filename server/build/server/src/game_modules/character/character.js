@@ -56,6 +56,7 @@ class Character {
         this._traits = {};
         this.action_points_left = 0;
         this.action_points_max = 10;
+        this.open_shop = false;
         this.next_turn_after = 1;
         this.position = {
             x: 0,

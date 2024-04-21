@@ -16,6 +16,10 @@ export const move:CharacterMapAction ={
         if (char.in_battle()) {
             return NotificationResponse.InBattle
         }
+        if (char.open_shop) {
+            return NotificationResponse.ShopOpened
+        }
+
         const data = Data.World.id_to_coordinate(cell)
         if (MapSystem.can_move(data)) {
             let [x, y] = Data.World.id_to_coordinate(char.cell_id)

@@ -308,5 +308,10 @@ var CharacterSystem;
     function battle_update(character) {
     }
     CharacterSystem.battle_update = battle_update;
+    function open_shop(character) {
+        character.open_shop = true;
+        character.equip.data.backpack.limit = 100;
+    }
+    CharacterSystem.open_shop = open_shop;
 })(CharacterSystem || (exports.CharacterSystem = CharacterSystem = {}));
 

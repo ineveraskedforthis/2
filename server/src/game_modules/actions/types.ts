@@ -55,6 +55,10 @@ export namespace NotificationResponse {
         response: "Notification:",
         value: "You are in battle."
     }
+    export const ShopOpened : Notification = {
+        response: "Notification:",
+        value: "Can't move with shop"
+    }
 }
 
 export type MapActionTrigger = (character: Character) => TriggerResponse;

@@ -15,6 +15,9 @@ exports.move = {
         if (char.in_battle()) {
             return types_1.NotificationResponse.InBattle;
         }
+        if (char.open_shop) {
+            return types_1.NotificationResponse.ShopOpened;
+        }
         const data = data_objects_1.Data.World.id_to_coordinate(cell);
         if (system_1.MapSystem.can_move(data)) {
             let [x, y] = data_objects_1.Data.World.id_to_coordinate(char.cell_id);
