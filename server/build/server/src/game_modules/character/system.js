@@ -313,5 +313,10 @@ var CharacterSystem;
         character.equip.data.backpack.limit = 100;
     }
     CharacterSystem.open_shop = open_shop;
+    function close_shop(character) {
+        character.open_shop = false,
+            character.equip.data.backpack.limit = 10;
+    }
+    CharacterSystem.close_shop = close_shop;
 })(CharacterSystem || (exports.CharacterSystem = CharacterSystem = {}));
 

@@ -147,10 +147,23 @@ var ItemSystem;
         let result = new Damage_1.Damage();
         const material = content_1.MaterialStorage.get(item.prototype.material);
         const material_secondary = content_1.MaterialStorage.get(item.prototype.secondary_material);
-        result.blunt = material.blunt_protection * item.prototype.size + material_secondary.blunt_protection * item.prototype.secondary_material;
-        result.pierce = material.penentration_protection * item.prototype.size + material_secondary.penentration_protection * item.prototype.secondary_material;
-        result.slice = material.cutting_protection * item.prototype.size + material_secondary.cutting_protection * item.prototype.secondary_material;
-        result.fire = material.magic_power * item.prototype.size + material_secondary.magic_power * item.prototype.secondary_material;
+        const size = item.prototype.size;
+        const secondary_size = item.prototype.secondary_size;
+        const thickness = item.prototype.thickness;
+        result.blunt =
+            material.blunt_protection * size * thickness
+                + material_secondary.blunt_protection * secondary_size * thickness;
+        result.pierce =
+            material.penentration_protection * size * thickness
+                + material_secondary.penentration_protection * secondary_size * thickness;
+        result.slice =
+            material.cutting_protection * size * thickness
+                + material_secondary.cutting_protection * secondary_size * thickness;
+        result.fire =
+            material.magic_power * size * thickness
+                + material_secondary.magic_power * secondary_size * thickness
+                + item.prototype.magic_power;
+        damage_types_1.DmgOps.mult_ip(result, 2);
         for (let i = 0; i < item.affixes.length; i++) {
             let affix = item.affixes[i];
             let f = affix_1.protection_affixes_effects[affix.tag];
@@ -158,7 +171,7 @@ var ItemSystem;
                 result = f(result);
             }
         }
-        const durability_mod = 0.2 + 0.8 * item.durability / 100;
+        const durability_mod = 0.1 + 0.9 * item.durability / 100;
         damage_types_1.DmgOps.mult_ip(result, durability_mod);
         damage_types_1.DmgOps.floor_ip(result);
         return result;
