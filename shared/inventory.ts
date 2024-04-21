@@ -1,4 +1,4 @@
-import { ARMOUR, EQUIP_SLOT, MATERIAL, WEAPON, equip_slot_string_id } from "../game_content/src/content.js"
+import { ARMOUR, EQUIP_SLOT, MATERIAL, WEAPON, armour_string_id, equip_slot_string_id, weapon_string_id } from "../game_content/src/content.js"
 
 export interface SkillListInterface {
     clothier: number;
@@ -46,10 +46,12 @@ export type EquipSocket = {
     backpack: backpack;
 }
 
-export interface ItemData {
+
+
+export interface WeaponData {
     name: string,
     id: number,
-    prototype_id: string
+    prototype_id: weapon_string_id
     affixes: number,
     damage: damageSocket,
     ranged_damage: number,
@@ -57,25 +59,53 @@ export interface ItemData {
     affixes_list: affix[],
     item_type: EQUIP_SLOT
     durability: number
-    is_weapon: boolean
+    is_weapon: true
     price?: number
     backpack_index?: number,
 }
 
-export interface EquipSlotData {
-    equip_slot: equip_slot_string_id
-    item: ItemData
+export interface ArmourData {
+    name: string,
+    id: number,
+    prototype_id: armour_string_id
+    affixes: number,
+    damage: damageSocket,
+    ranged_damage: number,
+    resists: damageSocket,
+    affixes_list: affix[],
+    item_type: EQUIP_SLOT
+    durability: number
+    is_weapon: false
+    price?: number
+    backpack_index?: number,
 }
 
-export interface ItemBackpackData extends ItemData {
+export interface WeaponBackpackData extends WeaponData {
     backpack_index: number
 }
 
-export interface ItemOrderData extends ItemData {
+export interface ArmourBackpackData extends ArmourData {
+    backpack_index: number
+}
+
+export interface WeaponOrderData extends WeaponData {
     price: number
     seller: string
     seller_id: number
-    is_weapon: boolean
+}
+export interface ArmourOrderData extends ArmourData {
+    price: number
+    seller: string
+    seller_id: number
+}
+
+export type ItemData = WeaponData | ArmourData
+export type ItemBackpackData = WeaponBackpackData | ArmourBackpackData
+export type ItemOrderData = WeaponOrderData | ArmourOrderData
+
+export interface EquipSlotData {
+    equip_slot: equip_slot_string_id
+    item: ItemData
 }
 
 export type affix_tag = 'of_heat'|'layered'|'sharp'|'heavy'|'hot'|'precise'|'of_power'|'of_madness'|'calm'|'daemonic'|'notched'|'thick'|'hard'|'of_elodino_pleasure'|'of_graci_beauty'|'of_elder_beast'|'of_protection'|'of_painful_protection'

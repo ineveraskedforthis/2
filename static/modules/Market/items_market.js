@@ -1,4 +1,4 @@
-import { EquipSlotStorage } from "../.././content.js";
+import { ArmourStorage, EquipSlotStorage, MaterialStorage, WeaponStorage } from "../.././content.js";
 import { List } from "../../widgets/List/list.js";
 import { damage_types } from "../Constants/inventory.js";
 import { elementById } from "../HTMLwrappers/common.js";
@@ -53,6 +53,15 @@ const columns = [
     {
         header_text: "Item type",
         value: (item) => EquipSlotStorage.get(item.item_type).name,
+        type: "string",
+        custom_style: ["flex-1-0-5"]
+    },
+    {
+        header_text: "Material",
+        value: (item) => item.is_weapon ?
+            MaterialStorage.get(WeaponStorage.from_string(item.prototype_id).material).name
+            :
+                MaterialStorage.get(ArmourStorage.from_string(item.prototype_id).material).name,
         type: "string",
         custom_style: ["flex-1-0-5"]
     },

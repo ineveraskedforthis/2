@@ -65,7 +65,7 @@ export namespace Convert {
             id: index,
             seller: owner.get_name(),
             seller_id: owner.id
-        }
+        } as ItemOrderData
     }
 
     export function cell_id_to_item_orders_socket(cell_id: cell_id): ItemOrderData[] {

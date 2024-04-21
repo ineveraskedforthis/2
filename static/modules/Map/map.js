@@ -582,7 +582,7 @@ export function draw_map_related_stuff(maps, delta) {
         globals.action_time += delta;
         globals.action_ratio = globals.action_time / globals.action_total_time;
         let div = document.getElementById('action_progress_bar');
-        if (globals.action_total_time * 1.2 <= globals.action_time) {
+        if (globals.action_total_time * 1.4 <= globals.action_time) {
             // if current action_time >= total_time * 1.2
             // so if action had ended with a little overshoot
             // then stop action
