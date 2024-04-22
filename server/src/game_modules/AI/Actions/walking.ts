@@ -23,9 +23,9 @@ AIActionsStorage.register_action_location({
         const lack_of_hp = (actor.hp_max - actor.hp) / actor.hp_max;
         const utility_fatigue = Math.max(0, fatigue - 0.2);
         const utility_stress = Math.max(0, stress - 0.5);
-        const weight = AIfunctions.loot_weight(actor) / 50;
+        const weight = AIfunctions.loot_weight(actor) / 20;
 
-        return utility_fatigue + utility_stress + lack_of_hp + weight;
+        return 0.05 + utility_fatigue + utility_stress + lack_of_hp + weight;
     },
     potential_targets(actor) {
         const pre_result: location_id[] = [];
@@ -150,14 +150,17 @@ AIActionsStorage.register_action_location({
             + AIfunctions.check_local_demand_for_material(actor, MATERIAL.WOOD_RED)
             + actor.ai_gathering_target.get(MATERIAL.WOOD_RED)
 
-        return desired / 50
+        return desired / 100
     },
 
     // AIs are pretty shortsighted
     potential_targets(actor) {
         let result = DataID.Cells.locations(actor.cell_id).map(Data.Locations.from_id).filter((item) => item.forest > 0)
         for (const neighbour of Data.World.neighbours(actor.cell_id)) {
-            result = result.concat(DataID.Cells.locations(neighbour).map(Data.Locations.from_id).filter((item) => item.forest > 0))
+            result = result.concat(
+                DataID.Cells.locations(neighbour)
+                .map(Data.Locations.from_id)
+                .filter((item) => (item.forest > 0) && (MapSystem.can_move(Data.World.id_to_coordinate(item.cell_id)))))
         }
         return result
     },
@@ -189,7 +192,7 @@ AIActionsStorage.register_action_location({
             + AIfunctions.check_local_demand_for_material(actor, MATERIAL.COTTON)
             + actor.ai_gathering_target.get(MATERIAL.COTTON)
 
-        return desired / 50 + Math.random() * 0.1
+        return desired / 100 + Math.random() * 0.1
     },
 
     // AIs are pretty shortsighted
@@ -211,6 +214,49 @@ AIActionsStorage.register_action_location({
         if (target.cell_id == actor.cell_id) {
             Effect.enter_location(actor.id, target.id)
             ActionManager.start_action(CharacterAction.GATHER_COTTON, actor, actor.cell_id)
+        } else {
+            AIfunctions.go_to_location(actor, target)
+        }
+    }
+})
+
+
+AIActionsStorage.register_action_location({
+    tag: "fish",
+
+    utility(actor, target) {
+        if (target.cotton == 0) return 0
+        if (actor.open_shop) return 0
+
+        let desired =
+            actor.ai_desired_stash.get(MATERIAL.COTTON)
+            + 10
+            - actor.stash.get(MATERIAL.COTTON)
+            + AIfunctions.check_local_demand_for_material(actor, MATERIAL.COTTON)
+            + actor.ai_gathering_target.get(MATERIAL.COTTON)
+
+        return desired / 100 + Math.random() * 0.1
+    },
+
+    // AIs are pretty shortsighted
+    potential_targets(actor) {
+        let result = DataID.Cells.locations(actor.cell_id).map(Data.Locations.from_id).filter((item) => item.fish > 0)
+        for (const neighbour of Data.World.neighbours(actor.cell_id)) {
+            result =
+                result
+                .concat(DataID.Cells.locations(neighbour)
+                .map(Data.Locations.from_id)
+                .filter((item) => (item.fish > 0) && (MapSystem.can_move(Data.World.id_to_coordinate(item.cell_id)))))
+        }
+        return result
+    },
+
+    action(actor, target) {
+        actor.ai_gathering_target.set(MATERIAL.FISH_OKU, AIfunctions.check_local_demand_for_material(actor, MATERIAL.FISH_OKU))
+
+        if (target.cell_id == actor.cell_id) {
+            Effect.enter_location(actor.id, target.id)
+            ActionManager.start_action(CharacterAction.FISH, actor, actor.cell_id)
         } else {
             AIfunctions.go_to_location(actor, target)
         }
