@@ -42,7 +42,7 @@ export function init_messages_interactions() {
         let chat_box = elementById('messages_frame');
         let msg_box = elementById('desktop-list_of_messages');
         let send_box = elementById('desktop-send_message_frame');
-        let but = elementById('desktop-hide_chat_button');
+        let but = elementById('hide_chat_button');
 
         if (chat_box.classList.contains('chat_display_true')) {
             chat_box.classList.toggle('chat_display_true');
