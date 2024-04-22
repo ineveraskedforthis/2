@@ -17,7 +17,7 @@ export class List {
     constructor(container, wrapper_class = "table-30px-rows-flex") {
         this.container = container;
         this.wrapper = document.createElement("div");
-        this.wrapper.classList.add("wrapper");
+        this.wrapper.classList.add("table-wrapper");
         this.wrapper.classList.add(wrapper_class);
         container.appendChild(this.wrapper);
         this._sorting_sequence = [];
@@ -75,7 +75,16 @@ export class List {
         header.classList.add("table-header-row");
         this.wrapper.appendChild(header);
         let index = 0;
+        let first_flag = true;
         for (let col of this.columns) {
+            if (first_flag) {
+                first_flag = false;
+            }
+            else {
+                const separator = document.createElement("div");
+                separator.classList.add("table-separator");
+                header.appendChild(separator);
+            }
             let div = document.createElement("div");
             if (col.width_style) {
                 div.style.width = col.width_style;
@@ -128,7 +137,16 @@ export class List {
                 };
             })(this, item_index, line, item);
             let index = 0;
+            let first_flag = true;
             for (let col of this.columns) {
+                if (first_flag) {
+                    first_flag = false;
+                }
+                else {
+                    const separator = document.createElement("div");
+                    separator.classList.add("table-separator");
+                    line.appendChild(separator);
+                }
                 let div = document.createElement("div");
                 if (col.width_style)
                     div.style.width = col.width_style;

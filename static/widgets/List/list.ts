@@ -116,7 +116,7 @@ export class List<Item> implements ListInterface<Item> {
         this.container = container
 
         this.wrapper = document.createElement("div")
-        this.wrapper.classList.add("wrapper")
+        this.wrapper.classList.add("table-wrapper")
         this.wrapper.classList.add(wrapper_class)
 
         container.appendChild(this.wrapper)
@@ -187,7 +187,16 @@ export class List<Item> implements ListInterface<Item> {
         this.wrapper.appendChild(header);
 
         let index = 0;
+        let first_flag = true
         for (let col of this.columns) {
+            if (first_flag) {
+                first_flag = false
+            } else {
+                const separator = document.createElement("div")
+                separator.classList.add("table-separator")
+                header.appendChild(separator)
+            }
+
             let div = document.createElement("div");
             if (col.width_style) {
                 div.style.width = col.width_style;
@@ -243,7 +252,15 @@ export class List<Item> implements ListInterface<Item> {
             })(this, item_index, line, item)
 
             let index = 0
+            let first_flag = true
             for (let col of this.columns) {
+                if (first_flag) {
+                    first_flag = false
+                } else {
+                    const separator = document.createElement("div")
+                    separator.classList.add("table-separator")
+                    line.appendChild(separator)
+                }
                 let div = document.createElement("div");
                 if (col.width_style) div.style.width = col.width_style;
 

@@ -15,7 +15,10 @@
     height: 30px;
 }
 
-
+.table-wrapper {
+    margin: 3px;
+    padding: 2px;
+}
 
 .table-row {
     display: flex;
@@ -23,8 +26,8 @@
 }
 
 .table-row > div {
-    border: #fdf1f1fd 1px solid;
-    border-width: 0px 1px 0px 1px;
+    /* border: #fdf1f1fd 1px solid; */
+    /* border-width: 0px 1px 0px 1px; */
     margin-left: 2px;
     margin-right: 2px;
     padding: 2px;
@@ -76,6 +79,19 @@
 
 .table-header-row {
     margin-bottom: 10px;
+}
+
+.table-header-row > div {
+    align-content: center;
+    text-align: center;
+}
+
+.table-separator {
+    top: 2%;
+    height: 96%;
+    border-right: 3px solid ivory;
+    margin-left: 2px;
+    margin-right: 2px;
 }
 
 .columns_container {

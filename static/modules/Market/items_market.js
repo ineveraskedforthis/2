@@ -7,12 +7,6 @@ import { generate_item_name } from "../StringGeneration/string_generation.js";
 import { globals } from "../globals.js";
 const columns = [
     {
-        header_text: "Trader name",
-        value: (item) => item.seller,
-        type: "string",
-        custom_style: ["flex-1-0-5"]
-    },
-    {
         header_text: "Name",
         value: (item) => {
             const name = document.createElement('div');
@@ -112,6 +106,12 @@ for (let d of damage_types) {
         custom_style: ["flex-0-0-30px", "centered_background"]
     });
 }
+columns.push({
+    header_text: "Trader name",
+    value: (item) => item.seller,
+    type: "string",
+    custom_style: ["flex-1-0-5"]
+});
 const item_market_container = elementById('auction_house_tab');
 export const market_items = new List(item_market_container);
 market_items.columns = columns;
