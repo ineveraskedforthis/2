@@ -68,8 +68,8 @@ export function init_map_control(map) {
             let tmp = globals.now;
             if ((map.last_time_down == undefined) || (tmp - map.last_time_down < 150)) {
                 map.select_hex(selected_hex);
-                map.move_flag = true;
-                send_move_action(map, 'move');
+                globals.movement_in_process = true;
+                send_move_action(map.selected, 'move');
             }
         }
         else {
@@ -130,27 +130,27 @@ export class Map {
         this.buffer_context = this.buffer.getContext('2d');
         this.container = container;
         this.hex_side = 23;
-        this.camera = [50, 600];
-        this.hex_shift = [-100, -680];
+        this.camera = [0, 0]; //[50, 600];
+        this.hex_shift = [0, 0]; //[-100, -680];
         this.selected = [0, 0];
-        this.curr_pos = [0, 0];
-        this.move_flag = false; // does player follow some path currently?
-        this.movement_progress = 0;
         this.hex_h = this.hex_side * Math.sqrt(3) / 2;
         this.hex_w = this.hex_side / 2;
         this.terrain = [];
         this.forest = [];
         this.urban = [];
         this.rat_lairs = [];
-        this.path = {};
-        this.real_path = [];
-        this.path_progress = 0;
     }
     update_canvas_size() {
         this.canvas.width = this.container.clientWidth;
         this.canvas.height = this.container.clientHeight;
         this.buffer.width = this.container.clientWidth;
         this.buffer.height = this.container.clientHeight;
+        this.update_camera();
+    }
+    update_camera() {
+        let temp = this.hex_center(globals.current_map_position);
+        this.camera[0] = temp[0] - this.canvas.width / 2;
+        this.camera[1] = temp[1] - this.canvas.height / 2;
     }
     load_terrain(data) {
         if (this.terrain[data.x] == undefined) {
@@ -176,7 +176,7 @@ export class Map {
                 this.draw_hex_features(ctx, [i, j]);
             }
         }
-        this.draw_fill(ctx, this.curr_pos, '(0, 0, 255, 0.6)');
+        this.draw_fill(ctx, globals.current_map_position, '(0, 0, 255, 0.6)');
         if (this.selected) {
             this.draw_fill(ctx, this.selected, '(255, 255, 0, 0.6)');
         }
@@ -192,8 +192,8 @@ export class Map {
             let cur = this.selected;
             while (cur != undefined) {
                 let tmp = st(cur);
-                const previous = this.path[tmp];
-                if ((tmp in this.path) && (previous != undefined)) {
+                const previous = globals.current_path_data[tmp];
+                if ((tmp in globals.current_path_data) && (previous != undefined)) {
                     let t = this.get_hex_centre(cur);
                     ctx.beginPath();
                     ctx.moveTo(t[0], t[1]);
@@ -201,7 +201,7 @@ export class Map {
                     ctx.lineTo(tmp_cen[0], tmp_cen[1]);
                     ctx.stroke();
                 }
-                cur = this.path[tmp];
+                cur = globals.current_path_data[tmp];
             }
         }
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -215,12 +215,12 @@ export class Map {
         return [tx, ty];
     }
     draw_player_circle(ctx) {
-        let c = this.get_hex_centre(this.curr_pos);
-        if (this.move_flag) {
-            if (this.move_target != undefined) {
-                let b = this.get_hex_centre(this.move_target);
+        let c = this.get_hex_centre(globals.current_map_position);
+        if (globals.movement_in_process) {
+            if (globals.current_map_movement_target != undefined) {
+                let b = this.get_hex_centre(globals.current_map_movement_target);
                 ctx.strokeStyle = 'rgba' + '(200, 200, 0, 1)';
-                this.draw_pentagon(ctx, c[0] * (1 - this.movement_progress) + b[0] * this.movement_progress, c[1] * (1 - this.movement_progress) + b[1] * this.movement_progress, '(200, 200, 0, 1)', 10);
+                this.draw_pentagon(ctx, c[0] * (1 - globals.movement_progress) + b[0] * globals.movement_progress, c[1] * (1 - globals.movement_progress) + b[1] * globals.movement_progress, '(200, 200, 0, 1)', 10);
             }
         }
         else {
@@ -385,16 +385,16 @@ export class Map {
         this.selected = [i, j];
         let local_description = document.getElementById('local_description');
         local_description.innerHTML = '<img src="static/img/starting_tiles_image_downsized.png" width="300">';
-        this.path = this.create_path();
-        this.real_path = [];
-        this.path_progress = 0;
+        globals.current_path_data = this.create_path();
+        globals.current_path = [];
+        globals.current_path_step = 0;
         let cur = this.selected;
         while ((cur != undefined)) {
             let tmp = st(cur);
-            this.real_path.push(cur);
-            cur = this.path[tmp];
+            globals.current_path.push(cur);
+            cur = globals.current_path_data[tmp];
         }
-        this.real_path = this.real_path.reverse();
+        globals.current_path = globals.current_path.reverse();
     }
     get_terrain([i, j]) {
         if (this.terrain[i] == undefined)
@@ -402,9 +402,9 @@ export class Map {
         return this.terrain[i][j];
     }
     create_path() {
-        let queue = [this.curr_pos];
+        let queue = [globals.current_map_position];
         let prev = {};
-        prev[st(this.curr_pos)] = undefined;
+        prev[st(globals.current_map_position)] = undefined;
         let used = {};
         let right = 1;
         let next = 0;
@@ -443,79 +443,52 @@ export class Map {
         let v2 = this.get_hex_centre(b);
         return ((v1[0] - v2[0]) * (v1[0] - v2[0]) + (v1[1] - v2[1]) * (v1[1] - v2[1])) / 10000;
     }
-    get_bg_tag([i, j]) {
-        if ((this.terrain[i] != undefined) && (this.terrain[i][j] == 'coast')) {
-            if ((this.urban[i] != undefined) && (this.urban[i][j] >= 1)) {
-                return 'coast_rural';
-            }
-            return 'coast';
-        }
-        if (this.forest[i] != undefined) {
-            if (this.urban[i][j] >= 4) {
-                return 'colony';
-            }
-            if (this.urban[i][j] >= 1) {
-                return 'urban_1';
-            }
-            if (this.forest[i][j] >= 200) {
-                return 'forest';
-            }
-        }
-        return 'red_steppe';
-    }
-    set_curr_pos([i, j], teleport_flag) {
-        console.log('new position');
-        console.log(i, j);
-        let tmp0 = this.curr_pos[0];
-        let tmp1 = this.curr_pos[1];
-        if ((tmp0 == i) && (tmp1 == j)) {
-            return;
-        }
-        this.curr_pos = [i, j];
-        // this.curr_territory = get_territory_tag(i, j);
-        console.log('move flag');
-        console.log(this.real_path[this.real_path.length - 1]);
-        console.log(this.curr_pos);
-        console.log(this.move_flag);
-        if (this.move_flag) {
-            if ((this.real_path[this.real_path.length - 1][0] == this.curr_pos[0]) && (this.real_path[this.real_path.length - 1][1] == this.curr_pos[1])) {
-                this.move_flag = false;
-            }
-        }
-        else {
-            let temp = this.hex_center([i, j]);
-            this.camera[0] = temp[0] - 200;
-            this.camera[1] = temp[1] + 400;
-        }
-        console.log(this.move_flag);
-        socket.emit('request-local-locations');
-        return this.get_bg_tag([i, j]);
-    }
 }
-function send_move_action(map, action) {
+export function set_curr_pos(maps, [i, j], teleport_flag) {
+    console.log('new position');
+    console.log(i, j);
+    let tmp0 = globals.current_map_position[0];
+    let tmp1 = globals.current_map_position[1];
+    if ((tmp0 == i) && (tmp1 == j)) {
+        return;
+    }
+    globals.current_map_position = [i, j];
+    console.log('move flag');
+    const path_lenght = globals.current_path.length;
+    if (globals.movement_in_process) {
+        if ((globals.current_path[path_lenght - 1][0] == i) && (globals.current_path[path_lenght - 1][1] == j)) {
+            globals.movement_in_process = false;
+        }
+    }
+    for (const map of maps) {
+        map.update_camera();
+    }
+    console.log(globals.movement_in_process);
+    socket.emit('request-local-locations');
+}
+function send_move_action(target, action) {
     console.log(action);
-    let selected = map.selected;
-    let curr_pos = map.curr_pos;
+    let curr_pos = globals.current_map_position;
     if (action == 'move') {
-        if (selected == undefined)
+        if (target == undefined)
             return;
-        let adj_flag = check_move(position_diff(selected, curr_pos));
+        let adj_flag = check_move(position_diff(target, curr_pos));
         if (adj_flag) {
-            map.move_target = selected;
-            map.move_flag = true;
-            socket.emit('move', coord_to_x_y(selected));
+            globals.current_map_movement_target = target;
+            globals.movement_in_process = true;
+            socket.emit('move', coord_to_x_y(target));
         }
         else {
-            map.move_flag = true;
-            const next_cell = map.real_path[map.path_progress + 1];
-            map.move_target = next_cell;
+            const next_cell = globals.current_path[globals.current_path_step + 1];
+            globals.current_map_movement_target = next_cell;
+            globals.movement_in_process = true;
             socket.emit('move', coord_to_x_y(next_cell));
         }
     }
     else if (action == 'continue_move') {
-        map.path_progress += 1;
-        const next_cell = map.real_path[map.path_progress + 1];
-        map.move_target = next_cell;
+        globals.current_path_step += 1;
+        const next_cell = globals.current_path[globals.current_path_step + 1];
+        globals.current_map_movement_target = next_cell;
         if (next_cell == undefined)
             return;
         socket.emit('move', coord_to_x_y(next_cell));
@@ -592,23 +565,17 @@ export function draw_map_related_stuff(maps, delta) {
             console.log('keep doing?');
             console.log(globals.keep_doing);
             if (globals.keep_doing != undefined) {
-                for (const map of maps)
-                    send_local_cell_action(globals.keep_doing);
+                send_local_cell_action(globals.keep_doing);
             }
             //do the movement again if you are not at destination already
-            for (const map of maps)
-                if (map.move_flag) {
-                    send_move_action(map, 'continue_move');
-                }
-            // map.move_flag = false
+            if (globals.current_map_movement_target)
+                send_move_action(globals.current_map_movement_target, 'continue_move');
         }
         else {
             let bar = div.querySelector('span');
             bar.style.width = Math.min(Math.floor(globals.action_time / globals.action_total_time * 10000) / 100, 100) + '%';
-            for (const map of maps) {
-                if (map.move_flag) {
-                    map.movement_progress = globals.action_ratio;
-                }
+            if (globals.movement_in_process) {
+                globals.movement_progress = Math.min(1, globals.action_ratio);
             }
         }
     }
@@ -626,7 +593,7 @@ export function draw_map_related_stuff(maps, delta) {
         }
     }
 }
-function restart_action_bar(maps, time, is_move) {
+function restart_action_bar(time, is_move) {
     // console.log('???')
     globals.action_total_time = time;
     globals.action_in_progress = true;
@@ -636,10 +603,8 @@ function restart_action_bar(maps, time, is_move) {
     let bar = div.querySelector('span');
     bar.style.width = '0%';
     if (is_move) {
-        for (const map of maps) {
-            map.move_flag = true;
-            map.movement_progress = 0;
-        }
+        globals.movement_in_process = true;
+        globals.movement_progress = 0;
         globals.action_total_time += 0.1;
         globals.action_total_time *= 1.1;
     }
@@ -656,9 +621,7 @@ export function init_map() {
     set_local_actions(local_actions);
     socket.on('map-pos', msg => {
         console.log('map-pos');
-        for (const map of maps) {
-            map.set_curr_pos([msg.x, msg.y], msg.teleport_flag);
-        }
+        set_curr_pos(maps, [msg.x, msg.y], msg.teleport_flag);
     });
     socket.on('map-data-display', data => {
         for (const map of maps) {
@@ -670,6 +633,6 @@ export function init_map() {
             map.reset();
         }
     });
-    socket.on('action-ping', data => restart_action_bar(maps, data.time, data.is_move));
+    socket.on('action-ping', data => restart_action_bar(data.time, data.is_move));
     return maps;
 }

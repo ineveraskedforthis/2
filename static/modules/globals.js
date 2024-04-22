@@ -26,6 +26,13 @@ export var globals = {
     action_ratio: 0,
     action_total_time: 1,
     local_characters: [],
+    current_map_position: [0, 0],
+    current_map_movement_target: undefined,
+    movement_in_process: false,
+    movement_progress: 0,
+    current_path_data: {},
+    current_path: [],
+    current_path_step: 0,
     character_data: undefined,
     now: Date.now()
 };
