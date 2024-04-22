@@ -31,7 +31,7 @@ export function init_messages_interactions() {
         socket.emit('new-message', message);
     };
     elementById('hide_chat_button').onclick = (event) => {
-        let chat_box = elementById('desktop-messages_frame');
+        let chat_box = elementById('messages_frame');
         let msg_box = elementById('desktop-list_of_messages');
         let send_box = elementById('desktop-send_message_frame');
         let but = elementById('desktop-hide_chat_button');
