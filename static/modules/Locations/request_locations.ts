@@ -97,6 +97,7 @@ const lists : List<LocationView>[] = []
 export function init_locations() {
     const locations_list = new List<LocationView>(elementById("location-list"));
     locations_list.columns = columns;
+    locations_list.sorted_column = 0
     elementById('claim-location-button').onclick = create_plot;
 
     for (const container of selectHTMLs('.locations-display-mini')) {
@@ -117,6 +118,7 @@ export function init_locations() {
 export function new_mini_location_list(container : HTMLElement) {
     const locations_list = new List<LocationView>(container);
     locations_list.columns = columns_mini;
+    locations_list.sorted_column = 0
     return locations_list
 }
 
