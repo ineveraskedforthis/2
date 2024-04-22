@@ -97,7 +97,7 @@ export function init_locations() {
             item.data = data;
         }
     });
-    return locations_list;
+    return [locations_list, ...lists];
 }
 export function new_mini_location_list(container) {
     const locations_list = new List(container);

@@ -111,7 +111,7 @@ export function init_locations() {
         }
     })
 
-    return locations_list
+    return [locations_list, ... lists]
 }
 
 export function new_mini_location_list(container : HTMLElement) {

@@ -111,6 +111,7 @@ export namespace SocketCommand {
         if (location.cell_id != character.cell_id) return false
 
         Effect.enter_location(character.id, location.id)
+        Request.local_locations(sw)
     }
 
     // export function create_plot(sw: SocketWrapper) {

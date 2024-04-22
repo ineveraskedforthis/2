@@ -53,7 +53,7 @@ tab.turn_on('map');
 const maps = init_map();
 tab.turn_off('map');
 init_game_scene(maps);
-const background_image = new BackgroundImage(locations_list);
+const background_image = new BackgroundImage(locations_list[0]);
 const equip_tables = [];
 for (const container of selectHTMLs(".equip-display")) {
     equip_tables.push(init_equipment_screen(container, socket));
@@ -92,7 +92,7 @@ socket.on("character_data", (msg) => {
         name: msg.name,
         savings: new AnimatedValue(socket, "savings", [market_bulk, market_items, ...markets_mini]),
         savings_trade: new AnimatedValue(socket, "savings_trade", []),
-        location_id: new Value(socket, "location_id", [locations_list, background_image]),
+        location_id: new Value(socket, "location_id", [background_image, ...locations_list]),
         stash: []
     };
     init_battle_control();

@@ -276,6 +276,7 @@ var SendUpdate;
             teleport_flag: teleport_flag
         };
         alerts_1.Alerts.generic_user_alert(user, 'map-pos', data);
+        location(user);
     }
     SendUpdate.map_position = map_position;
     function location(user) {

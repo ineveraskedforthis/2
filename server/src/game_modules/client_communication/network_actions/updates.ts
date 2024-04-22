@@ -282,6 +282,7 @@ export namespace SendUpdate {
             teleport_flag:teleport_flag
         }
         Alerts.generic_user_alert(user, 'map-pos', data)
+        location(user)
     }
 
     export function location(user: User) {

@@ -108,6 +108,7 @@ var SocketCommand;
         if (location.cell_id != character.cell_id)
             return false;
         effects_1.Effect.enter_location(character.id, location.id);
+        request_1.Request.local_locations(sw);
     }
     SocketCommand.enter_location = enter_location;
     // export function create_plot(sw: SocketWrapper) {
