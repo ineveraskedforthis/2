@@ -5,7 +5,7 @@ import { EventInventory } from "../../events/inventory_events";
 import { EventMarket } from "../../events/market";
 import { AuctionResponse, } from "../../market/system";
 import { market_order_id } from "@custom_types/ids";
-import { Character } from "../../character/character";
+import { Character } from "../../data/entities/character";
 import { Data } from "../../data/data_objects";
 import { EquipSlotConfiguration, EquipSlotStorage, MATERIAL_CATEGORY, MaterialConfiguration, MaterialStorage } from "@content/content";
 import { money } from "@custom_types/common";

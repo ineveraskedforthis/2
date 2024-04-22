@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dummy_start = exports.dummy_duration = exports.dummy_effect = exports.basic_duration_modifier = exports.basic_duration = exports.basic_trigger = void 0;
-const types_1 = require("./types");
+const character_1 = require("../data/entities/character");
 function basic_trigger(character) {
     if (character.in_battle()) {
-        return types_1.NotificationResponse.InBattle;
+        return character_1.NotificationResponse.InBattle;
     }
     return { response: 'OK' };
 }

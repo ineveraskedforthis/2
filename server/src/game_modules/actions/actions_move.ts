@@ -1,15 +1,14 @@
-import { Character } from "../character/character";
+import { Character, CharacterMapAction, NotificationResponse, TriggerResponse } from "../data/entities/character";
 import { MapSystem } from "../map/system";
 import { Event } from "../events/events";
-import { CharacterSystem } from "../character/system";
-import { CharacterMapAction, NotificationResponse, TriggerResponse } from "./types";
 import { cell_id } from "@custom_types/ids";
 import { Data } from "../data/data_objects";
 import { DataID } from "../data/data_id";
+import { CharacterValues } from "../scripted-values/character";
 
 export const move:CharacterMapAction ={
     duration(char: Character) {
-        return CharacterSystem.movement_duration_map(char);
+        return CharacterValues.movement_duration_map(char);
     },
 
     check: function (char: Character, cell: cell_id) : TriggerResponse {

@@ -1,8 +1,8 @@
-import { Character } from "../../character/character";
 import { Data } from "../../data/data_objects";
+import { Character } from "../../data/entities/character";
 import { AIActionsStorage } from "../Storage/storage";
 
-import "../Actions/_loader"
+import "../Actions/_loader";
 
 interface ActionCalculation<Target> {
     tag: string
@@ -40,7 +40,8 @@ export function decide() {
         }
 
         if (best) {
-            console.log(character.name, best.tag)
+            // if (character.race == "human")
+                // console.log(character.name, best.tag)
             best.action(character, best.target)
         }
     })

@@ -6,6 +6,7 @@ const geom_1 = require("../geom");
 const TRIGGERS_1 = require("./TRIGGERS");
 const actions_1 = require("./actions");
 const data_objects_1 = require("../data/data_objects");
+const character_1 = require("../scripted-values/character");
 function utility_unit_damage(key, action, battle, character, target_character) {
     if (!TRIGGERS_1.BattleTriggers.is_enemy(character, target_character)) {
         return { action_key: key, utility: 0, ap_cost: 0, target: target_character };
@@ -54,7 +55,7 @@ function utility_switch_weapon(battle, character, target_character, d_ap) {
 function utility_move_closer(battle, character, target_character, d_ap) {
     const delta = geom_1.geom.minus(target_character.position, character.position);
     const dist = geom_1.geom.norm(delta);
-    const range = character.range();
+    const range = character_1.CharacterValues.range(character);
     const max_move = 1; // potential movement
     if (dist < range) {
         return { action_key: "MoveTowards", utility: 0, ap_cost: 0, target: target_character };

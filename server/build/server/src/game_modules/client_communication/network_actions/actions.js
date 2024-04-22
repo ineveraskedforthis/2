@@ -1,15 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HandleAction = void 0;
-const manager_1 = require("../../actions/manager");
 const actions_00_1 = require("../../actions/actions_00");
+const manager_1 = require("../../actions/manager");
+const actions_1 = require("../../battle/actions");
+const heap_1 = require("../../battle/classes/heap");
+const data_objects_1 = require("../../data/data_objects");
 const systems_communication_1 = require("../../systems_communication");
 const user_manager_1 = require("../user_manager");
 const alerts_1 = require("./alerts");
-const actions_1 = require("../../battle/actions");
 const common_validations_1 = require("./common_validations");
-const data_objects_1 = require("../../data/data_objects");
-const heap_1 = require("../../battle/classes/heap");
 var HandleAction;
 (function (HandleAction) {
     function response_to_alert(user, response) {

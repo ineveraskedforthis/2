@@ -5,19 +5,18 @@ const content_1 = require("../../../.././../game_content/src/content");
 const data_id_1 = require("../../data/data_id");
 const data_objects_1 = require("../../data/data_objects");
 const SYSTEM_REPUTATION_1 = require("../../SYSTEM_REPUTATION");
-const system_1 = require("../../character/system");
 const crafts_storage_1 = require("../../craft/crafts_storage");
-const CraftBulk_1 = require("../../craft/CraftBulk");
-const system_2 = require("../../market/system");
-const CraftItem_1 = require("../../craft/CraftItem");
+const system_1 = require("../../market/system");
 const item_1 = require("../../../content_wrappers/item");
 const damage_types_1 = require("../../damage_types");
 const item_system_1 = require("../../systems/items/item_system");
-const system_3 = require("../../map/system");
+const system_2 = require("../../map/system");
 const manager_1 = require("../../actions/manager");
 const actions_00_1 = require("../../actions/actions_00");
-const system_4 = require("../../battle/system");
+const system_3 = require("../../battle/system");
 const TRIGGERS_1 = require("../../battle/TRIGGERS");
+const character_conditions_1 = require("../../scripted-conditions/character-conditions");
+const craft_1 = require("../../scripted-values/craft");
 exports.base_price = 1;
 exports.directions = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1]];
 var AIfunctions;
@@ -56,7 +55,7 @@ var AIfunctions;
         let total_weight = 0;
         for (const material of content_1.MaterialConfiguration.MATERIAL) {
             const data = content_1.MaterialStorage.get(material);
-            if (system_1.CharacterSystem.can_eat(actor, data)) {
+            if (character_conditions_1.CharacterCondition.can_eat(actor, data)) {
                 total_weight += actor.stash.get(material) * data.unit_size * data.density;
             }
         }
@@ -150,7 +149,7 @@ var AIfunctions;
     AIfunctions.price_norm_box = price_norm_box;
     function craft_bulk_profitability(character, craft) {
         const input_price = price_norm_box(character, craft.input, buy_price);
-        const output_price = price_norm_box(character, (0, CraftBulk_1.output_bulk)(character, craft), sell_price);
+        const output_price = price_norm_box(character, craft_1.CraftValues.output_bulk(character, craft), sell_price);
         const profit = output_price - input_price;
         return profit;
     }
@@ -159,14 +158,14 @@ var AIfunctions;
         const result = [];
         for (const item of Object.values(crafts_storage_1.crafts_items)) {
             if (item.output.tag == "armour") {
-                if (system_2.ItemOrders.count_armour_orders_of_type(character.cell_id, item.output.value) >= 3)
+                if (system_1.ItemOrders.count_armour_orders_of_type(character.cell_id, item.output.value) >= 3)
                     continue;
             }
             if (item.output.tag == "weapon") {
-                if (system_2.ItemOrders.count_weapon_orders_of_type(character.cell_id, item.output.value) >= 3)
+                if (system_1.ItemOrders.count_weapon_orders_of_type(character.cell_id, item.output.value) >= 3)
                     continue;
             }
-            if ((0, CraftItem_1.durability)(character, item) > 100) {
+            if (craft_1.CraftValues.durability(character, item) > 100) {
                 result.push(item);
             }
         }
@@ -183,7 +182,7 @@ var AIfunctions;
     }
     AIfunctions.sell_price_item = sell_price_item;
     function go_to_location(actor, target) {
-        let next_cell = system_3.MapSystem.find_path(actor.cell_id, target.cell_id);
+        let next_cell = system_2.MapSystem.find_path(actor.cell_id, target.cell_id);
         if (next_cell != undefined) {
             manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, actor, next_cell);
         }
@@ -355,7 +354,7 @@ var AIfunctions;
         // console.log(battles)
         for (let item of battles) {
             let battle = data_objects_1.Data.Battles.from_id(item);
-            if (!(system_4.BattleSystem.battle_finished(battle))) {
+            if (!(system_3.BattleSystem.battle_finished(battle))) {
                 let team = check_team_to_join(agent, battle);
                 if (team == 'no_interest')
                     continue;
@@ -372,12 +371,12 @@ var AIfunctions;
         // console.log(battles)
         for (let item of battles) {
             let battle = data_objects_1.Data.Battles.from_id(item);
-            if (!(system_4.BattleSystem.battle_finished(battle))) {
+            if (!(system_3.BattleSystem.battle_finished(battle))) {
                 let team = check_team_to_join(agent, battle);
                 if (team == 'no_interest')
                     continue;
                 else {
-                    system_4.BattleSystem.add_figther(battle, agent, team, 100);
+                    system_3.BattleSystem.add_figther(battle, agent, team, 100);
                     return true;
                 }
             }

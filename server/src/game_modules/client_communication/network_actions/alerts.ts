@@ -3,7 +3,7 @@ import { ItemData, skill } from "../../../../../shared/inventory";
 import { AttackObj } from "../../attack/class";
 import { Battle } from "../../battle/classes/battle";
 import { BattleSystem } from "../../battle/system";
-import { Character } from "../../character/character";
+import { Character } from "../../data/entities/character";
 import { CraftBulkTemplate, CraftItemTemplate, box } from "@custom_types/inventory";
 import { MarketOrderJson } from "../../market/classes";
 import { Damage } from "../../Damage";
@@ -15,7 +15,7 @@ import { cell_id, character_id } from "@custom_types/ids";
 import { DataID } from "../../data/data_id";
 import { Data } from "../../data/data_objects";
 import { CHANGE_REASON } from "../../effects/effects";
-import { Stash } from "../../inventories/stash";
+import { Stash } from "../../data/entities/stash";
 import { MATERIAL, MaterialConfiguration, MaterialStorage } from "@content/content";
 
 export namespace Alerts {

@@ -4,11 +4,12 @@ exports.Dialog = void 0;
 const systems_communication_1 = require("../../systems_communication");
 const perk_base_price_1 = require("../../prices/perk_base_price");
 const triggers_1 = require("../../events/triggers");
-const system_1 = require("../../character/system");
 const skill_price_1 = require("../../prices/skill_price");
 const SYSTEM_REPUTATION_1 = require("../../SYSTEM_REPUTATION");
 const data_objects_1 = require("../../data/data_objects");
 const data_id_1 = require("../../data/data_id");
+const extract_data_1 = require("../../data-extraction/extract-data");
+const character_1 = require("../../scripted-values/character");
 var Dialog;
 (function (Dialog) {
     function talking_check(sw, character_id) {
@@ -66,7 +67,7 @@ var Dialog;
             perks: {},
             skills: {},
             model: target_character.model,
-            equip: target_character.equip_models()
+            equip: extract_data_1.Extract.CharacterEquipModel(target_character)
         };
         for (let perk of Object.keys(data)) {
             if (data[perk] == true) {
@@ -76,7 +77,7 @@ var Dialog;
         for (let skill of Object.keys(target_character._skills)) {
             let teaching_response = triggers_1.Trigger.can_learn_from(character, target_character, skill);
             if (teaching_response.response == 'ok' || teaching_response.response == triggers_1.ResponseNegativeQuantified.Money) {
-                const teacher_skill = system_1.CharacterSystem.skill(target_character, skill);
+                const teacher_skill = character_1.CharacterValues.skill(target_character, skill);
                 response.skills[skill] = [
                     teacher_skill,
                     (0, skill_price_1.skill_price)(skill, character, target_character)

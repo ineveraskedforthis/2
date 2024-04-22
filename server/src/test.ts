@@ -1,13 +1,14 @@
 import { Data, save_path } from "./game_modules/data/data_objects";
 import { ItemSystem } from "./game_modules/systems/items/item_system";
-import { Equip } from "./game_modules/inventories/equip";
+import { Equip } from "./game_modules/data/entities/equip";
 import { CharacterSystem } from "./game_modules/character/system";
 import { HumanTemplate } from "./game_modules/races/TEMPLATE_HUMANS";
-import { Inventory } from "./game_modules/inventories/inventory";
+import { Inventory } from "./game_modules/data/entities/inventory";
 import { character_to_string, inventory_from_string, inventory_to_string, string_to_character } from "./game_modules/data/strings_management";
 import { money } from "@custom_types/common";
 import { cell_id, location_id } from "@custom_types/ids";
 import { ARMOUR, MATERIAL, WEAPON } from "@content/content";
+import { EquipmentEffects } from "./game_modules/scripted-effects/equipment-effects";
 
 Data.World.load_world_dimensions(save_path.WORLD_DIMENSIONS)
 Data.World.load_terrain(save_path.TERRAIN)
@@ -35,7 +36,7 @@ function add_testing_items_to_equip(equip: Equip) {
     const item2 = Data.Items.create_armour_simple(ARMOUR.MAIL_LEATHER_RAT)
     const id1 = equip.data.backpack.add(item.id)
     const id2 = equip.data.backpack.add(item2.id)
-    if (id1 !== false) equip.equip_weapon(id1, 'human')
+    if (id1 !== false) EquipmentEffects.equip_weapon(equip, id1, 'human')
 }
 
 function character_serialization_test_simple() {

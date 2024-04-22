@@ -1,23 +1,21 @@
-import { SocketWrapper } from "./user";
 import { io_type, Socket } from "../../server";
-import { UserManagement} from "./user_manager";
+import { SocketWrapper } from "./user";
+import { UserManagement } from "./user_manager";
 // import { SECTIONS } from "../static_data/map_definitions";
+import { MaterialConfiguration } from "@content/content";
+import { CharacterAction } from "../actions/actions_00";
+import { craft_actions } from "../craft/crafts_storage";
+import { SKILLS } from "../static_data/skills";
+import { Convert } from "../systems_communication";
+import { ModelVariant } from "../types";
+import { HandleAction } from "./network_actions/actions";
+import { Alerts } from "./network_actions/alerts";
 import { Auth } from "./network_actions/auth";
 import { Validator } from "./network_actions/common_validations";
-import { Alerts } from "./network_actions/alerts";
-import { MapSystem } from "../map/system";
-import { HandleAction } from "./network_actions/actions";
-import { CharacterAction } from "../actions/actions_00";
-import { SocketCommand } from "./network_actions/run_event";
-import { Convert } from "../systems_communication";
-import { ModelVariant, tagModel, tagRACE } from "../types";
+import { Dialog } from "./network_actions/dialog";
 import { InventoryCommands } from "./network_actions/inventory_management";
 import { Request } from "./network_actions/request";
-import { SKILLS } from "../static_data/skills";
-import { craft_actions } from "../craft/crafts_storage";
-import { Dialog } from "./network_actions/dialog";
-import { SendUpdate } from "./network_actions/updates";
-import { MaterialConfiguration } from "@content/content";
+import { SocketCommand } from "./network_actions/run_event";
 
 interface Message {
     id: number

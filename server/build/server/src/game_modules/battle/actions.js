@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.battle_action_position = exports.battle_action_character = exports.battle_action_self = exports.battle_action_position_check = exports.battle_action_character_check = exports.battle_action_self_check = exports.ActionsPosition = exports.ActionsUnit = exports.ActionsSelf = void 0;
 const system_1 = require("../attack/system");
 const checks_1 = require("../character/checks");
-const system_2 = require("../character/system");
 const alerts_1 = require("../client_communication/network_actions/alerts");
 const damage_types_1 = require("../damage_types");
 const data_objects_1 = require("../data/data_objects");
@@ -15,15 +14,17 @@ const battle_calcs_1 = require("./battle_calcs");
 const events_2 = require("./events");
 const TRIGGERS_1 = require("./TRIGGERS");
 const VALUES_1 = require("./VALUES");
+const equipment_values_1 = require("../scripted-values/equipment-values");
+const character_1 = require("../scripted-values/character");
 function attack_ap_cost(base, character) {
     let result = base;
-    let weapon = character.equip.weapon;
+    let weapon = equipment_values_1.EquipmentValues.weapon(character.equip);
     if (weapon != undefined) {
         result = base * item_system_1.ItemSystem.weight(weapon) / 4;
     }
-    const skill = system_2.CharacterSystem.attack_skill(character);
+    const skill = character_1.CharacterValues.attack_skill(character);
     result = result * (1 - skill / 200);
-    const power = system_2.CharacterSystem.phys_power(character);
+    const power = character_1.CharacterValues.phys_power(character);
     result = result * (0.5 + 10 / power);
     return result;
 }
@@ -68,7 +69,7 @@ exports.ActionsSelf = {
     'RandomStep': {
         // max_utility: 2,
         ap_cost: (battle, character) => {
-            return system_2.CharacterSystem.movement_cost_battle(character) * RANDOM_STEP_LENGTH;
+            return character_1.CharacterValues.movement_cost_battle(character) * RANDOM_STEP_LENGTH;
         },
         execute: (battle, character, available_points) => {
             const phi = Math.random() * Math.PI * 2;
@@ -88,7 +89,7 @@ exports.ActionsUnit = {
             return attack_ap_cost(2, character);
         },
         range: (battle, character) => {
-            return character.range();
+            return character_1.CharacterValues.range(character);
         },
         execute: (battle, character, target_character) => {
             let dodge_flag = (target_character.dodge_turns > 0);
@@ -96,8 +97,8 @@ exports.ActionsUnit = {
             let b = target_character.position;
             let c = geom_1.geom.minus(b, a);
             let norm = geom_1.geom.norm(c);
-            let power_ratio = system_2.CharacterSystem.phys_power(character) / system_2.CharacterSystem.phys_power(target_character);
-            let scale = character.range() * power_ratio / norm;
+            let power_ratio = character_1.CharacterValues.phys_power(character) / character_1.CharacterValues.phys_power(target_character);
+            let scale = character_1.CharacterValues.range(character) * power_ratio / norm;
             c = geom_1.geom.mult(c, scale);
             events_2.BattleEvent.SetCoord(battle, target_character, geom_1.geom.sum(b, c));
             events_1.Event.attack(character, target_character, dodge_flag, 'pierce', false);
@@ -115,11 +116,11 @@ exports.ActionsUnit = {
             return attack_ap_cost(3, character);
         },
         range: (battle, character) => {
-            return character.range();
+            return character_1.CharacterValues.range(character);
         },
         execute: (battle, character, target_character) => {
             let dodge_flag = (target_character.dodge_turns > 0);
-            let range = character.range();
+            let range = character_1.CharacterValues.range(character);
             for (let aoe_target_id of battle.heap) {
                 const aoe_target = data_objects_1.Data.Characters.from_id(aoe_target_id);
                 if (aoe_target == undefined)
@@ -153,11 +154,11 @@ exports.ActionsUnit = {
             return attack_ap_cost(2, character);
         },
         range: (battle, character) => {
-            return character.range();
+            return character_1.CharacterValues.range(character);
         },
         execute: (battle, character, target_character) => {
             let dodge_flag = (target_character.dodge_turns > 0);
-            let range = character.range();
+            let range = character_1.CharacterValues.range(character);
             events_1.Event.attack(character, target_character, dodge_flag, 'blunt', false);
             alerts_1.Alerts.battle_event_target_unit(battle, 'attack', character, target_character);
             alerts_1.Alerts.battle_update_unit(battle, character);
@@ -265,7 +266,7 @@ exports.ActionsUnit = {
         ap_cost: (battle, character, target_character) => {
             const delta = geom_1.geom.minus(target_character.position, character.position);
             const dist = geom_1.geom.norm(delta);
-            const range = character.range();
+            const range = character_1.CharacterValues.range(character);
             const max_move = character.action_points_left / VALUES_1.BattleValues.move_cost(character) - 0.01; // potential movement
             if (dist < range) {
                 return 0;
@@ -278,7 +279,7 @@ exports.ActionsUnit = {
         execute: (battle, character, target_character, available_points) => {
             const delta = geom_1.geom.minus(target_character.position, character.position);
             const dist = geom_1.geom.norm(delta);
-            const range = character.range();
+            const range = character_1.CharacterValues.range(character);
             const max_move = available_points / VALUES_1.BattleValues.move_cost(character); // potential movement
             if (dist < range) {
                 return;

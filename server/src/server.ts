@@ -80,7 +80,7 @@ app.get('/api/:API_KEY/character/:charID', (req: Request, res: Response) => {
         cell: character.cell_id,
         savings: character.savings,
         stash: character.stash,
-        equip: character.equip.get_data(),
+        equip: Extract.EquipData(character.equip),
         skills: character._skills,
         perks: character._perks,
         traits: character._traits,
@@ -160,6 +160,7 @@ import { SocketManager } from "./game_modules/client_communication/socket_manage
 import { CellView } from '@custom_types/common.js';
 import { cell_id } from "@custom_types/ids.js";
 import { Convert } from './game_modules/systems_communication.js';
+import { Extract } from './game_modules/data-extraction/extract-data.js';
 
 export var io = require('socket.io')(server, { path: '/socket.io' });
 export var socket_manager = new SocketManager(io)

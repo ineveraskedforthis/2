@@ -85,7 +85,7 @@ app.get('/api/:API_KEY/character/:charID', (req, res) => {
         cell: character.cell_id,
         savings: character.savings,
         stash: character.stash,
-        equip: character.equip.get_data(),
+        equip: extract_data_js_1.Extract.EquipData(character.equip),
         skills: character._skills,
         perks: character._perks,
         traits: character._traits,
@@ -150,6 +150,7 @@ const data_id_js_1 = require("./game_modules/data/data_id.js");
 const data_objects_js_1 = require("./game_modules/data/data_objects.js");
 const socket_manager_js_1 = require("./game_modules/client_communication/socket_manager.js");
 const systems_communication_js_1 = require("./game_modules/systems_communication.js");
+const extract_data_js_1 = require("./game_modules/data-extraction/extract-data.js");
 exports.io = require('socket.io')(server, { path: '/socket.io' });
 exports.socket_manager = new socket_manager_js_1.SocketManager(exports.io);
 (0, game_launch_js_1.launch)(server);

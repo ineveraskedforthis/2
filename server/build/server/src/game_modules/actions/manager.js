@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ActionManager = void 0;
-// import { attack } from "./attack"
 const alerts_1 = require("../client_communication/network_actions/alerts");
 const data_objects_1 = require("../data/data_objects");
 var ActionManager;

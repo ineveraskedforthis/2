@@ -1,7 +1,6 @@
 import { EQUIP_SLOT, MATERIAL, MaterialConfiguration, MaterialStorage } from "@content/content";
 import { AIfunctions } from "../HelperFunctions/common";
 import { AIActionsStorage } from "../Storage/storage";
-import { CharacterSystem } from "../../character/system";
 import { MarketOrders } from "../../market/system";
 import { EventMarket } from "../../events/market";
 import { ActionManager } from "../../actions/manager";
@@ -9,6 +8,9 @@ import { craft_actions } from "../../craft/crafts_storage";
 import { is_weapon } from "../../../content_wrappers/item";
 import { Data } from "../../data/data_objects";
 import { EventInventory } from "../../events/inventory_events";
+import { CharacterCondition } from "../../scripted-conditions/character-conditions";
+import { CharacterValues } from "../../scripted-values/character";
+import { CharacterEffect } from "../../scripted-effects/character";
 
 // Used instead of a part of old crafting routine
 // to decide required amounts of materials character needs
@@ -35,7 +37,7 @@ AIActionsStorage.register_action_self({
 
         // food: replace with distribution later
         for (const item of MaterialConfiguration.MATERIAL) {
-            if (CharacterSystem.can_eat(actor, MaterialStorage.get(item))) {
+            if (CharacterCondition.can_eat(actor, MaterialStorage.get(item))) {
                 actor.ai_desired_stash.inc(item, 10)
             }
         }
@@ -57,12 +59,12 @@ AIActionsStorage.register_action_self({
         }
 
         //arrows:
-        if (CharacterSystem.skill(actor, "ranged") > 30) {
+        if (CharacterValues.skill(actor, "ranged") > 30) {
             actor.ai_desired_stash.inc(MATERIAL.ARROW_BONE, 40)
         }
 
         //zaz for mages
-        if (CharacterSystem.skill(actor, "magic_mastery") > 30) {
+        if (CharacterValues.skill(actor, "magic_mastery") > 30) {
             actor.ai_desired_stash.inc(MATERIAL.ZAZ, 40)
         }
     }
@@ -75,7 +77,7 @@ AIActionsStorage.register_action_self({
         for (let item of bulk_crafts) {
             if (item.profit <= 0) continue;
 
-            if (CharacterSystem.can_bulk_craft(actor, item.craft)) {
+            if (CharacterCondition.can_bulk_craft(actor, item.craft)) {
                 return 0.8
             }
         }
@@ -101,7 +103,7 @@ AIActionsStorage.register_action_self({
     utility(actor, target) {
         const bulk_crafts = AIfunctions.profitable_item_craft(actor)
         for (let item of bulk_crafts) {
-            if (CharacterSystem.can_item_craft(actor, item)) {
+            if (CharacterCondition.can_item_craft(actor, item)) {
                 return 0.8
             }
         }
@@ -123,7 +125,7 @@ AIActionsStorage.register_action_self({
 AIActionsStorage.register_action_material({
     tag: "eat",
     utility(actor, target) {
-        if (CharacterSystem.can_eat(actor, target)) {
+        if (CharacterCondition.can_eat(actor, target)) {
             return AIfunctions.lack_of_hp(actor) + actor.fatigue / 200 + actor.stress / 200
         }
         return 0
@@ -132,7 +134,7 @@ AIActionsStorage.register_action_material({
         return MaterialConfiguration.MATERIAL.map(MaterialStorage.get)
     },
     action(actor, target) {
-        CharacterSystem.eat(actor, target)
+        CharacterEffect.eat(actor, target)
     }
 })
 
@@ -217,7 +219,7 @@ AIActionsStorage.register_action_self({
     },
 
     action(actor, target) {
-        CharacterSystem.open_shop(actor)
+        CharacterEffect.open_shop(actor)
     }
 })
 

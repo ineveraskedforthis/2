@@ -3,7 +3,7 @@ import { character_id } from "@custom_types/ids";
 import { DataID } from "../../data/data_id";
 import { Data } from "../../data/data_objects";
 import { Battle } from "./battle";
-import { Character } from "../../character/character";
+import { Character } from "../../data/entities/character";
 
 /**  Implementation of priority queue to decide priority in battle
 * Current unit is stored in heap[0]

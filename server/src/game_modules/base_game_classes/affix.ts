@@ -1,7 +1,7 @@
 // import { Armour, IMPACT_TYPE, Weapon } from "../static_data/item_tags";
 import { affix_tag } from "../../../../shared/inventory";
 import { AttackObj } from "../attack/class";
-import { Character } from "../character/character";
+import { Character } from "../data/entities/character";
 import { Armour, Item, Weapon } from "../data/entities/item";
 import { Damage } from "../Damage";
 import { IMPACT_TYPE, MATERIAL } from "@content/content";

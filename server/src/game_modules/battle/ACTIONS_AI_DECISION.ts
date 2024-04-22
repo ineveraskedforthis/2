@@ -1,11 +1,12 @@
 import { ActionSelfKeys, ActionUnitKeys, action_points } from "@custom_types/battle_data";
-import { Character } from "../character/character";
+import { Character } from "../data/entities/character";
 import { EventInventory } from "../events/inventory_events";
 import { geom } from "../geom";
 import { BattleTriggers } from "./TRIGGERS";
 import { ActionUnit, ActionsSelf, ActionsUnit, battle_action_character, battle_action_character_check, battle_action_self, battle_action_self_check} from "./actions";
 import { Battle } from "./classes/battle";
 import { Data } from "../data/data_objects";
+import { CharacterValues } from "../scripted-values/character";
 
 type UtilityObjectTargeted = {
     action_key: ActionUnitKeys|ActionSelfKeys,
@@ -74,7 +75,7 @@ function utility_switch_weapon(battle: Battle, character: Character, target_char
 function utility_move_closer(battle: Battle, character: Character, target_character: Character, d_ap: action_points): UtilityObjectTargeted {
     const delta = geom.minus(target_character.position, character.position);
     const dist = geom.norm(delta)
-    const range = character.range()
+    const range = CharacterValues.range(character)
     const max_move = 1 // potential movement
     if (dist < range) {
         return {action_key: "MoveTowards", utility: 0, ap_cost: 0, target: target_character}

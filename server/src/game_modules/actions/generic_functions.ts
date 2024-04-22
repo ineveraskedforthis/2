@@ -1,6 +1,5 @@
 import { cell_id } from "@custom_types/ids";
-import { Character } from "../character/character";
-import { NotificationResponse, TriggerResponse } from "./types";
+import { Character, NotificationResponse, TriggerResponse } from "../data/entities/character";
 
 export function basic_trigger(character: Character): TriggerResponse {
     if (character.in_battle()) {

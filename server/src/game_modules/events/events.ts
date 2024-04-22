@@ -1,33 +1,34 @@
+import { EQUIP_SLOT, EquipSlotConfiguration, MATERIAL, MATERIAL_CATEGORY, MaterialStorage } from "@content/content";
+import { melee_attack_type } from "@custom_types/common";
+import { cell_id, location_id } from "@custom_types/ids";
+import { skill } from "@custom_types/inventory";
+import { Perks } from "../../../../shared/character";
+import { handle_attack_reputation_change } from "../SYSTEM_REPUTATION";
+import { AttackObj } from "../attack/class";
+import { Attack } from "../attack/system";
 import { Accuracy } from "../battle/battle_calcs";
 import { trim } from "../calculations/basic_functions";
-import { Attack } from "../attack/system";
-import { Character } from "../character/character";
-import { CharacterTemplate, ModelVariant } from "../types";
-import { location_id } from "@custom_types/ids";
-import { Loot } from "../races/generate_loot";
 import { perk_requirement } from "../character/perk_requirement";
-import { perk_price } from "../prices/perk_base_price";
 import { CharacterSystem } from "../character/system";
 import { UI_Part } from "../client_communication/causality_graph";
 import { Alerts } from "../client_communication/network_actions/alerts";
 import { UserManagement } from "../client_communication/user_manager";
-import { skill } from "@custom_types/inventory";
-import { Convert, Link, Unlink } from "../systems_communication";
-import { damage_type, melee_attack_type } from "@custom_types/common";
+import { on_craft_update } from "../craft/helpers";
+import { DmgOps } from "../damage_types";
+import { DataID } from "../data/data_id";
+import { Data } from "../data/data_objects";
+import { Character } from "../data/entities/character";
 import { CHANGE_REASON, Effect } from "../effects/effects";
+import { MapSystem } from "../map/system";
+import { perk_price } from "../prices/perk_base_price";
+import { Loot } from "../races/generate_loot";
+import { CharacterValues } from "../scripted-values/character";
+import { EquipmentValues } from "../scripted-values/equipment-values";
+import { Convert, Link, Unlink } from "../systems_communication";
+import { CharacterTemplate, ModelVariant } from "../types";
 import { EventInventory } from "./inventory_events";
 import { EventMarket } from "./market";
-import { AttackObj } from "../attack/class";
-import { DmgOps } from "../damage_types";
-import { on_craft_update } from "../craft/helpers";
-import { Perks } from "../../../../shared/character";
-import { cell_id } from "@custom_types/ids";
 import { Trigger } from "./triggers";
-import { handle_attack_reputation_change } from "../SYSTEM_REPUTATION";
-import { Data } from "../data/data_objects";
-import { MapSystem } from "../map/system";
-import { DataID } from "../data/data_id";
-import { EQUIP_SLOT, EquipSlotConfiguration, MATERIAL, MATERIAL_CATEGORY, MaterialStorage } from "@content/content";
 
 const GRAVEYARD_CELL = 0 as cell_id
 
@@ -101,7 +102,7 @@ export namespace Event {
     }
 
     export function move_fatigue_change(character: Character) {
-        const boots = character.equip.slot_to_item(EQUIP_SLOT.BOOTS)
+        const boots = EquipmentValues.item(character.equip, EQUIP_SLOT.BOOTS)
         if (boots == undefined) {
             Effect.Change.fatigue(character, 3, CHANGE_REASON.TRAVEL)
         } else {
@@ -115,7 +116,7 @@ export namespace Event {
         if (dice < probability) {
             Effect.change_durability(character, EQUIP_SLOT.BOOTS, -1)
             let skill_dice = Math.random()
-            if (skill_dice * skill_dice * skill_dice > CharacterSystem.skill(character, 'travelling') / 100) {
+            if (skill_dice * skill_dice * skill_dice > CharacterValues.skill(character, 'travelling') / 100) {
                 Effect.Change.skill(character, 'travelling', 1, CHANGE_REASON.TRAVEL)
             }
         }
@@ -138,7 +139,7 @@ export namespace Event {
         // it gives base 10% of arrows missing
         // and you rise your evasion if you are attacked
         const attack_skill = 2 * attack.attack_skill
-        const evasion = CharacterSystem.skill(defender, 'evasion')
+        const evasion = CharacterValues.skill(defender, 'evasion')
 
         let evasion_chance = evasion / (100 + attack_skill)
         if (flag_dodge) evasion_chance = evasion_chance + 0.1
@@ -169,7 +170,7 @@ export namespace Event {
         //check missed attack because of lack of skill
         const acc = Accuracy.ranged(attacker, distance)
         const dice_accuracy = Math.random()
-        const attacker_ranged_skill = CharacterSystem.skill(attacker, 'ranged')
+        const attacker_ranged_skill = CharacterValues.skill(attacker, 'ranged')
         if (dice_accuracy > acc) {
             const dice_skill_up = Math.random()
             if (dice_skill_up * 100 > attacker_ranged_skill) {
@@ -205,7 +206,7 @@ export namespace Event {
         attack.defender_status_change.fatigue += 5
         attack.defender_status_change.stress += 3
 
-        attack.defence_skill += CharacterSystem.skill(defender, 'evasion')
+        attack.defence_skill += CharacterValues.skill(defender, 'evasion')
         deal_damage(defender, attack, attacker, false, CHANGE_REASON.RANGED_ATTACK)
 
         //if target is dead, loot it all
@@ -219,7 +220,7 @@ export namespace Event {
     export function unconditional_magic_bolt(attacker: Character, defender: Character, dist: number, flag_dodge: boolean, flag_charged: boolean) {
 
         const dice = Math.random()
-        if (dice > CharacterSystem.skill(attacker, 'magic_mastery') / 50) {
+        if (dice > CharacterValues.skill(attacker, 'magic_mastery') / 50) {
             Effect.Change.skill(attacker, 'magic_mastery', 1, CHANGE_REASON.MAGIC_APPLICATION)
         }
         const attack = Attack.generate_magic_bolt(attacker, dist, flag_charged)
@@ -268,7 +269,7 @@ export namespace Event {
         Effect.Change.status(defender, attack.defender_status_change, reason);
         Effect.Change.status(attacker, attack.attacker_status_change, reason);
 
-        const resistance = CharacterSystem.resistance(defender)
+        const resistance = CharacterValues.resistance(defender)
 
         Alerts.log_attack(defender, attack, resistance, total, 'defender')
         Alerts.log_attack(attacker, attack, resistance, total, 'attacker')
@@ -353,7 +354,7 @@ export namespace Event {
         //for defender
         const dice = Math.random();
         if ((dice < 0.5) && (attack.attack_skill <= 30)) {
-            Effect.Change.skill(defender, CharacterSystem.equiped_weapon_required_skill(defender), 1, CHANGE_REASON.FIGHTING);
+            Effect.Change.skill(defender, CharacterValues.equiped_weapon_required_skill(defender), 1, CHANGE_REASON.FIGHTING);
         }
         //for attacker
         const dice2 = Math.random();
@@ -363,8 +364,8 @@ export namespace Event {
     }
 
     function parry(defender: Character, attack: AttackObj) {
-        const weapon = CharacterSystem.equiped_weapon_required_skill(defender);
-        const skill = CharacterSystem.attack_skill(defender) + Math.round(Math.random() * 5);
+        const weapon = CharacterValues.equiped_weapon_required_skill(defender);
+        const skill = CharacterValues.attack_skill(defender) + Math.round(Math.random() * 5);
         attack.defence_skill += skill;
 
         // roll parry
@@ -386,7 +387,7 @@ export namespace Event {
     }
 
     function block(defender: Character, attack: AttackObj) {
-        const skill = CharacterSystem.skill(defender, 'blocking') + Math.round(Math.random() * 10);
+        const skill = CharacterValues.skill(defender, 'blocking') + Math.round(Math.random() * 10);
         attack.defence_skill += skill;
 
         // roll block
@@ -408,7 +409,7 @@ export namespace Event {
 
     function evade(defender: Character, attack: AttackObj, dodge_flag: boolean) {
         //this skill has quite wide deviation
-        const skill = trim(CharacterSystem.skill(defender, 'evasion') + Math.round((Math.random() - 0.5) * 40), 0, 200);
+        const skill = trim(CharacterValues.skill(defender, 'evasion') + Math.round((Math.random() - 0.5) * 40), 0, 200);
 
         //passive evasion
         attack.defence_skill += skill;
@@ -474,7 +475,7 @@ export namespace Event {
         for (const item of loot) {
             if (MaterialStorage.get(item.material).category == MATERIAL_CATEGORY.SKIN) {
                 const dice = Math.random()
-                const skinning_skill = CharacterSystem.skill(killer, 'skinning')
+                const skinning_skill = CharacterValues.skill(killer, 'skinning')
                 const amount = Math.round(item.amount * dice * skinning_skill / 100 * skinning_skill / 100)
                 Event.change_stash(killer, item.material, amount)
                 if (dice > skinning_skill / 100) {

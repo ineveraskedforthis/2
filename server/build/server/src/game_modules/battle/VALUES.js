@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BattleValues = void 0;
-const system_1 = require("../character/system");
+const character_1 = require("../scripted-values/character");
 var BattleValues;
 (function (BattleValues) {
     BattleValues.HALFWIDTH = 15;
@@ -11,7 +11,7 @@ var BattleValues;
     }
     BattleValues.flee_chance = flee_chance;
     function move_cost(unit) {
-        return system_1.CharacterSystem.movement_cost_battle(unit);
+        return character_1.CharacterValues.movement_cost_battle(unit);
     }
     BattleValues.move_cost = move_cost;
 })(BattleValues || (exports.BattleValues = BattleValues = {}));

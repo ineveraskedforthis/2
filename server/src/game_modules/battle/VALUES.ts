@@ -1,6 +1,6 @@
 import { battle_position } from "@custom_types/battle_data";
-import { Character } from "../character/character";
-import { CharacterSystem } from "../character/system";
+import { Character } from "../data/entities/character";
+import { CharacterValues } from "../scripted-values/character";
 
 export namespace BattleValues {
     export const HALFWIDTH = 15
@@ -11,6 +11,6 @@ export namespace BattleValues {
     }
 
     export function move_cost(unit: Character): number {
-        return CharacterSystem.movement_cost_battle(unit)
+        return CharacterValues.movement_cost_battle(unit)
     }
 }

@@ -1,16 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BattleEvent = void 0;
-const alerts_1 = require("../client_communication/network_actions/alerts");
-const geom_1 = require("../geom");
-const systems_communication_1 = require("../systems_communication");
-const system_1 = require("./system");
-const checks_1 = require("../character/checks");
 const basic_functions_1 = require("../calculations/basic_functions");
+const checks_1 = require("../character/checks");
+const alerts_1 = require("../client_communication/network_actions/alerts");
 const user_manager_1 = require("../client_communication/user_manager");
+const data_objects_1 = require("../data/data_objects");
+const geom_1 = require("../geom");
+const character_1 = require("../scripted-values/character");
+const systems_communication_1 = require("../systems_communication");
 const VALUES_1 = require("./VALUES");
 const heap_1 = require("./classes/heap");
-const data_objects_1 = require("../data/data_objects");
+const system_1 = require("./system");
 // export const MOVE_COST = 3
 const COST = {
     ATTACK: 3,
@@ -128,9 +129,9 @@ var BattleEvent;
         }
         unit.action_points_left = unit.action_points_left - COST.CHARGE;
         let dist = geom_1.geom.dist(unit.position, target.position);
-        if (dist > (unit.range() - 0.1)) {
+        if (dist > (character_1.CharacterValues.range(unit) - 0.1)) {
             let direction = geom_1.geom.minus(target.position, unit.position);
-            let stop_before = geom_1.geom.mult(geom_1.geom.normalize(direction), unit.range() - 0.1);
+            let stop_before = geom_1.geom.mult(geom_1.geom.normalize(direction), character_1.CharacterValues.range(unit) - 0.1);
             direction = geom_1.geom.minus(direction, stop_before);
             SetCoord(battle, unit, direction);
         }

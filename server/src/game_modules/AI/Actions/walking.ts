@@ -21,7 +21,7 @@ AIActionsStorage.register_action_location({
         const stress = actor.stress / 100;
 
         const lack_of_hp = (actor.hp_max - actor.hp) / actor.hp_max;
-        const utility_fatigue = Math.max(0, fatigue - 0.5);
+        const utility_fatigue = Math.max(0, fatigue - 0.2);
         const utility_stress = Math.max(0, stress - 0.5);
         const weight = AIfunctions.loot_weight(actor) / 50;
 
@@ -189,14 +189,18 @@ AIActionsStorage.register_action_location({
             + AIfunctions.check_local_demand_for_material(actor, MATERIAL.COTTON)
             + actor.ai_gathering_target.get(MATERIAL.COTTON)
 
-        return desired / 50
+        return desired / 50 + Math.random() * 0.1
     },
 
     // AIs are pretty shortsighted
     potential_targets(actor) {
         let result = DataID.Cells.locations(actor.cell_id).map(Data.Locations.from_id).filter((item) => item.cotton > 0)
         for (const neighbour of Data.World.neighbours(actor.cell_id)) {
-            result = result.concat(DataID.Cells.locations(neighbour).map(Data.Locations.from_id).filter((item) => item.cotton > 0))
+            result =
+                result
+                .concat(DataID.Cells.locations(neighbour)
+                .map(Data.Locations.from_id)
+                .filter((item) => (item.cotton > 0) && (MapSystem.can_move(Data.World.id_to_coordinate(item.cell_id)))))
         }
         return result
     },
@@ -206,7 +210,7 @@ AIActionsStorage.register_action_location({
 
         if (target.cell_id == actor.cell_id) {
             Effect.enter_location(actor.id, target.id)
-            ActionManager.start_action(CharacterAction.GATHER_WOOD, actor, actor.cell_id)
+            ActionManager.start_action(CharacterAction.GATHER_COTTON, actor, actor.cell_id)
         } else {
             AIfunctions.go_to_location(actor, target)
         }

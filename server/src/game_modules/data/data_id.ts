@@ -1,9 +1,9 @@
 // THIS MODULE MUST BE IMPORTED FIRST
 
-import { Faction, ReputationData } from "@custom_types/common"
-import { character_id, location_id, market_order_id, user_id, cell_id, item_id, backpack_id } from "@custom_types/ids"
 import { battle_id } from "@custom_types/battle_data"
 import { reputation_level } from "@custom_types/character"
+import { ReputationData } from "@custom_types/common"
+import { cell_id, character_id, item_id, location_id, market_order_id, user_id } from "@custom_types/ids"
 
 
 var last_id_battle                          = 0 as battle_id

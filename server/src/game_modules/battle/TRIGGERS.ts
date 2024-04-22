@@ -1,5 +1,5 @@
 import { is_enemy_characters } from "../SYSTEM_REPUTATION"
-import { Character } from "../character/character"
+import { Character } from "../data/entities/character"
 import { DataID } from "../data/data_id"
 import { Data } from "../data/data_objects"
 import { hostile } from "../races/racial_hostility"

@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Trigger = exports.ResponseNegativeQuantified = exports.ResponseNegative = void 0;
-const skill_price_1 = require("../prices/skill_price");
-const system_1 = require("../character/system");
 const data_objects_1 = require("../data/data_objects");
+const skill_price_1 = require("../prices/skill_price");
+const character_1 = require("../scripted-values/character");
 var ResponseNegative;
 (function (ResponseNegative) {
     ResponseNegative["current_location_is_not_undefined"] = "current_location_is_not_undefined";
@@ -40,8 +40,8 @@ var Trigger;
     Trigger.location_is_available = location_is_available;
     function can_learn_from(student, teacher, skill) {
         let savings = student.savings.get();
-        const teacher_skill = system_1.CharacterSystem.pure_skill(teacher, skill);
-        const student_skill = system_1.CharacterSystem.pure_skill(student, skill);
+        const teacher_skill = character_1.CharacterValues.pure_skill(teacher, skill);
+        const student_skill = character_1.CharacterValues.pure_skill(student, skill);
         if ((teacher_skill <= student_skill + 20) || (teacher_skill < 30)) {
             return {
                 response: ResponseNegativeQuantified.TeacherSkill,

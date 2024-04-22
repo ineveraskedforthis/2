@@ -1,4 +1,4 @@
-import { Character } from "../../character/character";
+import { Character } from "../../data/entities/character";
 import { Data } from "../../data/data_objects";
 import { Convert } from "../../systems_communication";
 import { User } from "../user";

@@ -1,8 +1,6 @@
-import { EQUIP_SLOT } from "@content/content"
 import { Attack } from "../attack/system"
-import { Character } from "../character/character"
+import { Character } from "../data/entities/character"
 import { can_cast_magic_bolt, can_cast_magic_bolt_blood, can_shoot, has_zaz } from "../character/checks"
-import { CharacterSystem } from "../character/system"
 import { Alerts } from "../client_communication/network_actions/alerts"
 import { DmgOps } from "../damage_types"
 import { Data } from "../data/data_objects"
@@ -10,7 +8,6 @@ import { Event } from "../events/events"
 import { EventInventory } from "../events/inventory_events"
 import { geom } from "../geom"
 import { ItemSystem } from "../systems/items/item_system"
-import { Convert } from "../systems_communication"
 import { Accuracy } from "./battle_calcs"
 import { Battle } from "./classes/battle"
 import { BattleEvent } from "./events"
@@ -18,18 +15,20 @@ import { BattleTriggers } from "./TRIGGERS"
 import { BattleActionExecution, BattleActionExecutionPosition, BattleActionExecutionTarget, BattleApCost, BattleApCostPosition, BattleApCostTarget, BattleNumber, BattleNumberTarget } from "./TYPES"
 import { BattleValues } from "./VALUES"
 import { action_points, ActionPositionKeys, ActionSelfKeys, ActionUnitKeys, battle_position } from "@custom_types/battle_data"
+import { EquipmentValues } from "../scripted-values/equipment-values"
+import { CharacterValues } from "../scripted-values/character"
 
 function attack_ap_cost(base: number, character: Character) {
     let result = base
 
-    let weapon = character.equip.weapon
+    let weapon = EquipmentValues.weapon(character.equip)
     if (weapon != undefined) {
         result = base * ItemSystem.weight(weapon) / 4
     }
 
-    const skill = CharacterSystem.attack_skill(character)
+    const skill = CharacterValues.attack_skill(character)
     result = result * (1 - skill / 200)
-    const power = CharacterSystem.phys_power(character)
+    const power = CharacterValues.phys_power(character)
     result = result * (0.5 + 10 / power)
 
     return result as action_points
@@ -104,7 +103,7 @@ export const ActionsSelf: {[_ in ActionSelfKeys]: ActionSelf} = {
     'RandomStep' : {
         // max_utility: 2,
         ap_cost: (battle: Battle, character: Character, ) => {
-            return CharacterSystem.movement_cost_battle(character) * RANDOM_STEP_LENGTH as action_points
+            return CharacterValues.movement_cost_battle(character) * RANDOM_STEP_LENGTH as action_points
         },
         execute: (battle: Battle, character: Character, available_points: action_points) => {
             const phi = Math.random() * Math.PI * 2
@@ -128,7 +127,7 @@ export const ActionsUnit: Record<ActionUnitKeys, ActionUnit> = {
             return attack_ap_cost(2, character)
         },
         range: (battle: Battle, character: Character, ) => {
-            return character.range()
+            return CharacterValues.range(character)
         },
         execute: (battle: Battle, character: Character,  target_character: Character, ) => {
             let dodge_flag = (target_character.dodge_turns > 0)
@@ -136,8 +135,8 @@ export const ActionsUnit: Record<ActionUnitKeys, ActionUnit> = {
             let b = target_character.position
             let c = geom.minus(b, a)
             let norm = geom.norm(c)
-            let power_ratio = CharacterSystem.phys_power(character) / CharacterSystem.phys_power(target_character)
-            let scale = character.range() * power_ratio / norm
+            let power_ratio = CharacterValues.phys_power(character) / CharacterValues.phys_power(target_character)
+            let scale = CharacterValues.range(character) * power_ratio / norm
             c = geom.mult(c, scale)
             BattleEvent.SetCoord(battle, target_character, geom.sum(b, c))
             Event.attack(character, target_character, dodge_flag, 'pierce', false)
@@ -156,11 +155,11 @@ export const ActionsUnit: Record<ActionUnitKeys, ActionUnit> = {
             return attack_ap_cost(3, character)
         },
         range: (battle: Battle, character: Character, ) => {
-            return character.range()
+            return CharacterValues.range(character)
         },
         execute: (battle: Battle, character: Character,  target_character: Character, ) => {
             let dodge_flag = (target_character.dodge_turns > 0)
-            let range = character.range()
+            let range = CharacterValues.range(character)
 
             for (let aoe_target_id of battle.heap) {
                 const aoe_target = Data.Characters.from_id(aoe_target_id)
@@ -194,11 +193,11 @@ export const ActionsUnit: Record<ActionUnitKeys, ActionUnit> = {
             return attack_ap_cost(2, character)
         },
         range: (battle: Battle, character: Character, ) => {
-            return character.range()
+            return CharacterValues.range(character)
         },
         execute: (battle: Battle, character: Character,  target_character: Character, ) => {
             let dodge_flag = (target_character.dodge_turns > 0)
-            let range = character.range()
+            let range = CharacterValues.range(character)
 
             Event.attack(character, target_character, dodge_flag, 'blunt', false)
             Alerts.battle_event_target_unit(battle, 'attack', character, target_character)
@@ -312,7 +311,7 @@ export const ActionsUnit: Record<ActionUnitKeys, ActionUnit> = {
         ap_cost: (battle: Battle, character: Character,  target_character: Character, ): action_points => {
             const delta = geom.minus(target_character.position, character.position);
             const dist = geom.norm(delta)
-            const range = character.range()
+            const range = CharacterValues.range(character)
             const max_move = character.action_points_left / BattleValues.move_cost(character) - 0.01 // potential movement
 
             if (dist < range) {
@@ -326,7 +325,7 @@ export const ActionsUnit: Record<ActionUnitKeys, ActionUnit> = {
         execute: (battle: Battle, character: Character, target_character: Character, available_points: action_points) => {
             const delta = geom.minus(target_character.position, character.position);
             const dist = geom.norm(delta)
-            const range = character.range()
+            const range = CharacterValues.range(character)
             const max_move = available_points / BattleValues.move_cost(character) // potential movement
             if (dist < range) {
                 return

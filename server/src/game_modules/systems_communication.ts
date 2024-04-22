@@ -1,7 +1,7 @@
 import { UnitSocket } from "../../../shared/battle_data";
 import { ItemOrderData, equip } from "../../../shared/inventory";
 import { Battle } from "./battle/classes/battle";
-import { Character } from "./character/character";
+import { Character } from "./data/entities/character";
 import { ItemSystem } from "./systems/items/item_system";
 import { UI_Part } from "./client_communication/causality_graph";
 import { SocketWrapper, User, UserData } from "./client_communication/user";
@@ -17,6 +17,7 @@ import { CellData } from "./map/cell_interface";
 import { CharacterView } from "@custom_types/responses";
 import { CharacterSystem } from "./character/system";
 import { EquipSlotConfiguration, EquipSlotStorage } from "@content/content";
+import { CharacterValues } from "./scripted-values/character";
 
 
 export namespace Convert {
@@ -106,7 +107,7 @@ export namespace Convert {
         return {
             tag: character.model,
             position: character.position,
-            range: character.range(),
+            range: CharacterValues.range(character),
             name: character.get_name(),
             hp: character.get_hp(),
             max_hp: character.get_max_hp(),

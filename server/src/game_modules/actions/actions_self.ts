@@ -1,17 +1,13 @@
 import { cell_id } from "@custom_types/ids";
-import { Character } from "../character/character";
-import { CHANGE_REASON, Effect } from "../effects/effects";
-import { generate_action } from "./generator";
-import { CharacterMapAction, LackData, NotificationResponse, TriggerResponse } from "./types";
-import { basic_duration_modifier, dummy_effect } from "./generic_functions";
-import { Event } from "../events/events";
-import { CharacterSystem } from "../character/system";
-import { ScriptedValue } from "../events/scripted_values";
-import { UserManagement } from "../client_communication/user_manager";
 import { UI_Part } from "../client_communication/causality_graph";
-import { MapSystem } from "../map/system";
-import { MATERIAL } from "@content/content";
+import { UserManagement } from "../client_communication/user_manager";
 import { Data } from "../data/data_objects";
+import { Character, CharacterMapAction, LackData, NotificationResponse, TriggerResponse } from "../data/entities/character";
+import { CHANGE_REASON, Effect } from "../effects/effects";
+import { ScriptedValue } from "../events/scripted_values";
+import { MapSystem } from "../map/system";
+import { generate_action } from "./generator";
+import { dummy_effect } from "./generic_functions";
 
 const CLEAN_FATIGUE_COST = 5
 

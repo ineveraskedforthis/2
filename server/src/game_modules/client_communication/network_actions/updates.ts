@@ -1,22 +1,24 @@
-import { Accuracy } from "../../battle/battle_calcs";
-import { Convert } from "../../systems_communication";
-import { User } from "../user";
-import { Alerts } from "./alerts";
-import { BattleSystem } from "../../battle/system";
-import { BATTLE_CURRENT_UNIT, character_id_MESSAGE, BATTLE_DATA_MESSAGE } from "../../static_data/constants";
-import { prepare_market_orders } from "../helper_functions";
-import { durability, get_crafts_item_list } from "../../craft/CraftItem";
-import { get_crafts_bulk_list, output_bulk } from "../../craft/CraftBulk";
-import { CharacterSystem } from "../../character/system";
-import { Attack } from "../../attack/system";
-import { DmgOps } from "../../damage_types";
-import { terrain_to_string } from "../../map/terrain";
-import { CellDisplay, CharacterStatsResponse, CharacterView } from "@custom_types/responses";
 import { skill } from "@custom_types/inventory";
+import { CellDisplay, CharacterStatsResponse } from "@custom_types/responses";
+import { Attack } from "../../attack/system";
+import { Accuracy } from "../../battle/battle_calcs";
+import { CharactersHeap } from "../../battle/classes/heap";
+import { BattleSystem } from "../../battle/system";
+import { get_crafts_bulk_list } from "../../craft/crafts_storage";
+import { get_crafts_item_list } from "../../craft/crafts_storage";
+import { DmgOps } from "../../damage_types";
+import { Extract } from "../../data-extraction/extract-data";
+import { DataID } from "../../data/data_id";
 import { Data } from "../../data/data_objects";
 import { MapSystem } from "../../map/system";
-import { DataID } from "../../data/data_id";
-import { CharactersHeap } from "../../battle/classes/heap";
+import { terrain_to_string } from "../../map/terrain";
+import { CharacterValues } from "../../scripted-values/character";
+import { BATTLE_CURRENT_UNIT, BATTLE_DATA_MESSAGE, character_id_MESSAGE } from "../../static_data/constants";
+import { Convert } from "../../systems_communication";
+import { prepare_market_orders } from "../helper_functions";
+import { User } from "../user";
+import { Alerts } from "./alerts";
+import { CraftValues } from "../../scripted-values/craft";
 
 
 export namespace SendUpdate {
@@ -44,11 +46,11 @@ export namespace SendUpdate {
         if (character == undefined) return
 
         const stats: CharacterStatsResponse = {
-            phys_power: CharacterSystem.phys_power(character),
-            magic_power: CharacterSystem.magic_power(character),
-            enchant_rating: CharacterSystem.enchant_rating(character),
-            movement_cost: CharacterSystem.movement_cost_battle(character),
-            move_duration_map: CharacterSystem.movement_duration_map(character),
+            phys_power: CharacterValues.phys_power(character),
+            magic_power: CharacterValues.magic_power(character),
+            enchant_rating: CharacterValues.enchant_rating(character),
+            movement_cost: CharacterValues.movement_cost_battle(character),
+            move_duration_map: CharacterValues.movement_duration_map(character),
             base_damage_magic_bolt: Attack.magic_bolt_base_damage(character, false),
             base_damage_magic_bolt_charged: Attack.magic_bolt_base_damage(character, true),
         }
@@ -106,7 +108,7 @@ export namespace SendUpdate {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
-        Alerts.generic_user_alert(user, 'equip-update', character.equip.get_data())
+        Alerts.generic_user_alert(user, 'equip-update', Extract.EquipData(character.equip))
         attack_damage(user)
     }
 
@@ -114,8 +116,8 @@ export namespace SendUpdate {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
-        const current_skill = CharacterSystem.skill(character, skill)
-        const pure_skill = CharacterSystem.pure_skill(character, skill)
+        const current_skill = CharacterValues.skill(character, skill)
+        const pure_skill = CharacterValues.pure_skill(character, skill)
 
         Alerts.skill(user, skill, pure_skill, current_skill)
     }
@@ -125,8 +127,8 @@ export namespace SendUpdate {
         if (character == undefined) return
 
         for (let skill of skills) {
-            const current_skill = CharacterSystem.skill(character, skill)
-            const pure_skill = CharacterSystem.pure_skill(character, skill)
+            const current_skill = CharacterValues.skill(character, skill)
+            const pure_skill = CharacterValues.pure_skill(character, skill)
             Alerts.skill(user, skill, pure_skill, current_skill)
         }
     }
@@ -176,11 +178,11 @@ export namespace SendUpdate {
         }
 
         for (let item of get_crafts_bulk_list(character)) {
-            Alerts.craft_bulk(user, item.id, output_bulk(character, item))
+            Alerts.craft_bulk(user, item.id, CraftValues.output_bulk(character, item))
         }
 
         for (let item of get_crafts_item_list(character)) {
-            Alerts.craft_item(user, item.id, durability(character, item))
+            Alerts.craft_item(user, item.id, CraftValues.durability(character, item))
         }
     }
 

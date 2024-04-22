@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.inventory_from_string = exports.inventory_to_string = exports.string_to_character = exports.character_to_string = void 0;
-const character_1 = require("../character/character");
+const character_1 = require("./entities/character");
 function character_to_string(data) {
     return JSON.stringify({
         model: data.model,
@@ -16,6 +16,7 @@ function character_to_string(data) {
         battle_id: data.battle_id,
         user_id: data.user_id,
         location_id: data.location_id,
+        open_shop: data.open_shop,
         explored: data.explored,
         equip: data.equip,
         home_location_id: data.home_location_id,
@@ -55,6 +56,7 @@ function string_to_character(s) {
     character._skills = data._skills;
     character._perks = data._perks;
     character._traits = data._traits;
+    character.open_shop = data.open_shop;
     return character;
 }
 exports.string_to_character = string_to_character;

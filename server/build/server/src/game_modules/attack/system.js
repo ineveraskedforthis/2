@@ -2,22 +2,23 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Attack = void 0;
 const damage_types_1 = require("../damage_types");
-const system_1 = require("../character/system");
+const equipment_effects_1 = require("../scripted-effects/equipment-effects");
+const character_1 = require("../scripted-values/character");
 const class_1 = require("./class");
 var Attack;
 (function (Attack) {
     function generate_melee(character, type) {
-        const result = new class_1.AttackObj(system_1.CharacterSystem.equiped_weapon_required_skill_melee(character));
+        const result = new class_1.AttackObj(character_1.CharacterValues.equiped_weapon_required_skill_melee(character));
         //add base item damage
-        damage_types_1.DmgOps.add_ip(result.damage, system_1.CharacterSystem.melee_damage_raw(character, type));
+        damage_types_1.DmgOps.add_ip(result.damage, character_1.CharacterValues.melee_damage_raw(character, type));
         //account for strength
-        const physical_modifier = 1 + system_1.CharacterSystem.phys_power(character) / 30;
+        const physical_modifier = 1 + character_1.CharacterValues.phys_power(character) / 30;
         damage_types_1.DmgOps.mult_ip(result.damage, physical_modifier);
         //account for character own skill
-        result.attack_skill += system_1.CharacterSystem.attack_skill(character);
+        result.attack_skill += character_1.CharacterValues.attack_skill(character);
         //account for items modifiers
         // may change skill and everything
-        character.equip.modify_attack(result);
+        equipment_effects_1.EquipmentEffects.modify_attack(character.equip, result);
         //modify base damage with skill
         damage_types_1.DmgOps.mult_ip(result.damage, 1 + result.attack_skill / 100);
         // console.log(result)
@@ -25,9 +26,9 @@ var Attack;
     }
     Attack.generate_melee = generate_melee;
     function best_melee_damage_type(character) {
-        const damage_slice = damage_types_1.DmgOps.total(system_1.CharacterSystem.melee_damage_raw(character, 'slice'));
-        const damage_blunt = damage_types_1.DmgOps.total(system_1.CharacterSystem.melee_damage_raw(character, 'blunt'));
-        const damage_pierce = damage_types_1.DmgOps.total(system_1.CharacterSystem.melee_damage_raw(character, 'pierce'));
+        const damage_slice = damage_types_1.DmgOps.total(character_1.CharacterValues.melee_damage_raw(character, 'slice'));
+        const damage_blunt = damage_types_1.DmgOps.total(character_1.CharacterValues.melee_damage_raw(character, 'blunt'));
+        const damage_pierce = damage_types_1.DmgOps.total(character_1.CharacterValues.melee_damage_raw(character, 'pierce'));
         const max = Math.max(damage_blunt, damage_pierce, damage_slice);
         if (damage_slice == max)
             return 'slice';
@@ -41,14 +42,14 @@ var Attack;
     function generate_ranged(character) {
         const result = new class_1.AttackObj('ranged');
         //raw items damage
-        damage_types_1.DmgOps.add_ip(result.damage, system_1.CharacterSystem.ranged_damage_raw(character));
+        damage_types_1.DmgOps.add_ip(result.damage, character_1.CharacterValues.ranged_damage_raw(character));
         //account for strength
-        const physical_modifier = system_1.CharacterSystem.phys_power(character);
+        const physical_modifier = character_1.CharacterValues.phys_power(character);
         damage_types_1.DmgOps.mult_ip(result.damage, physical_modifier / 10);
         //account for items modifiers
-        character.equip.modify_attack(result);
+        equipment_effects_1.EquipmentEffects.modify_attack(character.equip, result);
         //account for own skill
-        const skill = system_1.CharacterSystem.skill(character, 'ranged');
+        const skill = character_1.CharacterValues.skill(character, 'ranged');
         result.attack_skill += skill;
         //modify current damage with skill
         damage_types_1.DmgOps.mult_ip(result.damage, 1 + skill / 50);
@@ -62,8 +63,8 @@ var Attack;
         }
         if (character._perks.magic_bolt)
             (base_damage += 2);
-        const skill = system_1.CharacterSystem.skill(character, 'magic_mastery');
-        return Math.round(base_damage * system_1.CharacterSystem.magic_power(character) / 10 * (1 + skill / 10));
+        const skill = character_1.CharacterValues.skill(character, 'magic_mastery');
+        return Math.round(base_damage * character_1.CharacterValues.magic_power(character) / 10 * (1 + skill / 10));
     }
     Attack.magic_bolt_base_damage = magic_bolt_base_damage;
     function generate_magic_bolt(character, dist, charge_flag) {

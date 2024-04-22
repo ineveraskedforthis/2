@@ -1,18 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventInventory = void 0;
-const user_manager_1 = require("../client_communication/user_manager");
+const item_1 = require("../../content_wrappers/item");
 const affix_1 = require("../base_game_classes/affix");
 const alerts_1 = require("../client_communication/network_actions/alerts");
-const effects_1 = require("../effects/effects");
-const events_1 = require("./events");
-const system_1 = require("../character/system");
+const user_manager_1 = require("../client_communication/user_manager");
 const data_objects_1 = require("../data/data_objects");
-const item_1 = require("../../content_wrappers/item");
+const effects_1 = require("../effects/effects");
+const equipment_effects_1 = require("../scripted-effects/equipment-effects");
+const character_1 = require("../scripted-values/character");
+const events_1 = require("./events");
 var EventInventory;
 (function (EventInventory) {
     function equip_from_backpack(character, index) {
-        character.equip.equip_from_backpack(index, character.model);
+        equipment_effects_1.EquipmentEffects.equip_from_backpack(character.equip, index, character.model);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 10 /* UI_Part.INVENTORY */);
     }
     EventInventory.equip_from_backpack = equip_from_backpack;
@@ -49,7 +50,7 @@ var EventInventory;
     }
     EventInventory.add_item = add_item;
     function enchant(character, index) {
-        let enchant_rating = system_1.CharacterSystem.enchant_rating(character);
+        let enchant_rating = character_1.CharacterValues.enchant_rating(character);
         let item = data_objects_1.Data.Items.from_id(character.equip.data.backpack.items[index]);
         if (item == undefined)
             return;
@@ -58,7 +59,7 @@ var EventInventory;
             return;
         }
         events_1.Event.change_stash(character, 30 /* MATERIAL.ZAZ */, -1);
-        const pure_skill = system_1.CharacterSystem.pure_skill(character, 'magic_mastery');
+        const pure_skill = character_1.CharacterValues.pure_skill(character, 'magic_mastery');
         if (pure_skill < 10)
             effects_1.Effect.Change.skill(character, 'magic_mastery', 1, "Enchanting" /* CHANGE_REASON.ENCHANTING */);
         if ((0, item_1.is_weapon)(item))
@@ -69,7 +70,7 @@ var EventInventory;
     }
     EventInventory.enchant = enchant;
     function reroll_enchant(character, index) {
-        let enchant_rating = system_1.CharacterSystem.enchant_rating(character) * 0.8;
+        let enchant_rating = character_1.CharacterValues.enchant_rating(character) * 0.8;
         let item = data_objects_1.Data.Items.from_id(character.equip.data.backpack.items[index]);
         if (item == undefined)
             return;
@@ -79,7 +80,7 @@ var EventInventory;
         }
         let rolls = item.affixes.length;
         events_1.Event.change_stash(character, 30 /* MATERIAL.ZAZ */, -1);
-        const pure_skill = system_1.CharacterSystem.pure_skill(character, 'magic_mastery');
+        const pure_skill = character_1.CharacterValues.pure_skill(character, 'magic_mastery');
         if (pure_skill < 10 * rolls)
             effects_1.Effect.Change.skill(character, 'magic_mastery', 1, "Enchanting" /* CHANGE_REASON.ENCHANTING */);
         item.affixes = [];

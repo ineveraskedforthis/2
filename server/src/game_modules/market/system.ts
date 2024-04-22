@@ -1,14 +1,12 @@
-import { Character } from "../character/character";
-import { CharacterSystem } from "../character/system";
-import { Stash } from "../inventories/stash";
-import { Item } from "../data/entities/item";
-import { cell_id, item_id, market_order_id } from "@custom_types/ids";
-import { money } from "@custom_types/common";
-import { Data } from "../data/data_objects";
-import { DataID } from "../data/data_id";
 import { ARMOUR, MATERIAL, WEAPON } from "@content/content";
-import { CHANGE_REASON, Effect } from "../effects/effects";
+import { money } from "@custom_types/common";
+import { cell_id, item_id, market_order_id } from "@custom_types/ids";
 import { is_armour, is_weapon } from "../../content_wrappers/item";
+import { DataID } from "../data/data_id";
+import { Data } from "../data/data_objects";
+import { Character } from "../data/entities/character";
+import { Stash } from "../data/entities/stash";
+import { CHANGE_REASON, Effect } from "../effects/effects";
 
 export enum AuctionResponse {
     NOT_IN_THE_SAME_CELL = 'not_in_the_same_cell',
@@ -153,6 +151,21 @@ export namespace MarketOrders {
             order.amount -= x
             character.trade_stash.inc(order.material, -x)
         }
+    }
+
+    export function spoilage(character: Character, good: MATERIAL, rate: number) {
+        let orders = DataID.Character.market_orders_list(character.id)
+        let integer = (Math.random() < 0.5) ? 1 : 0
+
+        for (let order of orders) {
+            let order_item = Data.MarketOrders.from_id(order)
+            const current_amount = order_item.amount
+            if (order_item.material != good) continue
+            let spoiled_amount = Math.min(current_amount, Math.max(integer, Math.floor(current_amount * 0.01)))
+            MarketOrders.decrease_amount(order, spoiled_amount)
+        }
+
+        Effect.Update.cell_market(character.cell_id)
     }
 }
 

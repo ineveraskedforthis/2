@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ScriptedValue = void 0;
 const basic_functions_1 = require("../calculations/basic_functions");
 const data_objects_1 = require("../data/data_objects");
-const system_1 = require("../character/system");
+const character_1 = require("../scripted-values/character");
 var ScriptedValue;
 (function (ScriptedValue) {
     ScriptedValue.max_devastation = 100;
@@ -67,7 +67,7 @@ var ScriptedValue;
      * @return {number} The target fatigue.
      */
     function target_fatigue(character, location) {
-        const skill = system_1.CharacterSystem.skill(character, 'travelling');
+        const skill = character_1.CharacterValues.skill(character, 'travelling');
         return rest_target_fatigue(rest_tier(character, location), ScriptedValue.rest_quality(location) + skill, character.race);
     }
     ScriptedValue.target_fatigue = target_fatigue;
@@ -98,7 +98,7 @@ var ScriptedValue;
      * @return {number} The target fatigue.
      */
     function target_stress(character, location) {
-        const skill = system_1.CharacterSystem.skill(character, 'travelling');
+        const skill = character_1.CharacterValues.skill(character, 'travelling');
         return rest_target_stress(rest_tier(character, location), ScriptedValue.rest_quality(location) + Math.floor(skill / 5), character.race);
     }
     ScriptedValue.target_stress = target_stress;

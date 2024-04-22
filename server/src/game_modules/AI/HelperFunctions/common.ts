@@ -1,17 +1,13 @@
 import { MATERIAL, MATERIAL_CATEGORY, MaterialConfiguration, MaterialStorage } from "@content/content";
-import { Character } from "../../character/character";
+import { Character } from "../../data/entities/character";
 import { DataID } from "../../data/data_id";
 import { Data } from "../../data/data_objects";
 import { is_enemy_characters } from "../../SYSTEM_REPUTATION";
 import { tagRACE } from "../../types";
-import { ScriptedValue } from "../../events/scripted_values";
-import { CharacterSystem } from "../../character/system";
 import { crafts_bulk, crafts_items } from "../../craft/crafts_storage";
 import { money } from "@custom_types/common";
 import { CraftBulkTemplate, box } from "@custom_types/inventory";
-import { output_bulk } from "../../craft/CraftBulk";
 import { ItemOrders } from "../../market/system";
-import { durability } from "../../craft/CraftItem";
 import { EquipmentPiece } from "../../data/entities/item";
 import { is_armour } from "../../../content_wrappers/item";
 import { DmgOps } from "../../damage_types";
@@ -24,6 +20,8 @@ import { battle_id } from "@custom_types/battle_data";
 import { BattleSystem } from "../../battle/system";
 import { Battle } from "../../battle/classes/battle";
 import { BattleTriggers } from "../../battle/TRIGGERS";
+import { CharacterCondition } from "../../scripted-conditions/character-conditions";
+import { CraftValues } from "../../scripted-values/craft";
 
 export const base_price = 1 as money
 
@@ -70,7 +68,7 @@ export namespace AIfunctions {
         let total_weight = 0
         for (const material of MaterialConfiguration.MATERIAL) {
             const data = MaterialStorage.get(material)
-            if (CharacterSystem.can_eat(actor, data)) {
+            if (CharacterCondition.can_eat(actor, data)) {
                 total_weight += actor.stash.get(material) * data.unit_size * data.density
             }
         }
@@ -168,7 +166,7 @@ export namespace AIfunctions {
 
     export function craft_bulk_profitability(character: Character, craft: CraftBulkTemplate) {
         const input_price = price_norm_box(character, craft.input, buy_price)
-        const output_price = price_norm_box(character, output_bulk(character, craft), sell_price)
+        const output_price = price_norm_box(character, CraftValues.output_bulk(character, craft), sell_price)
         const profit = output_price - input_price;
         return profit
     }
@@ -184,7 +182,7 @@ export namespace AIfunctions {
                 if (ItemOrders.count_weapon_orders_of_type(character.cell_id, item.output.value) >= 3) continue
             }
 
-            if (durability(character, item) > 100) {
+            if (CraftValues.durability(character, item) > 100) {
                 result.push(item)
             }
         }

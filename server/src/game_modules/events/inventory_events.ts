@@ -1,19 +1,20 @@
-import { Character } from "../character/character";
-import { UI_Part } from "../client_communication/causality_graph";
-import { UserManagement } from "../client_communication/user_manager";
-import { roll_affix_armour, roll_affix_weapon } from "../base_game_classes/affix";
-import { Alerts } from "../client_communication/network_actions/alerts";
-import { CHANGE_REASON, Effect } from "../effects/effects";
-import { Event } from "./events";
-import { CharacterSystem } from "../character/system";
 import { EQUIP_SLOT, MATERIAL } from "@content/content";
-import { Data } from "../data/data_objects";
 import { item_id } from "@custom_types/ids";
 import { is_weapon } from "../../content_wrappers/item";
+import { roll_affix_armour, roll_affix_weapon } from "../base_game_classes/affix";
+import { UI_Part } from "../client_communication/causality_graph";
+import { Alerts } from "../client_communication/network_actions/alerts";
+import { UserManagement } from "../client_communication/user_manager";
+import { Data } from "../data/data_objects";
+import { Character } from "../data/entities/character";
+import { CHANGE_REASON, Effect } from "../effects/effects";
+import { EquipmentEffects } from "../scripted-effects/equipment-effects";
+import { CharacterValues } from "../scripted-values/character";
+import { Event } from "./events";
 
 export namespace EventInventory {
     export function equip_from_backpack(character: Character, index: number) {
-        character.equip.equip_from_backpack(index, character.model)
+        EquipmentEffects.equip_from_backpack(character.equip, index, character.model)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.INVENTORY)
     }
 
@@ -51,7 +52,7 @@ export namespace EventInventory {
     }
 
     export function enchant(character: Character, index: number) {
-        let enchant_rating = CharacterSystem.enchant_rating(character)
+        let enchant_rating = CharacterValues.enchant_rating(character)
 
         let item = Data.Items.from_id(character.equip.data.backpack.items[index])
         if (item == undefined) return;
@@ -62,7 +63,7 @@ export namespace EventInventory {
         }
 
         Event.change_stash(character, MATERIAL.ZAZ, -1)
-        const pure_skill = CharacterSystem.pure_skill(character, 'magic_mastery')
+        const pure_skill = CharacterValues.pure_skill(character, 'magic_mastery')
         if (pure_skill < 10) Effect.Change.skill(character, 'magic_mastery', 1, CHANGE_REASON.ENCHANTING)
         if (is_weapon(item)) roll_affix_weapon(enchant_rating, item)
         else roll_affix_armour(enchant_rating, item)
@@ -70,7 +71,7 @@ export namespace EventInventory {
     }
 
     export function reroll_enchant(character: Character, index: number) {
-        let enchant_rating = CharacterSystem.enchant_rating(character) * 0.8
+        let enchant_rating = CharacterValues.enchant_rating(character) * 0.8
 
         let item = Data.Items.from_id(character.equip.data.backpack.items[index])
         if (item == undefined) return;
@@ -83,7 +84,7 @@ export namespace EventInventory {
 
         let rolls = item.affixes.length
         Event.change_stash(character, MATERIAL.ZAZ, -1)
-        const pure_skill = CharacterSystem.pure_skill(character, 'magic_mastery')
+        const pure_skill = CharacterValues.pure_skill(character, 'magic_mastery')
         if (pure_skill < 10 * rolls) Effect.Change.skill(character, 'magic_mastery', 1, CHANGE_REASON.ENCHANTING)
 
 

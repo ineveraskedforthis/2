@@ -1,24 +1,25 @@
-import { damage_type, melee_attack_type } from "@custom_types/common";
+import { melee_attack_type } from "@custom_types/common";
 import { DmgOps } from "../damage_types";
-import { Character } from "../character/character";
-import { CharacterSystem } from "../character/system";
+import { Character } from "../data/entities/character";
+import { EquipmentEffects } from "../scripted-effects/equipment-effects";
+import { CharacterValues } from "../scripted-values/character";
 import { AttackObj } from "./class";
 
 export namespace Attack {
     export function generate_melee(character: Character, type: melee_attack_type): AttackObj {
-        const result = new AttackObj(CharacterSystem.equiped_weapon_required_skill_melee(character))
+        const result = new AttackObj(CharacterValues.equiped_weapon_required_skill_melee(character))
         //add base item damage
-        DmgOps.add_ip(result.damage, CharacterSystem.melee_damage_raw(character, type))
+        DmgOps.add_ip(result.damage, CharacterValues.melee_damage_raw(character, type))
         //account for strength
-        const physical_modifier = 1 + CharacterSystem.phys_power(character) / 30
+        const physical_modifier = 1 + CharacterValues.phys_power(character) / 30
         DmgOps.mult_ip(result.damage, physical_modifier)
 
         //account for character own skill
-        result.attack_skill += CharacterSystem.attack_skill(character)
+        result.attack_skill += CharacterValues.attack_skill(character)
 
         //account for items modifiers
         // may change skill and everything
-        character.equip.modify_attack(result)
+        EquipmentEffects.modify_attack(character.equip, result)
 
         //modify base damage with skill
         DmgOps.mult_ip(result.damage, 1 + result.attack_skill / 100)
@@ -28,9 +29,9 @@ export namespace Attack {
     }
 
     export function best_melee_damage_type(character: Character):melee_attack_type {
-        const damage_slice = DmgOps.total(CharacterSystem.melee_damage_raw(character, 'slice'))
-        const damage_blunt = DmgOps.total(CharacterSystem.melee_damage_raw(character, 'blunt'))
-        const damage_pierce = DmgOps.total(CharacterSystem.melee_damage_raw(character, 'pierce'))
+        const damage_slice = DmgOps.total(CharacterValues.melee_damage_raw(character, 'slice'))
+        const damage_blunt = DmgOps.total(CharacterValues.melee_damage_raw(character, 'blunt'))
+        const damage_pierce = DmgOps.total(CharacterValues.melee_damage_raw(character, 'pierce'))
 
         const max = Math.max(damage_blunt, damage_pierce, damage_slice)
 
@@ -44,15 +45,15 @@ export namespace Attack {
     export function generate_ranged(character: Character): AttackObj {
         const result = new AttackObj('ranged')
         //raw items damage
-        DmgOps.add_ip(result.damage, CharacterSystem.ranged_damage_raw(character))
+        DmgOps.add_ip(result.damage, CharacterValues.ranged_damage_raw(character))
         //account for strength
-        const physical_modifier = CharacterSystem.phys_power(character)
+        const physical_modifier = CharacterValues.phys_power(character)
         DmgOps.mult_ip(result.damage, physical_modifier / 10)
         //account for items modifiers
-        character.equip.modify_attack(result)
+        EquipmentEffects.modify_attack(character.equip, result)
 
         //account for own skill
-        const skill = CharacterSystem.skill(character, 'ranged')
+        const skill = CharacterValues.skill(character, 'ranged')
 
         result.attack_skill += skill
 
@@ -69,8 +70,8 @@ export namespace Attack {
         if (character._perks.magic_bolt) (
             base_damage += 2
         )
-        const skill = CharacterSystem.skill(character, 'magic_mastery')
-        return Math.round(base_damage * CharacterSystem.magic_power(character) / 10 * (1 + skill / 10))
+        const skill = CharacterValues.skill(character, 'magic_mastery')
+        return Math.round(base_damage * CharacterValues.magic_power(character) / 10 * (1 + skill / 10))
     }
 
     export function generate_magic_bolt(character: Character, dist: number, charge_flag: boolean): AttackObj {

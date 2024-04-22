@@ -372,7 +372,7 @@ export class ArmourConfiguration {
     // Numbers: 
 
     static ARMOUR_MAGIC_POWER : Record<ARMOUR, number> = [0, 0, 0, 3, 0, 0, 0, 1, 10, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
-    static ARMOUR_THICKNESS : Record<ARMOUR, number> = [2.0, 0.5, 1.0, 0.1, 2.0, 1.0, 0.5, 0.5, 1.0, 1.0, 4.0, 4.0, 2.0, 0.5, 0.2, 0.5, 0.2, 0.1, 2.0, 1.0, 2.0, 2.0, 0.5, 5.0, ]
+    static ARMOUR_THICKNESS : Record<ARMOUR, number> = [2.0, 0.5, 1.0, 0.01, 2.0, 1.0, 0.5, 0.5, 1.0, 1.0, 4.0, 4.0, 2.0, 0.5, 0.2, 0.5, 0.2, 0.1, 2.0, 1.0, 2.0, 2.0, 0.5, 5.0, ]
     static ARMOUR_SIZE : Record<ARMOUR, number> = [3.0, 3.0, 3.0, 3.0, 10.0, 10.0, 10.0, 8.0, 8.0, 10.0, 6.0, 6.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.5, 2.5, 2.5, 15.0, 1.0, 2.0, ]
     static ARMOUR_SECONDARY_SIZE : Record<ARMOUR, number> = [0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, ]
     static ARMOUR_CRAFTABLE : Record<ARMOUR, number> = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ]
@@ -618,16 +618,16 @@ export class MaterialStorage {
 
     // Retrieve instance of MaterialInstance 
     static get(id: MATERIAL) : MaterialInstance {
-        if (!(id in this.instances)) {
+        if (!(id in MaterialStorage.instances)) {
             throw new Error(`Invalid Material id: ${id}`);
         }
-        return this.instances[id]
+        return MaterialStorage.instances[id]
     }
     static from_string(id: material_string_id) : MaterialInstance {
         if (!(id in MaterialConfiguration.MATERIAL_FROM_STRING)) {
             throw new Error(`Invalid Material id: ${id}`);
         }
-        return this.instances[MaterialConfiguration.MATERIAL_FROM_STRING[id]]
+        return MaterialStorage.instances[MaterialConfiguration.MATERIAL_FROM_STRING[id]]
     }
 }
 
@@ -636,16 +636,16 @@ export class MaterialCategoryStorage {
 
     // Retrieve instance of MaterialCategoryInstance 
     static get(id: MATERIAL_CATEGORY) : MaterialCategoryInstance {
-        if (!(id in this.instances)) {
+        if (!(id in MaterialCategoryStorage.instances)) {
             throw new Error(`Invalid MaterialCategory id: ${id}`);
         }
-        return this.instances[id]
+        return MaterialCategoryStorage.instances[id]
     }
     static from_string(id: material_category_string_id) : MaterialCategoryInstance {
         if (!(id in MaterialCategoryConfiguration.CATEGORY_FROM_STRING)) {
             throw new Error(`Invalid MaterialCategory id: ${id}`);
         }
-        return this.instances[MaterialCategoryConfiguration.CATEGORY_FROM_STRING[id]]
+        return MaterialCategoryStorage.instances[MaterialCategoryConfiguration.CATEGORY_FROM_STRING[id]]
     }
 }
 
@@ -654,16 +654,16 @@ export class EquipSlotStorage {
 
     // Retrieve instance of EquipSlotInstance 
     static get(id: EQUIP_SLOT) : EquipSlotInstance {
-        if (!(id in this.instances)) {
+        if (!(id in EquipSlotStorage.instances)) {
             throw new Error(`Invalid EquipSlot id: ${id}`);
         }
-        return this.instances[id]
+        return EquipSlotStorage.instances[id]
     }
     static from_string(id: equip_slot_string_id) : EquipSlotInstance {
         if (!(id in EquipSlotConfiguration.SLOT_FROM_STRING)) {
             throw new Error(`Invalid EquipSlot id: ${id}`);
         }
-        return this.instances[EquipSlotConfiguration.SLOT_FROM_STRING[id]]
+        return EquipSlotStorage.instances[EquipSlotConfiguration.SLOT_FROM_STRING[id]]
     }
 }
 
@@ -672,16 +672,16 @@ export class ImpactStorage {
 
     // Retrieve instance of ImpactInstance 
     static get(id: IMPACT_TYPE) : ImpactInstance {
-        if (!(id in this.instances)) {
+        if (!(id in ImpactStorage.instances)) {
             throw new Error(`Invalid Impact id: ${id}`);
         }
-        return this.instances[id]
+        return ImpactStorage.instances[id]
     }
     static from_string(id: impact_type_string_id) : ImpactInstance {
         if (!(id in ImpactConfiguration.IMPACT_FROM_STRING)) {
             throw new Error(`Invalid Impact id: ${id}`);
         }
-        return this.instances[ImpactConfiguration.IMPACT_FROM_STRING[id]]
+        return ImpactStorage.instances[ImpactConfiguration.IMPACT_FROM_STRING[id]]
     }
 }
 
@@ -690,16 +690,16 @@ export class WeaponStorage {
 
     // Retrieve instance of WeaponInstance 
     static get(id: WEAPON) : WeaponInstance {
-        if (!(id in this.instances)) {
+        if (!(id in WeaponStorage.instances)) {
             throw new Error(`Invalid Weapon id: ${id}`);
         }
-        return this.instances[id]
+        return WeaponStorage.instances[id]
     }
     static from_string(id: weapon_string_id) : WeaponInstance {
         if (!(id in WeaponConfiguration.WEAPON_FROM_STRING)) {
             throw new Error(`Invalid Weapon id: ${id}`);
         }
-        return this.instances[WeaponConfiguration.WEAPON_FROM_STRING[id]]
+        return WeaponStorage.instances[WeaponConfiguration.WEAPON_FROM_STRING[id]]
     }
 }
 
@@ -708,16 +708,16 @@ export class ArmourStorage {
 
     // Retrieve instance of ArmourInstance 
     static get(id: ARMOUR) : ArmourInstance {
-        if (!(id in this.instances)) {
+        if (!(id in ArmourStorage.instances)) {
             throw new Error(`Invalid Armour id: ${id}`);
         }
-        return this.instances[id]
+        return ArmourStorage.instances[id]
     }
     static from_string(id: armour_string_id) : ArmourInstance {
         if (!(id in ArmourConfiguration.ARMOUR_FROM_STRING)) {
             throw new Error(`Invalid Armour id: ${id}`);
         }
-        return this.instances[ArmourConfiguration.ARMOUR_FROM_STRING[id]]
+        return ArmourStorage.instances[ArmourConfiguration.ARMOUR_FROM_STRING[id]]
     }
 }
 

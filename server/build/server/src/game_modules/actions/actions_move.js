@@ -1,22 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.move = void 0;
+const character_1 = require("../data/entities/character");
 const system_1 = require("../map/system");
 const events_1 = require("../events/events");
-const system_2 = require("../character/system");
-const types_1 = require("./types");
 const data_objects_1 = require("../data/data_objects");
 const data_id_1 = require("../data/data_id");
+const character_2 = require("../scripted-values/character");
 exports.move = {
     duration(char) {
-        return system_2.CharacterSystem.movement_duration_map(char);
+        return character_2.CharacterValues.movement_duration_map(char);
     },
     check: function (char, cell) {
         if (char.in_battle()) {
-            return types_1.NotificationResponse.InBattle;
+            return character_1.NotificationResponse.InBattle;
         }
         if (char.open_shop) {
-            return types_1.NotificationResponse.ShopOpened;
+            return character_1.NotificationResponse.ShopOpened;
         }
         const data = data_objects_1.Data.World.id_to_coordinate(cell);
         if (system_1.MapSystem.can_move(data)) {

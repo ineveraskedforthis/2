@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ItemOrders = exports.MarketOrders = exports.AuctionResponse = void 0;
-const stash_1 = require("../inventories/stash");
-const data_objects_1 = require("../data/data_objects");
-const data_id_1 = require("../data/data_id");
-const effects_1 = require("../effects/effects");
 const item_1 = require("../../content_wrappers/item");
+const data_id_1 = require("../data/data_id");
+const data_objects_1 = require("../data/data_objects");
+const stash_1 = require("../data/entities/stash");
+const effects_1 = require("../effects/effects");
 var AuctionResponse;
 (function (AuctionResponse) {
     AuctionResponse["NOT_IN_THE_SAME_CELL"] = "not_in_the_same_cell";
@@ -127,6 +127,20 @@ var MarketOrders;
         }
     }
     MarketOrders.decrease_amount = decrease_amount;
+    function spoilage(character, good, rate) {
+        let orders = data_id_1.DataID.Character.market_orders_list(character.id);
+        let integer = (Math.random() < 0.5) ? 1 : 0;
+        for (let order of orders) {
+            let order_item = data_objects_1.Data.MarketOrders.from_id(order);
+            const current_amount = order_item.amount;
+            if (order_item.material != good)
+                continue;
+            let spoiled_amount = Math.min(current_amount, Math.max(integer, Math.floor(current_amount * 0.01)));
+            MarketOrders.decrease_amount(order, spoiled_amount);
+        }
+        effects_1.Effect.Update.cell_market(character.cell_id);
+    }
+    MarketOrders.spoilage = spoilage;
 })(MarketOrders || (exports.MarketOrders = MarketOrders = {}));
 var ItemOrders;
 (function (ItemOrders) {

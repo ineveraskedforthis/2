@@ -1,10 +1,10 @@
-import { Character } from "../character/character";
-import { Stash } from "../inventories/stash";
+import { box, skill_check } from "@custom_types/inventory";
 import { trim } from "../calculations/basic_functions";
+import { Character } from "../data/entities/character";
+import { Stash } from "../data/entities/stash";
 import { CHANGE_REASON, Effect } from "../effects/effects";
-import { skill_check, box } from "@custom_types/inventory";
 import { Event } from "../events/events";
-import { CharacterSystem } from "../character/system";
+import { CharacterValues } from "../scripted-values/character";
 
 export const MAX_SKILL_MULTIPLIER_BULK = 10
 export function skill_to_ratio(skill: number, difficulty: number) {
@@ -25,8 +25,8 @@ export function roll_skill_improvement(current: number, target: number) {
 export function on_craft_update(character: Character, difficulty: skill_check[]) {
     let fatigue = 5;
     for (let item of difficulty) {
-        const pure_skill = CharacterSystem.pure_skill(character, item.skill);
-        const total_skill = CharacterSystem.skill(character, item.skill);
+        const pure_skill = CharacterValues.pure_skill(character, item.skill);
+        const total_skill = CharacterValues.skill(character, item.skill);
         if (roll_skill_improvement(pure_skill, item.difficulty)) {
             Effect.Change.skill(character, item.skill, 1, CHANGE_REASON.CRAFTING);
         }

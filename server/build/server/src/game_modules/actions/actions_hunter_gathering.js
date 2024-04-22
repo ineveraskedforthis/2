@@ -1,32 +1,32 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.berries = exports.fish = exports.hunt = exports.gather_cotton = exports.gather_wood = void 0;
+const data_objects_1 = require("../data/data_objects");
 const effects_1 = require("../effects/effects");
 const events_1 = require("../events/events");
+const character_1 = require("../scripted-values/character");
 const generator_1 = require("./generator");
-const system_1 = require("../character/system");
 const generic_functions_1 = require("./generic_functions");
-const data_objects_1 = require("../data/data_objects");
 const FATIGUE_COST_WOOD = 5;
 const FATIGUE_COST_COTTON = 1;
 const FATIGUE_COST_HUNT = 5;
 const FATIGUE_COST_FISH = 3;
 const FATIGUE_COST_BERRIES = 10;
 function gather_wood_duration_modifier(character) {
-    const slice_damage = system_1.CharacterSystem.melee_damage_raw(character, 'slice');
+    const slice_damage = character_1.CharacterValues.melee_damage_raw(character, 'slice');
     const damage_mod = (1 + slice_damage.slice / 50);
-    return 10 / system_1.CharacterSystem.phys_power(character) / damage_mod;
+    return 10 / character_1.CharacterValues.phys_power(character) / damage_mod;
 }
 function hunt_duration_modifier(character) {
-    const skill = system_1.CharacterSystem.skill(character, 'hunt');
+    const skill = character_1.CharacterValues.skill(character, 'hunt');
     return (150 - skill) / 100;
 }
 function fishing_duration_modifier(char) {
-    const skill = system_1.CharacterSystem.skill(char, 'fishing');
+    const skill = character_1.CharacterValues.skill(char, 'fishing');
     return (150 - skill) / 100;
 }
 function berry_duration_modifier(char) {
-    const skill = system_1.CharacterSystem.skill(char, 'travelling');
+    const skill = character_1.CharacterValues.skill(char, 'travelling');
     return (150 - skill) / 100;
 }
 function gather_wood_trigger(character) {
@@ -83,7 +83,7 @@ function gather_cotton_effect(character) {
     events_1.Event.change_stash(character, 2 /* MATERIAL.COTTON */, 1);
 }
 function gather_berries_effect(character) {
-    const skill = system_1.CharacterSystem.pure_skill(character, "travelling");
+    const skill = character_1.CharacterValues.pure_skill(character, "travelling");
     const amount = Math.floor(skill / 10 + Math.random() * 5);
     data_objects_1.Data.Locations.from_id(character.location_id).berries -= 1;
     if (Math.random() < 0.2) {
@@ -96,8 +96,8 @@ function gather_berries_effect(character) {
     events_1.Event.change_stash(character, 28 /* MATERIAL.BERRY_FIE */, amount);
 }
 function hunt_skill_upgrade_roll(character) {
-    const skill = system_1.CharacterSystem.pure_skill(character, 'hunt');
-    const skinning_skill = system_1.CharacterSystem.pure_skill(character, 'skinning');
+    const skill = character_1.CharacterValues.pure_skill(character, 'hunt');
+    const skinning_skill = character_1.CharacterValues.pure_skill(character, 'skinning');
     if (Math.random() * Math.random() > skill / 100) {
         effects_1.Effect.Change.skill(character, 'hunt', 1, "Hunting" /* CHANGE_REASON.HUNTING */);
         effects_1.Effect.Change.stress(character, 1, "Hunting" /* CHANGE_REASON.HUNTING */);
@@ -107,8 +107,8 @@ function hunt_skill_upgrade_roll(character) {
     }
 }
 function hunt_effect(character) {
-    const skill = system_1.CharacterSystem.skill(character, 'hunt');
-    const skinning_skill = system_1.CharacterSystem.skill(character, 'skinning');
+    const skill = character_1.CharacterValues.skill(character, 'hunt');
+    const skinning_skill = character_1.CharacterValues.skill(character, 'skinning');
     let amount_meat = Math.floor(skill / 10) + 1;
     let amount_skin = Math.floor(Math.max(amount_meat * skinning_skill / 100));
     if (Math.random() < 0.1) {
@@ -121,7 +121,7 @@ function hunt_effect(character) {
     events_1.Event.change_stash(character, 10 /* MATERIAL.SKIN_RAT */, amount_skin);
 }
 function fishing_effect(character, cell) {
-    const skill = system_1.CharacterSystem.skill(character, 'fishing');
+    const skill = character_1.CharacterValues.skill(character, 'fishing');
     let amount = Math.floor(skill / 20) + 1;
     if (Math.random() < 0.01) {
         amount += 10;

@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.rest = exports.clean = void 0;
-const effects_1 = require("../effects/effects");
-const generator_1 = require("./generator");
-const types_1 = require("./types");
-const generic_functions_1 = require("./generic_functions");
-const scripted_values_1 = require("../events/scripted_values");
 const user_manager_1 = require("../client_communication/user_manager");
-const system_1 = require("../map/system");
 const data_objects_1 = require("../data/data_objects");
+const character_1 = require("../data/entities/character");
+const effects_1 = require("../effects/effects");
+const scripted_values_1 = require("../events/scripted_values");
+const system_1 = require("../map/system");
+const generator_1 = require("./generator");
+const generic_functions_1 = require("./generic_functions");
 const CLEAN_FATIGUE_COST = 5;
 function clean_duration_modifier(character) {
     return 1 + character.get_blood() / 50;
@@ -37,7 +37,7 @@ exports.rest = {
     },
     check: function (char, cell) {
         if (char.in_battle())
-            return types_1.NotificationResponse.InBattle;
+            return character_1.NotificationResponse.InBattle;
         const location = data_objects_1.Data.Locations.from_id(char.location_id);
         const price = scripted_values_1.ScriptedValue.rest_price(char, location);
         if (char.savings.get() < price) {

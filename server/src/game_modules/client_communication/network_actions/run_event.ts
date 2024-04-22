@@ -12,6 +12,7 @@ import { skill } from "@custom_types/inventory";
 import { Data } from "../../data/data_objects";
 import { Effect } from "../../effects/effects";
 import { DataID } from "../../data/data_id";
+import { CharacterValues } from "../../scripted-values/character";
 
 export namespace SocketCommand {
 
@@ -59,11 +60,11 @@ export namespace SocketCommand {
             valid_user.socket.emit('alert', 'not in the same cell')
             return
         }
-        if (!CharacterSystem.perk(target_character, perk_tag as Perks)) {
+        if (!CharacterValues.perk(target_character, perk_tag as Perks)) {
             valid_user.socket.emit('alert', "target doesn't know this perk")
             return
         }
-        if (CharacterSystem.perk(valid_character, perk_tag as Perks)) {
+        if (CharacterValues.perk(valid_character, perk_tag as Perks)) {
             valid_user.socket.emit('alert', "you already know it")
             return
         }

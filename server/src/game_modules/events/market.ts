@@ -1,15 +1,15 @@
+import { MATERIAL } from "@content/content"
 import { money } from "@custom_types/common"
+import { market_order_id } from "@custom_types/ids"
+import { AIfunctions } from "../AI/HelperFunctions/common"
 import { trim } from "../calculations/basic_functions"
-import { Character } from "../character/character"
 import { UI_Part } from "../client_communication/causality_graph"
 import { UserManagement } from "../client_communication/user_manager"
-import { MarketOrders, ItemOrders } from "../market/system"
-import { market_order_id } from "@custom_types/ids"
-import { Effect } from "../effects/effects"
-import { Data } from "../data/data_objects"
 import { DataID } from "../data/data_id"
-import { MATERIAL } from "@content/content"
-import { AIfunctions } from "../AI/HelperFunctions/common"
+import { Data } from "../data/data_objects"
+import { Character } from "../data/entities/character"
+import { Effect } from "../effects/effects"
+import { ItemOrders, MarketOrders } from "../market/system"
 
 export namespace EventMarket {
     export function buy(character: Character, material:MATERIAL, amount: number, price: money) {

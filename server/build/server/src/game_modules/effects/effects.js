@@ -1,15 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Effect = void 0;
-const user_manager_1 = require("../client_communication/user_manager");
-const scripted_values_1 = require("../events/scripted_values");
+const content_1 = require("../../.././../game_content/src/content");
 const basic_functions_1 = require("../calculations/basic_functions");
-const triggers_1 = require("../events/triggers");
-const system_1 = require("../market/system");
+const alerts_1 = require("../client_communication/network_actions/alerts");
+const user_manager_1 = require("../client_communication/user_manager");
 const data_id_1 = require("../data/data_id");
 const data_objects_1 = require("../data/data_objects");
-const content_1 = require("../../.././../game_content/src/content");
-const alerts_1 = require("../client_communication/network_actions/alerts");
+const scripted_values_1 = require("../events/scripted_values");
+const triggers_1 = require("../events/triggers");
+const equipment_values_1 = require("../scripted-values/equipment-values");
 var Effect;
 (function (Effect) {
     let Update;
@@ -24,7 +24,7 @@ var Effect;
         Update.cell_market = cell_market;
     })(Update = Effect.Update || (Effect.Update = {}));
     function change_durability(character, slot, dx) {
-        const item = character.equip.slot_to_item(slot);
+        const item = equipment_values_1.EquipmentValues.item(character.equip, slot);
         if (item == undefined)
             return;
         item.durability += dx;
@@ -267,16 +267,6 @@ var Effect;
             let spoiled_amount = Math.max(integer, Math.floor(current_amount * rate));
             character.stash.set(good, current_amount - spoiled_amount);
             user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.STASH */);
-            let orders = data_id_1.DataID.Character.market_orders_list(character.id);
-            for (let order of orders) {
-                let order_item = data_objects_1.Data.MarketOrders.from_id(order);
-                const current_amount = order_item.amount;
-                if (order_item.material != good)
-                    continue;
-                let spoiled_amount = Math.min(current_amount, Math.max(integer, Math.floor(current_amount * 0.01)));
-                system_1.MarketOrders.decrease_amount(order, spoiled_amount);
-            }
-            Update.cell_market(character.cell_id);
         }
     }
     Effect.spoilage = spoilage;

@@ -1,5 +1,5 @@
 import { Perks } from "../../../../shared/character";
-import { Character } from "./character";
+import { Character } from "../data/entities/character";
 // import { Perks } from "./Perks";
 
 export function perk_requirement(tag: Perks, character: Character) {

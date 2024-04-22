@@ -1,17 +1,18 @@
 import { action_points, battle_position, ms } from "../../../../shared/battle_data"
-import { Alerts } from "../client_communication/network_actions/alerts"
-import { geom } from "../geom"
-import { Convert, Unlink } from "../systems_communication"
-import { Character } from "../character/character"
-import { Battle } from "./classes/battle"
-import { BattleSystem } from "./system"
-import { can_cast_magic_bolt, can_dodge, can_shoot } from "../character/checks"
 import { trim } from "../calculations/basic_functions"
-import { UserManagement } from "../client_communication/user_manager"
+import { can_dodge } from "../character/checks"
 import { UI_Part } from "../client_communication/causality_graph"
-import { BattleValues } from "./VALUES"
-import { CharactersHeap } from "./classes/heap"
+import { Alerts } from "../client_communication/network_actions/alerts"
+import { UserManagement } from "../client_communication/user_manager"
 import { Data } from "../data/data_objects"
+import { Character } from "../data/entities/character"
+import { geom } from "../geom"
+import { CharacterValues } from "../scripted-values/character"
+import { Convert } from "../systems_communication"
+import { BattleValues } from "./VALUES"
+import { Battle } from "./classes/battle"
+import { CharactersHeap } from "./classes/heap"
+import { BattleSystem } from "./system"
 
 // export const MOVE_COST = 3
 
@@ -140,9 +141,9 @@ export namespace BattleEvent {
         unit.action_points_left = unit.action_points_left - COST.CHARGE as action_points
 
         let dist = geom.dist(unit.position, target.position)
-        if (dist > (unit.range() - 0.1)) {
+        if (dist > (CharacterValues.range(unit) - 0.1)) {
             let direction = geom.minus(target.position, unit.position);
-            let stop_before = geom.mult(geom.normalize(direction), unit.range() - 0.1);
+            let stop_before = geom.mult(geom.normalize(direction), CharacterValues.range(unit) - 0.1);
             direction = geom.minus(direction, stop_before) as battle_position
             SetCoord(battle, unit, direction)
         }

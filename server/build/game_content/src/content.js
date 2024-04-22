@@ -156,7 +156,7 @@ ArmourConfiguration.ARMOUR_SLOT = [9 /* EQUIP_SLOT.HELMET */, 9 /* EQUIP_SLOT.HE
 ArmourConfiguration.ARMOUR_SLOT_STRING = ["helmet", "helmet", "helmet", "helmet", "mail", "mail", "mail", "mail", "mail", "dress", "pants", "pants", "boots", "gauntlet-right", "gauntlet-right", "gauntlet-left", "gauntlet-left", "socks", "pauldron-left", "pauldron-left", "pauldron-right", "robe", "belt", "shirt",];
 // Numbers: 
 ArmourConfiguration.ARMOUR_MAGIC_POWER = [0, 0, 0, 3, 0, 0, 0, 1, 10, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,];
-ArmourConfiguration.ARMOUR_THICKNESS = [2.0, 0.5, 1.0, 0.1, 2.0, 1.0, 0.5, 0.5, 1.0, 1.0, 4.0, 4.0, 2.0, 0.5, 0.2, 0.5, 0.2, 0.1, 2.0, 1.0, 2.0, 2.0, 0.5, 5.0,];
+ArmourConfiguration.ARMOUR_THICKNESS = [2.0, 0.5, 1.0, 0.01, 2.0, 1.0, 0.5, 0.5, 1.0, 1.0, 4.0, 4.0, 2.0, 0.5, 0.2, 0.5, 0.2, 0.1, 2.0, 1.0, 2.0, 2.0, 0.5, 5.0,];
 ArmourConfiguration.ARMOUR_SIZE = [3.0, 3.0, 3.0, 3.0, 10.0, 10.0, 10.0, 8.0, 8.0, 10.0, 6.0, 6.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.5, 2.5, 2.5, 15.0, 1.0, 2.0,];
 ArmourConfiguration.ARMOUR_SECONDARY_SIZE = [0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,];
 ArmourConfiguration.ARMOUR_CRAFTABLE = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,];
@@ -372,16 +372,16 @@ class ArmourInstance {
 class MaterialStorage {
     // Retrieve instance of MaterialInstance 
     static get(id) {
-        if (!(id in this.instances)) {
+        if (!(id in MaterialStorage.instances)) {
             throw new Error(`Invalid Material id: ${id}`);
         }
-        return this.instances[id];
+        return MaterialStorage.instances[id];
     }
     static from_string(id) {
         if (!(id in MaterialConfiguration.MATERIAL_FROM_STRING)) {
             throw new Error(`Invalid Material id: ${id}`);
         }
-        return this.instances[MaterialConfiguration.MATERIAL_FROM_STRING[id]];
+        return MaterialStorage.instances[MaterialConfiguration.MATERIAL_FROM_STRING[id]];
     }
 }
 exports.MaterialStorage = MaterialStorage;
@@ -389,16 +389,16 @@ MaterialStorage.instances = [new MaterialInstance(0 /* MATERIAL.ARROW_BONE */), 
 class MaterialCategoryStorage {
     // Retrieve instance of MaterialCategoryInstance 
     static get(id) {
-        if (!(id in this.instances)) {
+        if (!(id in MaterialCategoryStorage.instances)) {
             throw new Error(`Invalid MaterialCategory id: ${id}`);
         }
-        return this.instances[id];
+        return MaterialCategoryStorage.instances[id];
     }
     static from_string(id) {
         if (!(id in MaterialCategoryConfiguration.CATEGORY_FROM_STRING)) {
             throw new Error(`Invalid MaterialCategory id: ${id}`);
         }
-        return this.instances[MaterialCategoryConfiguration.CATEGORY_FROM_STRING[id]];
+        return MaterialCategoryStorage.instances[MaterialCategoryConfiguration.CATEGORY_FROM_STRING[id]];
     }
 }
 exports.MaterialCategoryStorage = MaterialCategoryStorage;
@@ -406,16 +406,16 @@ MaterialCategoryStorage.instances = [new MaterialCategoryInstance(0 /* MATERIAL_
 class EquipSlotStorage {
     // Retrieve instance of EquipSlotInstance 
     static get(id) {
-        if (!(id in this.instances)) {
+        if (!(id in EquipSlotStorage.instances)) {
             throw new Error(`Invalid EquipSlot id: ${id}`);
         }
-        return this.instances[id];
+        return EquipSlotStorage.instances[id];
     }
     static from_string(id) {
         if (!(id in EquipSlotConfiguration.SLOT_FROM_STRING)) {
             throw new Error(`Invalid EquipSlot id: ${id}`);
         }
-        return this.instances[EquipSlotConfiguration.SLOT_FROM_STRING[id]];
+        return EquipSlotStorage.instances[EquipSlotConfiguration.SLOT_FROM_STRING[id]];
     }
 }
 exports.EquipSlotStorage = EquipSlotStorage;
@@ -423,16 +423,16 @@ EquipSlotStorage.instances = [new EquipSlotInstance(0 /* EQUIP_SLOT.WEAPON */), 
 class ImpactStorage {
     // Retrieve instance of ImpactInstance 
     static get(id) {
-        if (!(id in this.instances)) {
+        if (!(id in ImpactStorage.instances)) {
             throw new Error(`Invalid Impact id: ${id}`);
         }
-        return this.instances[id];
+        return ImpactStorage.instances[id];
     }
     static from_string(id) {
         if (!(id in ImpactConfiguration.IMPACT_FROM_STRING)) {
             throw new Error(`Invalid Impact id: ${id}`);
         }
-        return this.instances[ImpactConfiguration.IMPACT_FROM_STRING[id]];
+        return ImpactStorage.instances[ImpactConfiguration.IMPACT_FROM_STRING[id]];
     }
 }
 exports.ImpactStorage = ImpactStorage;
@@ -440,16 +440,16 @@ ImpactStorage.instances = [new ImpactInstance(0 /* IMPACT_TYPE.POINT */), new Im
 class WeaponStorage {
     // Retrieve instance of WeaponInstance 
     static get(id) {
-        if (!(id in this.instances)) {
+        if (!(id in WeaponStorage.instances)) {
             throw new Error(`Invalid Weapon id: ${id}`);
         }
-        return this.instances[id];
+        return WeaponStorage.instances[id];
     }
     static from_string(id) {
         if (!(id in WeaponConfiguration.WEAPON_FROM_STRING)) {
             throw new Error(`Invalid Weapon id: ${id}`);
         }
-        return this.instances[WeaponConfiguration.WEAPON_FROM_STRING[id]];
+        return WeaponStorage.instances[WeaponConfiguration.WEAPON_FROM_STRING[id]];
     }
 }
 exports.WeaponStorage = WeaponStorage;
@@ -457,16 +457,16 @@ WeaponStorage.instances = [new WeaponInstance(0 /* WEAPON.BOW_WOOD */), new Weap
 class ArmourStorage {
     // Retrieve instance of ArmourInstance 
     static get(id) {
-        if (!(id in this.instances)) {
+        if (!(id in ArmourStorage.instances)) {
             throw new Error(`Invalid Armour id: ${id}`);
         }
-        return this.instances[id];
+        return ArmourStorage.instances[id];
     }
     static from_string(id) {
         if (!(id in ArmourConfiguration.ARMOUR_FROM_STRING)) {
             throw new Error(`Invalid Armour id: ${id}`);
         }
-        return this.instances[ArmourConfiguration.ARMOUR_FROM_STRING[id]];
+        return ArmourStorage.instances[ArmourConfiguration.ARMOUR_FROM_STRING[id]];
     }
 }
 exports.ArmourStorage = ArmourStorage;

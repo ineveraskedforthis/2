@@ -1,22 +1,21 @@
-import { Character } from "../character/character";
-import { UI_Part } from "../client_communication/causality_graph";
-import { UserManagement } from "../client_communication/user_manager";
-import { location_id, character_id } from "@custom_types/ids";
-import { ScriptedValue } from "../events/scripted_values";
-import { trim } from "../calculations/basic_functions";
-import { money } from "@custom_types/common";
-import { cell_id } from "@custom_types/ids";
-import { Trigger } from "../events/triggers";
-import { skill } from "@custom_types/inventory";
-import { MarketOrders } from "../market/system";
+import { EQUIP_SLOT, MATERIAL, MaterialConfiguration } from "@content/content";
 import { Perks } from "@custom_types/character";
+import { money } from "@custom_types/common";
+import { cell_id, character_id, location_id } from "@custom_types/ids";
+import { skill } from "@custom_types/inventory";
+import { trim } from "../calculations/basic_functions";
+import { UI_Part } from "../client_communication/causality_graph";
+import { Alerts } from "../client_communication/network_actions/alerts";
+import { UserManagement } from "../client_communication/user_manager";
 import { DataID } from "../data/data_id";
 import { Data } from "../data/data_objects";
+import { Character } from "../data/entities/character";
+import { Stash } from "../data/entities/stash";
+import { ScriptedValue } from "../events/scripted_values";
+import { Trigger } from "../events/triggers";
 import { LocationInterface } from "../location/location_interface";
-import { EQUIP_SLOT, MATERIAL, MaterialConfiguration } from "@content/content";
-import { Alerts } from "../client_communication/network_actions/alerts";
+import { EquipmentValues } from "../scripted-values/equipment-values";
 import { Status } from "../types";
-import { Stash } from "../inventories/stash";
 
 
 export const enum CHANGE_REASON {
@@ -56,7 +55,7 @@ export namespace Effect {
     }
 
     export function change_durability(character: Character, slot: EQUIP_SLOT, dx: number) {
-        const item = character.equip.slot_to_item(slot)
+        const item = EquipmentValues.item(character.equip, slot)
         if (item == undefined) return
         item.durability += dx
 
@@ -290,17 +289,6 @@ export namespace Effect {
             let spoiled_amount = Math.max(integer, Math.floor(current_amount * rate))
             character.stash.set(good, current_amount - spoiled_amount)
             UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH)
-            let orders = DataID.Character.market_orders_list(character.id)
-            for (let order of orders) {
-                let order_item = Data.MarketOrders.from_id(order)
-                const current_amount = order_item.amount
-                if (order_item.material != good) continue
-                let spoiled_amount = Math.min(current_amount, Math.max(integer, Math.floor(current_amount * 0.01)))
-                MarketOrders.decrease_amount(order, spoiled_amount)
-            }
-            Update.cell_market(character.cell_id)
         }
     }
-
-
 }

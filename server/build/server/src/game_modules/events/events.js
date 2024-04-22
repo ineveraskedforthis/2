@@ -1,27 +1,29 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Event = void 0;
+const content_1 = require("../../.././../game_content/src/content");
+const SYSTEM_REPUTATION_1 = require("../SYSTEM_REPUTATION");
+const system_1 = require("../attack/system");
 const battle_calcs_1 = require("../battle/battle_calcs");
 const basic_functions_1 = require("../calculations/basic_functions");
-const system_1 = require("../attack/system");
-const generate_loot_1 = require("../races/generate_loot");
 const perk_requirement_1 = require("../character/perk_requirement");
-const perk_base_price_1 = require("../prices/perk_base_price");
 const system_2 = require("../character/system");
 const alerts_1 = require("../client_communication/network_actions/alerts");
 const user_manager_1 = require("../client_communication/user_manager");
-const systems_communication_1 = require("../systems_communication");
+const helpers_1 = require("../craft/helpers");
+const damage_types_1 = require("../damage_types");
+const data_id_1 = require("../data/data_id");
+const data_objects_1 = require("../data/data_objects");
 const effects_1 = require("../effects/effects");
+const system_3 = require("../map/system");
+const perk_base_price_1 = require("../prices/perk_base_price");
+const generate_loot_1 = require("../races/generate_loot");
+const character_1 = require("../scripted-values/character");
+const equipment_values_1 = require("../scripted-values/equipment-values");
+const systems_communication_1 = require("../systems_communication");
 const inventory_events_1 = require("./inventory_events");
 const market_1 = require("./market");
-const damage_types_1 = require("../damage_types");
-const helpers_1 = require("../craft/helpers");
 const triggers_1 = require("./triggers");
-const SYSTEM_REPUTATION_1 = require("../SYSTEM_REPUTATION");
-const data_objects_1 = require("../data/data_objects");
-const system_3 = require("../map/system");
-const data_id_1 = require("../data/data_id");
-const content_1 = require("../../.././../game_content/src/content");
 const GRAVEYARD_CELL = 0;
 var Event;
 (function (Event) {
@@ -84,7 +86,7 @@ var Event;
     }
     Event.move_durability_roll_probability = move_durability_roll_probability;
     function move_fatigue_change(character) {
-        const boots = character.equip.slot_to_item(8 /* EQUIP_SLOT.BOOTS */);
+        const boots = equipment_values_1.EquipmentValues.item(character.equip, 8 /* EQUIP_SLOT.BOOTS */);
         if (boots == undefined) {
             effects_1.Effect.Change.fatigue(character, 3, "Travel" /* CHANGE_REASON.TRAVEL */);
         }
@@ -99,7 +101,7 @@ var Event;
         if (dice < probability) {
             effects_1.Effect.change_durability(character, 8 /* EQUIP_SLOT.BOOTS */, -1);
             let skill_dice = Math.random();
-            if (skill_dice * skill_dice * skill_dice > system_2.CharacterSystem.skill(character, 'travelling') / 100) {
+            if (skill_dice * skill_dice * skill_dice > character_1.CharacterValues.skill(character, 'travelling') / 100) {
                 effects_1.Effect.Change.skill(character, 'travelling', 1, "Travel" /* CHANGE_REASON.TRAVEL */);
             }
         }
@@ -123,7 +125,7 @@ var Event;
         // it gives base 10% of arrows missing
         // and you rise your evasion if you are attacked
         const attack_skill = 2 * attack.attack_skill;
-        const evasion = system_2.CharacterSystem.skill(defender, 'evasion');
+        const evasion = character_1.CharacterValues.skill(defender, 'evasion');
         let evasion_chance = evasion / (100 + attack_skill);
         if (flag_dodge)
             evasion_chance = evasion_chance + 0.1;
@@ -154,7 +156,7 @@ var Event;
         //check missed attack because of lack of skill
         const acc = battle_calcs_1.Accuracy.ranged(attacker, distance);
         const dice_accuracy = Math.random();
-        const attacker_ranged_skill = system_2.CharacterSystem.skill(attacker, 'ranged');
+        const attacker_ranged_skill = character_1.CharacterValues.skill(attacker, 'ranged');
         if (dice_accuracy > acc) {
             const dice_skill_up = Math.random();
             if (dice_skill_up * 100 > attacker_ranged_skill) {
@@ -184,7 +186,7 @@ var Event;
         attack.attacker_status_change.fatigue += 5;
         attack.defender_status_change.fatigue += 5;
         attack.defender_status_change.stress += 3;
-        attack.defence_skill += system_2.CharacterSystem.skill(defender, 'evasion');
+        attack.defence_skill += character_1.CharacterValues.skill(defender, 'evasion');
         deal_damage(defender, attack, attacker, false, "Ranged attack" /* CHANGE_REASON.RANGED_ATTACK */);
         //if target is dead, loot it all
         if (defender.dead()) {
@@ -195,7 +197,7 @@ var Event;
     Event.shoot = shoot;
     function unconditional_magic_bolt(attacker, defender, dist, flag_dodge, flag_charged) {
         const dice = Math.random();
-        if (dice > system_2.CharacterSystem.skill(attacker, 'magic_mastery') / 50) {
+        if (dice > character_1.CharacterValues.skill(attacker, 'magic_mastery') / 50) {
             effects_1.Effect.Change.skill(attacker, 'magic_mastery', 1, "Application of magic" /* CHANGE_REASON.MAGIC_APPLICATION */);
         }
         const attack = system_1.Attack.generate_magic_bolt(attacker, dist, flag_charged);
@@ -251,7 +253,7 @@ var Event;
         const total = system_2.CharacterSystem.damage(defender, attack.damage, reason);
         effects_1.Effect.Change.status(defender, attack.defender_status_change, reason);
         effects_1.Effect.Change.status(attacker, attack.attacker_status_change, reason);
-        const resistance = system_2.CharacterSystem.resistance(defender);
+        const resistance = character_1.CharacterValues.resistance(defender);
         alerts_1.Alerts.log_attack(defender, attack, resistance, total, 'defender');
         alerts_1.Alerts.log_attack(attacker, attack, resistance, total, 'attacker');
         (0, SYSTEM_REPUTATION_1.handle_attack_reputation_change)(attacker, defender, AOE_flag);
@@ -325,7 +327,7 @@ var Event;
         //for defender
         const dice = Math.random();
         if ((dice < 0.5) && (attack.attack_skill <= 30)) {
-            effects_1.Effect.Change.skill(defender, system_2.CharacterSystem.equiped_weapon_required_skill(defender), 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
+            effects_1.Effect.Change.skill(defender, character_1.CharacterValues.equiped_weapon_required_skill(defender), 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
         }
         //for attacker
         const dice2 = Math.random();
@@ -334,8 +336,8 @@ var Event;
         }
     }
     function parry(defender, attack) {
-        const weapon = system_2.CharacterSystem.equiped_weapon_required_skill(defender);
-        const skill = system_2.CharacterSystem.attack_skill(defender) + Math.round(Math.random() * 5);
+        const weapon = character_1.CharacterValues.equiped_weapon_required_skill(defender);
+        const skill = character_1.CharacterValues.attack_skill(defender) + Math.round(Math.random() * 5);
         attack.defence_skill += skill;
         // roll parry
         const parry_dice = Math.random();
@@ -353,7 +355,7 @@ var Event;
         }
     }
     function block(defender, attack) {
-        const skill = system_2.CharacterSystem.skill(defender, 'blocking') + Math.round(Math.random() * 10);
+        const skill = character_1.CharacterValues.skill(defender, 'blocking') + Math.round(Math.random() * 10);
         attack.defence_skill += skill;
         // roll block
         const block_dice = Math.random();
@@ -371,7 +373,7 @@ var Event;
     }
     function evade(defender, attack, dodge_flag) {
         //this skill has quite wide deviation
-        const skill = (0, basic_functions_1.trim)(system_2.CharacterSystem.skill(defender, 'evasion') + Math.round((Math.random() - 0.5) * 40), 0, 200);
+        const skill = (0, basic_functions_1.trim)(character_1.CharacterValues.skill(defender, 'evasion') + Math.round((Math.random() - 0.5) * 40), 0, 200);
         //passive evasion
         attack.defence_skill += skill;
         //active dodge
@@ -427,7 +429,7 @@ var Event;
         for (const item of loot) {
             if (content_1.MaterialStorage.get(item.material).category == 4 /* MATERIAL_CATEGORY.SKIN */) {
                 const dice = Math.random();
-                const skinning_skill = system_2.CharacterSystem.skill(killer, 'skinning');
+                const skinning_skill = character_1.CharacterValues.skill(killer, 'skinning');
                 const amount = Math.round(item.amount * dice * skinning_skill / 100 * skinning_skill / 100);
                 Event.change_stash(killer, item.material, amount);
                 if (dice > skinning_skill / 100) {

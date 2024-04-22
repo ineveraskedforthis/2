@@ -1,5 +1,4 @@
-import { CharacterMapAction, DurationModifier, MapActionEffect, MapActionTriggerTargeted, TriggerResponse } from "./types";
-import { Character } from "../character/character";
+import { Character, CharacterMapAction, DurationModifier, MapActionEffect, MapActionTriggerTargeted, TriggerResponse } from "../data/entities/character";
 import { basic_trigger } from "./generic_functions";
 import { cell_id } from "@custom_types/ids";
 import { CHANGE_REASON, Effect } from "../effects/effects";

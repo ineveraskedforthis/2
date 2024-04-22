@@ -1,4 +1,4 @@
-import { Character } from "./character/character";
+import { Character } from "./data/entities/character";
 import { DataID } from "./data/data_id";
 import { hostile } from "./races/racial_hostility";
 

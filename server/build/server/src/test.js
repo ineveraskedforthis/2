@@ -3,8 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const data_objects_1 = require("./game_modules/data/data_objects");
 const system_1 = require("./game_modules/character/system");
 const TEMPLATE_HUMANS_1 = require("./game_modules/races/TEMPLATE_HUMANS");
-const inventory_1 = require("./game_modules/inventories/inventory");
+const inventory_1 = require("./game_modules/data/entities/inventory");
 const strings_management_1 = require("./game_modules/data/strings_management");
+const equipment_effects_1 = require("./game_modules/scripted-effects/equipment-effects");
 data_objects_1.Data.World.load_world_dimensions(data_objects_1.save_path.WORLD_DIMENSIONS);
 data_objects_1.Data.World.load_terrain(data_objects_1.save_path.TERRAIN);
 data_objects_1.Data.Cells.load(data_objects_1.save_path.CELLS);
@@ -26,7 +27,7 @@ function add_testing_items_to_equip(equip) {
     const id1 = equip.data.backpack.add(item.id);
     const id2 = equip.data.backpack.add(item2.id);
     if (id1 !== false)
-        equip.equip_weapon(id1, 'human');
+        equipment_effects_1.EquipmentEffects.equip_weapon(equip, id1, 'human');
 }
 function character_serialization_test_simple() {
     console.log('basic character serialisation test');

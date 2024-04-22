@@ -18,7 +18,7 @@ storage_1.AIActionsStorage.register_action_location({
         const fatigue = actor.fatigue / 100;
         const stress = actor.stress / 100;
         const lack_of_hp = (actor.hp_max - actor.hp) / actor.hp_max;
-        const utility_fatigue = Math.max(0, fatigue - 0.5);
+        const utility_fatigue = Math.max(0, fatigue - 0.2);
         const utility_stress = Math.max(0, stress - 0.5);
         const weight = common_1.AIfunctions.loot_weight(actor) / 50;
         return utility_fatigue + utility_stress + lack_of_hp + weight;
@@ -156,13 +156,17 @@ storage_1.AIActionsStorage.register_action_location({
             - actor.stash.get(2 /* MATERIAL.COTTON */)
             + common_1.AIfunctions.check_local_demand_for_material(actor, 2 /* MATERIAL.COTTON */)
             + actor.ai_gathering_target.get(2 /* MATERIAL.COTTON */);
-        return desired / 50;
+        return desired / 50 + Math.random() * 0.1;
     },
     // AIs are pretty shortsighted
     potential_targets(actor) {
         let result = data_id_1.DataID.Cells.locations(actor.cell_id).map(data_objects_1.Data.Locations.from_id).filter((item) => item.cotton > 0);
         for (const neighbour of data_objects_1.Data.World.neighbours(actor.cell_id)) {
-            result = result.concat(data_id_1.DataID.Cells.locations(neighbour).map(data_objects_1.Data.Locations.from_id).filter((item) => item.cotton > 0));
+            result =
+                result
+                    .concat(data_id_1.DataID.Cells.locations(neighbour)
+                    .map(data_objects_1.Data.Locations.from_id)
+                    .filter((item) => (item.cotton > 0) && (system_1.MapSystem.can_move(data_objects_1.Data.World.id_to_coordinate(item.cell_id)))));
         }
         return result;
     },
@@ -170,7 +174,7 @@ storage_1.AIActionsStorage.register_action_location({
         actor.ai_gathering_target.set(2 /* MATERIAL.COTTON */, common_1.AIfunctions.check_local_demand_for_material(actor, 2 /* MATERIAL.COTTON */));
         if (target.cell_id == actor.cell_id) {
             effects_1.Effect.enter_location(actor.id, target.id);
-            manager_1.ActionManager.start_action(actions_00_1.CharacterAction.GATHER_WOOD, actor, actor.cell_id);
+            manager_1.ActionManager.start_action(actions_00_1.CharacterAction.GATHER_COTTON, actor, actor.cell_id);
         }
         else {
             common_1.AIfunctions.go_to_location(actor, target);

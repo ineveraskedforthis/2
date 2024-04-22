@@ -6,16 +6,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Data = exports.save_path = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const content_1 = require("../../.././../game_content/src/content");
 const SAVE_GAME_PATH_1 = require("../../SAVE_GAME_PATH");
 const battle_1 = require("../battle/classes/battle");
-const character_1 = require("../character/character");
-const item_1 = require("./entities/item");
-const terrain_1 = require("../map/terrain");
-const data_id_1 = require("./data_id");
 const location_class_1 = require("../location/location_class");
-const strings_management_1 = require("./strings_management");
+const terrain_1 = require("../map/terrain");
 const classes_1 = require("../market/classes");
-const content_1 = require("../../.././../game_content/src/content");
+const data_id_1 = require("./data_id");
+const character_1 = require("./entities/character");
+const equip_1 = require("./entities/equip");
+const item_1 = require("./entities/item");
+const strings_management_1 = require("./strings_management");
+class FatEquip extends equip_1.Equip {
+}
 var character_id_object = [];
 var item_id_object = [];
 var market_order_id_object = [];

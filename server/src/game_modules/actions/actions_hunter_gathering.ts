@@ -1,13 +1,12 @@
-import { Character } from "../character/character";
+import { MATERIAL } from "@content/content";
+import { cell_id } from "@custom_types/ids";
+import { Data } from "../data/data_objects";
+import { Character, TriggerResponse } from "../data/entities/character";
 import { CHANGE_REASON, Effect } from "../effects/effects";
 import { Event } from "../events/events";
-import { cell_id } from "@custom_types/ids";
+import { CharacterValues } from "../scripted-values/character";
 import { generate_action } from "./generator";
-import { CharacterSystem } from "../character/system";
-import { TriggerResponse } from "./types";
 import { basic_duration_modifier, dummy_effect } from "./generic_functions";
-import { Data } from "../data/data_objects";
-import { MATERIAL } from "@content/content";
 const FATIGUE_COST_WOOD = 5
 const FATIGUE_COST_COTTON = 1
 const FATIGUE_COST_HUNT = 5
@@ -15,23 +14,23 @@ const FATIGUE_COST_FISH = 3
 const FATIGUE_COST_BERRIES = 10
 
 function gather_wood_duration_modifier(character: Character) {
-    const slice_damage = CharacterSystem.melee_damage_raw(character, 'slice')
+    const slice_damage = CharacterValues.melee_damage_raw(character, 'slice')
     const damage_mod = (1 + slice_damage.slice / 50)
-    return 10 / CharacterSystem.phys_power(character) / damage_mod
+    return 10 / CharacterValues.phys_power(character) / damage_mod
 }
 
 function hunt_duration_modifier(character: Character) {
-    const skill = CharacterSystem.skill(character, 'hunt')
+    const skill = CharacterValues.skill(character, 'hunt')
     return (150 - skill) / 100;
 }
 
 function fishing_duration_modifier(char: Character) {
-    const skill = CharacterSystem.skill(char, 'fishing')
+    const skill = CharacterValues.skill(char, 'fishing')
     return (150 - skill) / 100;
 }
 
 function berry_duration_modifier(char: Character) {
-    const skill = CharacterSystem.skill(char, 'travelling')
+    const skill = CharacterValues.skill(char, 'travelling')
     return (150 - skill) / 100;
 }
 
@@ -87,7 +86,7 @@ function gather_cotton_effect(character: Character) {
 }
 
 function gather_berries_effect(character: Character) {
-    const skill = CharacterSystem.pure_skill(character, "travelling")
+    const skill = CharacterValues.pure_skill(character, "travelling")
 
     const amount = Math.floor(skill / 10 + Math.random() * 5)
 
@@ -106,8 +105,8 @@ function gather_berries_effect(character: Character) {
 }
 
 function hunt_skill_upgrade_roll(character: Character) {
-    const skill = CharacterSystem.pure_skill(character, 'hunt')
-    const skinning_skill = CharacterSystem.pure_skill(character, 'skinning')
+    const skill = CharacterValues.pure_skill(character, 'hunt')
+    const skinning_skill = CharacterValues.pure_skill(character, 'skinning')
     if (Math.random() * Math.random() > skill / 100) {
         Effect.Change.skill(character, 'hunt', 1, CHANGE_REASON.HUNTING)
         Effect.Change.stress(character, 1, CHANGE_REASON.HUNTING)
@@ -117,8 +116,8 @@ function hunt_skill_upgrade_roll(character: Character) {
     }
 }
 function hunt_effect(character: Character) {
-    const skill = CharacterSystem.skill(character, 'hunt')
-    const skinning_skill = CharacterSystem.skill(character, 'skinning')
+    const skill = CharacterValues.skill(character, 'hunt')
+    const skinning_skill = CharacterValues.skill(character, 'skinning')
 
     let amount_meat = Math.floor(skill / 10) + 1
     let amount_skin = Math.floor(Math.max(amount_meat * skinning_skill / 100))
@@ -134,7 +133,7 @@ function hunt_effect(character: Character) {
 }
 
 function fishing_effect(character: Character, cell: cell_id) {
-    const skill = CharacterSystem.skill(character, 'fishing')
+    const skill = CharacterValues.skill(character, 'fishing')
 
     let amount = Math.floor(skill / 20) + 1
     if (Math.random() < 0.01) {

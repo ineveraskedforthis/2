@@ -1,8 +1,6 @@
 import { cell_id } from "@custom_types/ids"
-import { Character } from "../character/character"
-// import { attack } from "./attack"
+import { Character, CharacterMapAction, TriggerResponse } from "../data/entities/character"
 import { Alerts } from "../client_communication/network_actions/alerts"
-import { CharacterMapAction, TriggerResponse } from "./types"
 import { Data } from "../data/data_objects"
 
 

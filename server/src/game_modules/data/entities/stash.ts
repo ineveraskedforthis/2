@@ -1,5 +1,5 @@
 import { MATERIAL, MaterialConfiguration, MaterialStorage } from "@content/content";
-import { StashData } from "../types";
+import { StashData } from "../../types";
 
 export class Stash {
     data: Record<MATERIAL, number>

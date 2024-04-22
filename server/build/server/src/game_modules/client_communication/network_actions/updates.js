@@ -1,22 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.weapon_attack_tags = exports.SendUpdate = void 0;
+const system_1 = require("../../attack/system");
 const battle_calcs_1 = require("../../battle/battle_calcs");
-const systems_communication_1 = require("../../systems_communication");
-const alerts_1 = require("./alerts");
-const system_1 = require("../../battle/system");
-const constants_1 = require("../../static_data/constants");
-const helper_functions_1 = require("../helper_functions");
-const CraftItem_1 = require("../../craft/CraftItem");
-const CraftBulk_1 = require("../../craft/CraftBulk");
-const system_2 = require("../../character/system");
-const system_3 = require("../../attack/system");
-const damage_types_1 = require("../../damage_types");
-const terrain_1 = require("../../map/terrain");
-const data_objects_1 = require("../../data/data_objects");
-const system_4 = require("../../map/system");
-const data_id_1 = require("../../data/data_id");
 const heap_1 = require("../../battle/classes/heap");
+const system_2 = require("../../battle/system");
+const crafts_storage_1 = require("../../craft/crafts_storage");
+const crafts_storage_2 = require("../../craft/crafts_storage");
+const damage_types_1 = require("../../damage_types");
+const extract_data_1 = require("../../data-extraction/extract-data");
+const data_id_1 = require("../../data/data_id");
+const data_objects_1 = require("../../data/data_objects");
+const system_3 = require("../../map/system");
+const terrain_1 = require("../../map/terrain");
+const character_1 = require("../../scripted-values/character");
+const constants_1 = require("../../static_data/constants");
+const systems_communication_1 = require("../../systems_communication");
+const helper_functions_1 = require("../helper_functions");
+const alerts_1 = require("./alerts");
+const craft_1 = require("../../scripted-values/craft");
 var SendUpdate;
 (function (SendUpdate) {
     function all(user) {
@@ -43,13 +45,13 @@ var SendUpdate;
         if (character == undefined)
             return;
         const stats = {
-            phys_power: system_2.CharacterSystem.phys_power(character),
-            magic_power: system_2.CharacterSystem.magic_power(character),
-            enchant_rating: system_2.CharacterSystem.enchant_rating(character),
-            movement_cost: system_2.CharacterSystem.movement_cost_battle(character),
-            move_duration_map: system_2.CharacterSystem.movement_duration_map(character),
-            base_damage_magic_bolt: system_3.Attack.magic_bolt_base_damage(character, false),
-            base_damage_magic_bolt_charged: system_3.Attack.magic_bolt_base_damage(character, true),
+            phys_power: character_1.CharacterValues.phys_power(character),
+            magic_power: character_1.CharacterValues.magic_power(character),
+            enchant_rating: character_1.CharacterValues.enchant_rating(character),
+            movement_cost: character_1.CharacterValues.movement_cost_battle(character),
+            move_duration_map: character_1.CharacterValues.movement_duration_map(character),
+            base_damage_magic_bolt: system_1.Attack.magic_bolt_base_damage(character, false),
+            base_damage_magic_bolt_charged: system_1.Attack.magic_bolt_base_damage(character, true),
         };
         alerts_1.Alerts.generic_user_alert(user, 'stats', stats);
     }
@@ -63,7 +65,7 @@ var SendUpdate;
             // console.log('!!!')
             const battle = data_objects_1.Data.Battles.from_id(battle_id);
             alerts_1.Alerts.battle_progress(user, true);
-            alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_DATA_MESSAGE, system_1.BattleSystem.data(battle));
+            alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_DATA_MESSAGE, system_2.BattleSystem.data(battle));
             alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_CURRENT_UNIT, heap_1.CharactersHeap.get_selected_unit(battle)?.id);
             alerts_1.Alerts.generic_user_alert(user, constants_1.character_id_MESSAGE, character.id);
         }
@@ -104,7 +106,7 @@ var SendUpdate;
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        alerts_1.Alerts.generic_user_alert(user, 'equip-update', character.equip.get_data());
+        alerts_1.Alerts.generic_user_alert(user, 'equip-update', extract_data_1.Extract.EquipData(character.equip));
         attack_damage(user);
     }
     SendUpdate.equip = equip;
@@ -112,8 +114,8 @@ var SendUpdate;
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        const current_skill = system_2.CharacterSystem.skill(character, skill);
-        const pure_skill = system_2.CharacterSystem.pure_skill(character, skill);
+        const current_skill = character_1.CharacterValues.skill(character, skill);
+        const pure_skill = character_1.CharacterValues.pure_skill(character, skill);
         alerts_1.Alerts.skill(user, skill, pure_skill, current_skill);
     }
     SendUpdate.skill = skill;
@@ -122,8 +124,8 @@ var SendUpdate;
         if (character == undefined)
             return;
         for (let skill of skills) {
-            const current_skill = system_2.CharacterSystem.skill(character, skill);
-            const pure_skill = system_2.CharacterSystem.pure_skill(character, skill);
+            const current_skill = character_1.CharacterValues.skill(character, skill);
+            const pure_skill = character_1.CharacterValues.pure_skill(character, skill);
             alerts_1.Alerts.skill(user, skill, pure_skill, current_skill);
         }
     }
@@ -165,17 +167,17 @@ var SendUpdate;
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        for (let item of (0, CraftBulk_1.get_crafts_bulk_list)(character)) {
+        for (let item of (0, crafts_storage_1.get_crafts_bulk_list)(character)) {
             alerts_1.Alerts.craft_bulk_complete(user, item.id, item);
         }
-        for (let item of (0, CraftItem_1.get_crafts_item_list)(character)) {
+        for (let item of (0, crafts_storage_2.get_crafts_item_list)(character)) {
             alerts_1.Alerts.craft_item_complete(user, item.id, item);
         }
-        for (let item of (0, CraftBulk_1.get_crafts_bulk_list)(character)) {
-            alerts_1.Alerts.craft_bulk(user, item.id, (0, CraftBulk_1.output_bulk)(character, item));
+        for (let item of (0, crafts_storage_1.get_crafts_bulk_list)(character)) {
+            alerts_1.Alerts.craft_bulk(user, item.id, craft_1.CraftValues.output_bulk(character, item));
         }
-        for (let item of (0, CraftItem_1.get_crafts_item_list)(character)) {
-            alerts_1.Alerts.craft_item(user, item.id, (0, CraftItem_1.durability)(character, item));
+        for (let item of (0, crafts_storage_2.get_crafts_item_list)(character)) {
+            alerts_1.Alerts.craft_item(user, item.id, craft_1.CraftValues.durability(character, item));
         }
     }
     SendUpdate.all_craft = all_craft;
@@ -249,15 +251,15 @@ var SendUpdate;
                 let x = cell.x;
                 let y = cell.y;
                 let terrain = data_objects_1.Data.World.id_to_terrain(cell.id);
-                let forestation = system_4.MapSystem.forestation(cell.id);
-                let urbanisation = system_4.MapSystem.urbanisation(cell.id);
+                let forestation = system_3.MapSystem.forestation(cell.id);
+                let urbanisation = system_3.MapSystem.urbanisation(cell.id);
                 // console.log(forestation)
                 // let res1: {[_ in string]: CellDisplayData} = {}
                 const display_data = {
                     terrain: (0, terrain_1.terrain_to_string)(terrain),
                     forestation: forestation,
                     urbanisation: urbanisation,
-                    rat_lair: system_4.MapSystem.rat_lair(cell.id)
+                    rat_lair: system_3.MapSystem.rat_lair(cell.id)
                 };
                 let res2 = { x: x, y: y, ter: display_data };
                 alerts_1.Alerts.generic_user_alert(user, 'map-data-display', res2);
@@ -329,13 +331,13 @@ var SendUpdate;
         const character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        let blunt = damage_types_1.DmgOps.total(system_3.Attack.generate_melee(character, 'blunt').damage);
-        let slice = damage_types_1.DmgOps.total(system_3.Attack.generate_melee(character, 'slice').damage);
-        let pierce = damage_types_1.DmgOps.total(system_3.Attack.generate_melee(character, 'pierce').damage);
+        let blunt = damage_types_1.DmgOps.total(system_1.Attack.generate_melee(character, 'blunt').damage);
+        let slice = damage_types_1.DmgOps.total(system_1.Attack.generate_melee(character, 'slice').damage);
+        let pierce = damage_types_1.DmgOps.total(system_1.Attack.generate_melee(character, 'pierce').damage);
         alerts_1.Alerts.battle_action_damage(user, 'attack_blunt', blunt);
         alerts_1.Alerts.battle_action_damage(user, 'attack_slice', slice);
         alerts_1.Alerts.battle_action_damage(user, 'attack_pierce', pierce);
-        let ranged = damage_types_1.DmgOps.total(system_3.Attack.generate_ranged(character).damage);
+        let ranged = damage_types_1.DmgOps.total(system_1.Attack.generate_ranged(character).damage);
         alerts_1.Alerts.battle_action_damage(user, 'shoot', ranged);
     }
     SendUpdate.attack_damage = attack_damage;

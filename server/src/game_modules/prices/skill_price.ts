@@ -1,4 +1,4 @@
-import { Character } from "../character/character";
+import { Character } from "../data/entities/character";
 import { money } from "@custom_types/common";
 import { skill } from "@custom_types/inventory";
 import { DataID } from "../data/data_id";

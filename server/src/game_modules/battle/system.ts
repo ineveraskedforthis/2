@@ -1,6 +1,6 @@
 import { action_points, BattleData, battle_id, battle_position, ms } from "@custom_types/battle_data"
 import { Convert, Link, Unlink } from "../systems_communication"
-import { Character } from "../character/character"
+import { Character } from "../data/entities/character"
 import { Battle } from "./classes/battle"
 import { BattleEvent } from "./events"
 import { BattleValues } from "./VALUES"

@@ -32,7 +32,8 @@ function decide() {
             }
         }
         if (best) {
-            console.log(character.name, best.tag);
+            // if (character.race == "human")
+            // console.log(character.name, best.tag)
             best.action(character, best.target);
         }
     });

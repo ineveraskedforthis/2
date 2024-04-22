@@ -1,5 +1,5 @@
 import { MaterialData } from "@content/content";
-import { Character } from "../../character/character";
+import { Character } from "../../data/entities/character";
 import { LocationInterface } from "../../location/location_interface";
 import { CellData } from "../../map/cell_interface";
 

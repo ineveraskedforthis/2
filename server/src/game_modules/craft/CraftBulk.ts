@@ -1,18 +1,18 @@
-import { Character } from "../character/character";
+import { CraftBulkTemplate, box, skill_check } from "@custom_types/inventory";
 import { UI_Part } from "../client_communication/causality_graph";
 import { UserManagement } from "../client_communication/user_manager";
-import { generate_bulk_craft_action } from "./generate_action";
-import { crafts_bulk, craft_actions } from "./crafts_storage";
-import { box, CraftBulkTemplate, skill_check } from "@custom_types/inventory";
-import { use_input, on_craft_update, skill_to_ratio, MAX_SKILL_MULTIPLIER_BULK } from "./helpers";
+import { Character, CharacterMapAction } from "../data/entities/character";
 import { Event } from "../events/events";
-import { CharacterSystem } from "../character/system";
-import { MATERIAL_CATEGORY, MaterialStorage } from "@content/content";
-
+import { craft_actions, crafts_bulk } from "./crafts_storage";
+import { check_inputs, on_craft_update, use_input } from "./helpers";
+import { generate_check_funtion } from "./generate_action";
+import { cell_id } from "@custom_types/ids";
+import { dummy_duration, dummy_start } from "../actions/generic_functions";
+import { CraftValues } from "../scripted-values/craft";
 
 export function event_craft_bulk(character: Character, craft: CraftBulkTemplate) {
     use_input(craft.input, character);
-    produce_output(output_bulk(character, craft), character);
+    produce_output(CraftValues.output_bulk(character, craft), character);
     on_craft_update(character, craft.difficulty);
     UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH);
 }
@@ -21,49 +21,6 @@ export function produce_output(output: box[], character: Character) {
     for (let item of output) {
         Event.change_stash(character, item.material, item.amount)
     }
-}
-
-
-export function output_bulk(character: Character, craft: CraftBulkTemplate) {
-    let result: box[] = [];
-    //calculating skill output
-    // min is 0
-    // max is 10
-    // choose minimum across all skills
-    let ratio = MAX_SKILL_MULTIPLIER_BULK;
-    for (let check of craft.difficulty) {
-        const skill = CharacterSystem.skill(character, check.skill);
-        ratio = Math.min(skill_to_ratio(skill, check.difficulty), ratio);
-    }
-
-    for (let item of craft.output) {
-        const material = MaterialStorage.get(item.material)
-
-        //calculate bonus from perks
-        let bonus = 0;
-        if (material.category == MATERIAL_CATEGORY.MEAT) {
-            if (character._perks.meat_master)
-                bonus += 1;
-        }
-
-        if (material.magic_power > 0) {
-            if (character._perks.alchemist)
-                bonus += 2;
-            if (character._perks.mage_initiation)
-                bonus += 1;
-        }
-
-        if (material.category == MATERIAL_CATEGORY.BOW_AMMO) {
-            if (character._perks.fletcher)
-                bonus += 5;
-        }
-
-        let amount = Math.floor(item.amount * ratio + bonus);
-        if (character.race == 'rat') amount = 0;
-        result.push({ material: item.material, amount: amount });
-    }
-
-    return result;
 }
 
 export function new_craft_bulk(id: string, input: box[], output: box[], difficulty: skill_check[]) {
@@ -78,10 +35,16 @@ export function new_craft_bulk(id: string, input: box[], output: box[], difficul
     return crafts_bulk[id]
 }
 
-export function get_crafts_bulk_list(character: Character) {
-    let list = []
-    for (let item of Object.values(crafts_bulk)) {
-        list.push(item)
-    }
-    return list
+export function generate_bulk_craft_action(craft: CraftBulkTemplate): CharacterMapAction {
+    return {
+        duration: dummy_duration,
+        check: generate_check_funtion(craft.input),
+        result(char: Character, cell: cell_id) {
+            if (check_inputs(craft.input, char.stash)) {
+                event_craft_bulk(char, craft);
+
+            }
+        },
+        start: dummy_start
+    };
 }

@@ -7,7 +7,7 @@ import { HumanStrongTemplate, HumanTemplate } from "./races/TEMPLATE_HUMANS"
 import { BerserkRatTemplate, BigRatTemplate, MageRatTemplate, RatTemplate } from "./races/TEMPLATE_RATS"
 import { CharacterTemplate, ModelVariant } from "./types"
 import { BallTemplate } from "./races/TEMPLATE_OTHERS"
-import { Character } from "./character/character"
+import { Character } from "./data/entities/character"
 import { DataID } from "./data/data_id"
 import { Data } from "./data/data_objects"
 import { ARMOUR, EQUIP_SLOT, MATERIAL, WEAPON } from "@content/content"
@@ -96,7 +96,7 @@ export namespace Template {
 
             let cutting_tool = Data.Items.create_weapon(100, [], WEAPON.DAGGER_BONE_RAT)
             cutting_tool.durability = 200
-            human.equip.weapon = cutting_tool
+            human.equip.weapon_id = cutting_tool.id
 
             return human
         }
@@ -146,7 +146,7 @@ export namespace Template {
             let pants = Data.Items.create_armour(100, [], ARMOUR.PANTS_LEATHER_RAT)
             let boots = Data.Items.create_armour(100, [], ARMOUR.BOOTS_LEATHER_RAT)
             let hat = Data.Items.create_armour(100, [], ARMOUR.HELMET_LEATHER_RAT)
-            human.equip.weapon = spear
+            human.equip.weapon_id = spear.id
             human.equip.data.slots[EQUIP_SLOT.MAIL] = armour.id
             human.equip.data.slots[EQUIP_SLOT.PANTS] = pants.id
             human.equip.data.slots[EQUIP_SLOT.BOOTS] = boots.id
@@ -321,7 +321,7 @@ export namespace Template {
             let item = Data.Items.create_weapon_simple(WEAPON.SPEAR_WOOD_RED_BONE_RAT)
             item.affixes.push({tag: 'of_power'})
             item.affixes.push({tag: 'of_power'})
-            mage.equip.weapon = item
+            mage.equip.weapon_id = item.id
 
             return mage
         }

@@ -3,14 +3,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const content_1 = require("../../../.././../game_content/src/content");
 const common_1 = require("../HelperFunctions/common");
 const storage_1 = require("../Storage/storage");
-const system_1 = require("../../character/system");
-const system_2 = require("../../market/system");
+const system_1 = require("../../market/system");
 const market_1 = require("../../events/market");
 const manager_1 = require("../../actions/manager");
 const crafts_storage_1 = require("../../craft/crafts_storage");
 const item_1 = require("../../../content_wrappers/item");
 const data_objects_1 = require("../../data/data_objects");
 const inventory_events_1 = require("../../events/inventory_events");
+const character_conditions_1 = require("../../scripted-conditions/character-conditions");
+const character_1 = require("../../scripted-values/character");
+const character_2 = require("../../scripted-effects/character");
 // Used instead of a part of old crafting routine
 // to decide required amounts of materials character needs
 storage_1.AIActionsStorage.register_action_self({
@@ -34,7 +36,7 @@ storage_1.AIActionsStorage.register_action_self({
         }
         // food: replace with distribution later
         for (const item of content_1.MaterialConfiguration.MATERIAL) {
-            if (system_1.CharacterSystem.can_eat(actor, content_1.MaterialStorage.get(item))) {
+            if (character_conditions_1.CharacterCondition.can_eat(actor, content_1.MaterialStorage.get(item))) {
                 actor.ai_desired_stash.inc(item, 10);
             }
         }
@@ -53,11 +55,11 @@ storage_1.AIActionsStorage.register_action_self({
             }
         }
         //arrows:
-        if (system_1.CharacterSystem.skill(actor, "ranged") > 30) {
+        if (character_1.CharacterValues.skill(actor, "ranged") > 30) {
             actor.ai_desired_stash.inc(0 /* MATERIAL.ARROW_BONE */, 40);
         }
         //zaz for mages
-        if (system_1.CharacterSystem.skill(actor, "magic_mastery") > 30) {
+        if (character_1.CharacterValues.skill(actor, "magic_mastery") > 30) {
             actor.ai_desired_stash.inc(30 /* MATERIAL.ZAZ */, 40);
         }
     }
@@ -69,7 +71,7 @@ storage_1.AIActionsStorage.register_action_self({
         for (let item of bulk_crafts) {
             if (item.profit <= 0)
                 continue;
-            if (system_1.CharacterSystem.can_bulk_craft(actor, item.craft)) {
+            if (character_conditions_1.CharacterCondition.can_bulk_craft(actor, item.craft)) {
                 return 0.8;
             }
         }
@@ -92,7 +94,7 @@ storage_1.AIActionsStorage.register_action_self({
     utility(actor, target) {
         const bulk_crafts = common_1.AIfunctions.profitable_item_craft(actor);
         for (let item of bulk_crafts) {
-            if (system_1.CharacterSystem.can_item_craft(actor, item)) {
+            if (character_conditions_1.CharacterCondition.can_item_craft(actor, item)) {
                 return 0.8;
             }
         }
@@ -111,7 +113,7 @@ storage_1.AIActionsStorage.register_action_self({
 storage_1.AIActionsStorage.register_action_material({
     tag: "eat",
     utility(actor, target) {
-        if (system_1.CharacterSystem.can_eat(actor, target)) {
+        if (character_conditions_1.CharacterCondition.can_eat(actor, target)) {
             return common_1.AIfunctions.lack_of_hp(actor) + actor.fatigue / 200 + actor.stress / 200;
         }
         return 0;
@@ -120,7 +122,7 @@ storage_1.AIActionsStorage.register_action_material({
         return content_1.MaterialConfiguration.MATERIAL.map(content_1.MaterialStorage.get);
     },
     action(actor, target) {
-        system_1.CharacterSystem.eat(actor, target);
+        character_2.CharacterEffect.eat(actor, target);
     }
 });
 storage_1.AIActionsStorage.register_action_material({
@@ -132,7 +134,7 @@ storage_1.AIActionsStorage.register_action_material({
         return content_1.MaterialConfiguration.MATERIAL.map(content_1.MaterialStorage.get);
     },
     action(actor, target) {
-        system_2.MarketOrders.remove_by_condition(actor, target.id);
+        system_1.MarketOrders.remove_by_condition(actor, target.id);
         const amount_to_sell = actor.stash.get(target.id) - actor.ai_desired_stash.get(target.id);
         market_1.EventMarket.sell_smart_with_limits(actor, target.id, common_1.AIfunctions.sell_price(actor, target.id), amount_to_sell);
     }
@@ -179,7 +181,7 @@ storage_1.AIActionsStorage.register_action_material({
         return content_1.MaterialConfiguration.MATERIAL.map(content_1.MaterialStorage.get);
     },
     action(actor, target) {
-        system_2.MarketOrders.remove_by_condition(actor, target.id);
+        system_1.MarketOrders.remove_by_condition(actor, target.id);
         const amount_to_sell = actor.stash.get(target.id) - actor.ai_desired_stash.get(target.id);
         market_1.EventMarket.buy_smart_with_limits(actor, target.id, common_1.AIfunctions.buy_price(actor, target.id), amount_to_sell);
     }
@@ -199,7 +201,7 @@ storage_1.AIActionsStorage.register_action_self({
         return [actor];
     },
     action(actor, target) {
-        system_1.CharacterSystem.open_shop(actor);
+        character_2.CharacterEffect.open_shop(actor);
     }
 });
 storage_1.AIActionsStorage.register_action_self({

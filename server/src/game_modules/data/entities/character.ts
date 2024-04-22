@@ -1,22 +1,70 @@
-import { Stash } from "../inventories/stash"
-import { Equip } from "../inventories/equip";
-import { Savings} from "../inventories/savings";
-import { CharacterTemplate, model_interface_name, ModelVariant, skeleton, Status, tagAI, tagModel, tagRACE, tagTactic } from "../types";
-import { status_type, money } from "@custom_types/common";
-import { location_id, character_id, user_id, cell_id } from "@custom_types/ids";
-import { SkillList } from "./SkillList";
-import { AImemory, AIstate } from "./AIstate";
-import { CharacterMapAction } from "../actions/types";
-import { MaxHP, MaxHPTag } from "../races/max_hp";
-import { BaseResistTag } from "../races/resists";
-import { StatsTag } from "../races/stats";
-import { trim } from "../calculations/basic_functions";
-import { ItemSystem } from "../systems/items/item_system";
-import { DataID } from "../data/data_id";
-import { PerksTable, TraitsTable } from "@custom_types/character";
+import { MATERIAL } from "@content/content";
 import { action_points, battle_id, battle_position } from "@custom_types/battle_data";
-import { EQUIP_SLOT, EquipSlotConfiguration, IMPACT_TYPE, MATERIAL } from "@content/content";
-import { Data } from "../data/data_objects";
+import { PerksTable, TraitsTable } from "@custom_types/character";
+import { money, status_type } from "@custom_types/common";
+import { cell_id, character_id, location_id, user_id } from "@custom_types/ids";
+import { trim } from "../../calculations/basic_functions";
+import { AImemory, AIstate } from "../../character/AIstate";
+import { SkillList } from "../../character/SkillList";
+import { MaxHP, MaxHPTag } from "../../races/max_hp";
+import { BaseResistTag } from "../../races/resists";
+import { StatsTag } from "../../races/stats";
+import { CharacterTemplate, ModelVariant, Status, model_interface_name, skeleton, tagAI, tagModel, tagRACE, tagTactic } from "../../types";
+import { DataID } from "../data_id";
+import { Equip } from "./equip";
+import { Savings } from "./savings";
+import { Stash } from "./stash";
+
+export interface CharacterMapAction {
+    check: MapActionTriggerTargeted;
+    start: MapActionEffect;
+    result: MapActionEffect;
+    duration: (character: Character) => number;
+    is_move?: boolean;
+    immediate?: boolean;
+}
+
+export interface LackData {
+    required_amount: number,
+    required_thing: string
+}
+
+interface LackOfResource {
+    response: "Not enough resources",
+    value: LackData[]
+}
+
+interface ActionIsPossible {
+    response: "OK"
+}
+
+interface Notification {
+    response: "Notification:"
+    value: string
+}
+
+export type TriggerResponse = Notification | ActionIsPossible | LackOfResource
+
+export const ResponseOK : TriggerResponse = {
+    response: "OK"
+}
+
+export namespace NotificationResponse {
+    export const InBattle : Notification = {
+        response: "Notification:",
+        value: "You are in battle."
+    }
+    export const ShopOpened : Notification = {
+        response: "Notification:",
+        value: "Can't move with shop"
+    }
+}
+
+export type MapActionTrigger = (character: Character) => TriggerResponse;
+export type MapActionTriggerTargeted = (character: Character, target_cell: cell_id) => TriggerResponse;
+export type MapActionEffect = (character: Character, target_cell: cell_id) => void;
+export type DurationModifier = (character: Character) => number;
+
 
 export class Character {
     id: character_id;
@@ -341,35 +389,6 @@ export class Character {
     get stress() {
         return this.status.stress
     }
-
-    range() {
-        let weapon = this.equip.weapon
-        if (weapon != undefined) {
-            let result = ItemSystem.range(weapon)
-            if (weapon.prototype.impact == IMPACT_TYPE.POINT) {
-                if (this._perks.advanced_polearm) {
-                    result += 0.5
-                }
-            }
-            return result
-        }
-        if (this.race == 'graci') return 2;
-        if (this.model == 'bigrat') return 1
-        if (this.model == 'elo') return 1
-        return 0.5
-    }
-
-    equip_models():{[_ in EQUIP_SLOT]?: string}  {
-        let response:{[_ in EQUIP_SLOT]?: string} = {}
-        for (let k of EquipSlotConfiguration.SLOT) {
-            const item_id = this.equip.data.slots[k]
-            if (item_id == undefined) continue
-            const item_data = Data.Items.from_id(item_id)
-            response[k] = item_data.prototype.id_string
-        }
-        return response
-    }
-
     is_player()     { return this.user_id != undefined }
     dead()          { return this.get_hp() == 0 }
     in_battle()     { return (this.battle_id != undefined) }

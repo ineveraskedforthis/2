@@ -1,26 +1,29 @@
-import fs from "fs"
+import fs from "fs";
 import path from "path";
 
+import { ARMOUR, ArmourStorage, MATERIAL, WEAPON, WeaponStorage } from "@content/content";
+import { battle_id, ms } from "@custom_types/battle_data";
+import { Faction, ReputationData, Terrain, money, world_coordinates } from "@custom_types/common";
+import { cell_id, character_id, item_id, location_id, market_order_id } from "@custom_types/ids";
+import { affix } from "@custom_types/inventory";
 import { DEFAULT_WORLD_PATH, SAVE_GAME_PATH } from "../../SAVE_GAME_PATH";
 import { Battle } from "../battle/classes/battle";
-import { Character } from "../character/character";
-import { Armour, EquipmentPiece, EquipmentPieceSaveData, Item, Weapon } from "./entities/item";
-import { Faction, ReputationData, money, world_coordinates } from "@custom_types/common";
-import { character_id, item_id, location_id, market_order_id } from "@custom_types/ids";
-import { cell_id } from "@custom_types/ids";
-import { string_to_terrain } from "../map/terrain";
-import { Terrain } from "@custom_types/common";
-import { LocationData, LocationMinimal } from "../location/location_interface";
-import { DataID } from "./data_id";
 import { Location } from "../location/location_class";
+import { LocationData, LocationMinimal } from "../location/location_interface";
 import { CellData } from "../map/cell_interface";
-import { character_to_string, string_to_character } from "./strings_management";
-import { MarketOrder, MarketOrderData, MarketOrderInterface } from "../market/classes";
-import { battle_id, ms } from "@custom_types/battle_data";
+import { string_to_terrain } from "../map/terrain";
+import { MarketOrder, MarketOrderInterface } from "../market/classes";
 import { CharacterTemplate } from "../types";
-import { affix } from "@custom_types/inventory";
-import { EquipmentPieceInterface, ItemInterface } from "../../content_wrappers/item";
-import { ARMOUR, ArmourConfiguration, ArmourStorage, MATERIAL, WEAPON, WeaponConfiguration, WeaponStorage, armour_string_id, weapon_string_id } from "@content/content";
+import { DataID } from "./data_id";
+import { Character } from "./entities/character";
+import { Equip } from "./entities/equip";
+import { Armour, EquipmentPiece, EquipmentPieceSaveData, Item, Weapon } from "./entities/item";
+import { character_to_string, string_to_character } from "./strings_management";
+
+class FatEquip extends Equip {
+
+}
+
 
 var character_id_object         : Character[]               = []
 var item_id_object              : (EquipmentPiece)[]        = []

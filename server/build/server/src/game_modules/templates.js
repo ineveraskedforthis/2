@@ -58,7 +58,7 @@ var Template;
             human.ai_map = 'lumberjack';
             let cutting_tool = data_objects_1.Data.Items.create_weapon(100, [], 3 /* WEAPON.DAGGER_BONE_RAT */);
             cutting_tool.durability = 200;
-            human.equip.weapon = cutting_tool;
+            human.equip.weapon_id = cutting_tool.id;
             return human;
         }
         Character.Lumberjack = Lumberjack;
@@ -105,7 +105,7 @@ var Template;
             let pants = data_objects_1.Data.Items.create_armour(100, [], 10 /* ARMOUR.PANTS_LEATHER_RAT */);
             let boots = data_objects_1.Data.Items.create_armour(100, [], 12 /* ARMOUR.BOOTS_LEATHER_RAT */);
             let hat = data_objects_1.Data.Items.create_armour(100, [], 2 /* ARMOUR.HELMET_LEATHER_RAT */);
-            human.equip.weapon = spear;
+            human.equip.weapon_id = spear.id;
             human.equip.data.slots[3 /* EQUIP_SLOT.MAIL */] = armour.id;
             human.equip.data.slots[13 /* EQUIP_SLOT.PANTS */] = pants.id;
             human.equip.data.slots[8 /* EQUIP_SLOT.BOOTS */] = boots.id;
@@ -273,7 +273,7 @@ var Template;
             let item = data_objects_1.Data.Items.create_weapon_simple(2 /* WEAPON.SPEAR_WOOD_RED_BONE_RAT */);
             item.affixes.push({ tag: 'of_power' });
             item.affixes.push({ tag: 'of_power' });
-            mage.equip.weapon = item;
+            mage.equip.weapon_id = item.id;
             return mage;
         }
         Character.Mage = Mage;

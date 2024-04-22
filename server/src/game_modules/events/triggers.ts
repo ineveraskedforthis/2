@@ -1,11 +1,10 @@
 import { money } from "@custom_types/common";
-import { Character } from "../character/character";
-import { location_id, character_id } from "@custom_types/ids";
-import { ScriptedValue } from "./scripted_values";
-import { skill_price } from "../prices/skill_price";
-import { CharacterSystem } from "../character/system";
+import { character_id, location_id } from "@custom_types/ids";
 import { skill } from "@custom_types/inventory";
 import { Data } from "../data/data_objects";
+import { Character } from "../data/entities/character";
+import { skill_price } from "../prices/skill_price";
+import { CharacterValues } from "../scripted-values/character";
 
 
 export enum ResponseNegative {
@@ -56,8 +55,8 @@ export namespace Trigger {
 
     export function can_learn_from(student: Character, teacher: Character, skill: skill): LearningAvailableResponse {
         let savings = student.savings.get()
-        const teacher_skill = CharacterSystem.pure_skill(teacher, skill)
-        const student_skill = CharacterSystem.pure_skill(student, skill)
+        const teacher_skill = CharacterValues.pure_skill(teacher, skill)
+        const student_skill = CharacterValues.pure_skill(student, skill)
         if ((teacher_skill <= student_skill + 20) || (teacher_skill < 30)) {
             return {
                 response: ResponseNegativeQuantified.TeacherSkill,

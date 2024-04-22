@@ -8,6 +8,7 @@ const data_id_1 = require("./data/data_id");
 const data_objects_1 = require("./data/data_objects");
 const system_1 = require("./character/system");
 const content_1 = require("../.././../game_content/src/content");
+const character_1 = require("./scripted-values/character");
 var Convert;
 (function (Convert) {
     function reputation_to_socket(reputation) {
@@ -98,7 +99,7 @@ var Convert;
         return {
             tag: character.model,
             position: character.position,
-            range: character.range(),
+            range: character_1.CharacterValues.range(character),
             name: character.get_name(),
             hp: character.get_hp(),
             max_hp: character.get_max_hp(),

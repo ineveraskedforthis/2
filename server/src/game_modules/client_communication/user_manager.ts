@@ -2,22 +2,21 @@ import { SocketWrapper, User, UserData } from "./user";
 var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
 
-import fs from "fs"
-import { Convert, Link } from "../systems_communication";
-import { SendUpdate } from "./network_actions/updates";
-import { Alerts } from "./network_actions/alerts";
-import { UI_Part, Update } from "./causality_graph";
+import { ARMOUR, WEAPON } from "@content/content";
 import { TEMP_character_id } from "@custom_types/common";
 import { character_id, user_id, user_online_id } from "@custom_types/ids";
-import { ModelVariant } from "../types";
+import fs from "fs";
 import { SAVE_GAME_PATH } from "../../SAVE_GAME_PATH";
-import { Template } from "../templates";
-import { Character } from "../character/character";
-import { ItemSystem } from "../systems/items/item_system";
-import { EventInventory } from "../events/inventory_events";
 import { DataID } from "../data/data_id";
 import { Data } from "../data/data_objects";
-import { ARMOUR, WEAPON } from "@content/content";
+import { Character } from "../data/entities/character";
+import { EventInventory } from "../events/inventory_events";
+import { Convert, Link } from "../systems_communication";
+import { Template } from "../templates";
+import { ModelVariant } from "../types";
+import { UI_Part, Update } from "./causality_graph";
+import { Alerts } from "./network_actions/alerts";
+import { SendUpdate } from "./network_actions/updates";
 var path = require('path')
 
 type LoginResponse = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}

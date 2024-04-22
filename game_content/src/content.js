@@ -147,7 +147,7 @@ ArmourConfiguration.ARMOUR_SLOT = [9 /* EQUIP_SLOT.HELMET */, 9 /* EQUIP_SLOT.HE
 ArmourConfiguration.ARMOUR_SLOT_STRING = ["helmet", "helmet", "helmet", "helmet", "mail", "mail", "mail", "mail", "mail", "dress", "pants", "pants", "boots", "gauntlet-right", "gauntlet-right", "gauntlet-left", "gauntlet-left", "socks", "pauldron-left", "pauldron-left", "pauldron-right", "robe", "belt", "shirt",];
 // Numbers: 
 ArmourConfiguration.ARMOUR_MAGIC_POWER = [0, 0, 0, 3, 0, 0, 0, 1, 10, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,];
-ArmourConfiguration.ARMOUR_THICKNESS = [2.0, 0.5, 1.0, 0.1, 2.0, 1.0, 0.5, 0.5, 1.0, 1.0, 4.0, 4.0, 2.0, 0.5, 0.2, 0.5, 0.2, 0.1, 2.0, 1.0, 2.0, 2.0, 0.5, 5.0,];
+ArmourConfiguration.ARMOUR_THICKNESS = [2.0, 0.5, 1.0, 0.01, 2.0, 1.0, 0.5, 0.5, 1.0, 1.0, 4.0, 4.0, 2.0, 0.5, 0.2, 0.5, 0.2, 0.1, 2.0, 1.0, 2.0, 2.0, 0.5, 5.0,];
 ArmourConfiguration.ARMOUR_SIZE = [3.0, 3.0, 3.0, 3.0, 10.0, 10.0, 10.0, 8.0, 8.0, 10.0, 6.0, 6.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.5, 2.5, 2.5, 15.0, 1.0, 2.0,];
 ArmourConfiguration.ARMOUR_SECONDARY_SIZE = [0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,];
 ArmourConfiguration.ARMOUR_CRAFTABLE = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,];
@@ -363,96 +363,96 @@ class ArmourInstance {
 export class MaterialStorage {
     // Retrieve instance of MaterialInstance 
     static get(id) {
-        if (!(id in this.instances)) {
+        if (!(id in MaterialStorage.instances)) {
             throw new Error(`Invalid Material id: ${id}`);
         }
-        return this.instances[id];
+        return MaterialStorage.instances[id];
     }
     static from_string(id) {
         if (!(id in MaterialConfiguration.MATERIAL_FROM_STRING)) {
             throw new Error(`Invalid Material id: ${id}`);
         }
-        return this.instances[MaterialConfiguration.MATERIAL_FROM_STRING[id]];
+        return MaterialStorage.instances[MaterialConfiguration.MATERIAL_FROM_STRING[id]];
     }
 }
 MaterialStorage.instances = [new MaterialInstance(0 /* MATERIAL.ARROW_BONE */), new MaterialInstance(1 /* MATERIAL.ARROW_ZAZ */), new MaterialInstance(2 /* MATERIAL.COTTON */), new MaterialInstance(3 /* MATERIAL.TEXTILE */), new MaterialInstance(4 /* MATERIAL.SMALL_BONE_RAT */), new MaterialInstance(5 /* MATERIAL.SMALL_BONE_HUMAN */), new MaterialInstance(6 /* MATERIAL.SMALL_BONE_GRACI */), new MaterialInstance(7 /* MATERIAL.BONE_RAT */), new MaterialInstance(8 /* MATERIAL.BONE_HUMAN */), new MaterialInstance(9 /* MATERIAL.BONE_GRACI */), new MaterialInstance(10 /* MATERIAL.SKIN_RAT */), new MaterialInstance(11 /* MATERIAL.SKIN_HUMAN */), new MaterialInstance(12 /* MATERIAL.SKIN_GRACI */), new MaterialInstance(13 /* MATERIAL.SKIN_BALL */), new MaterialInstance(14 /* MATERIAL.LEATHER_RAT */), new MaterialInstance(15 /* MATERIAL.LEATHER_HUMAN */), new MaterialInstance(16 /* MATERIAL.LEATHER_GRACI */), new MaterialInstance(17 /* MATERIAL.LEATHER_BALL */), new MaterialInstance(18 /* MATERIAL.MEAT_RAT */), new MaterialInstance(19 /* MATERIAL.MEAT_RAT_FRIED */), new MaterialInstance(20 /* MATERIAL.MEAT_ELODINO */), new MaterialInstance(21 /* MATERIAL.MEAT_BALL */), new MaterialInstance(22 /* MATERIAL.MEAT_HUMAN */), new MaterialInstance(23 /* MATERIAL.MEAT_GRACI */), new MaterialInstance(24 /* MATERIAL.MEAT_HUMAN_FRIED */), new MaterialInstance(25 /* MATERIAL.MEAT_GRACI_FRIED */), new MaterialInstance(26 /* MATERIAL.FISH_OKU */), new MaterialInstance(27 /* MATERIAL.FISH_OKU_FRIED */), new MaterialInstance(28 /* MATERIAL.BERRY_FIE */), new MaterialInstance(29 /* MATERIAL.BERRY_ZAZ */), new MaterialInstance(30 /* MATERIAL.ZAZ */), new MaterialInstance(31 /* MATERIAL.WOOD_RED */), new MaterialInstance(32 /* MATERIAL.WOOD_RED_PLATE */), new MaterialInstance(33 /* MATERIAL.HAIR_GRACI */), new MaterialInstance(34 /* MATERIAL.STEEL */)];
 export class MaterialCategoryStorage {
     // Retrieve instance of MaterialCategoryInstance 
     static get(id) {
-        if (!(id in this.instances)) {
+        if (!(id in MaterialCategoryStorage.instances)) {
             throw new Error(`Invalid MaterialCategory id: ${id}`);
         }
-        return this.instances[id];
+        return MaterialCategoryStorage.instances[id];
     }
     static from_string(id) {
         if (!(id in MaterialCategoryConfiguration.CATEGORY_FROM_STRING)) {
             throw new Error(`Invalid MaterialCategory id: ${id}`);
         }
-        return this.instances[MaterialCategoryConfiguration.CATEGORY_FROM_STRING[id]];
+        return MaterialCategoryStorage.instances[MaterialCategoryConfiguration.CATEGORY_FROM_STRING[id]];
     }
 }
 MaterialCategoryStorage.instances = [new MaterialCategoryInstance(0 /* MATERIAL_CATEGORY.BOW_AMMO */), new MaterialCategoryInstance(1 /* MATERIAL_CATEGORY.PLANT */), new MaterialCategoryInstance(2 /* MATERIAL_CATEGORY.MATERIAL */), new MaterialCategoryInstance(3 /* MATERIAL_CATEGORY.BONE */), new MaterialCategoryInstance(4 /* MATERIAL_CATEGORY.SKIN */), new MaterialCategoryInstance(5 /* MATERIAL_CATEGORY.LEATHER */), new MaterialCategoryInstance(6 /* MATERIAL_CATEGORY.MEAT */), new MaterialCategoryInstance(7 /* MATERIAL_CATEGORY.FISH */), new MaterialCategoryInstance(8 /* MATERIAL_CATEGORY.FOOD */), new MaterialCategoryInstance(9 /* MATERIAL_CATEGORY.FRUIT */), new MaterialCategoryInstance(10 /* MATERIAL_CATEGORY.WOOD */), new MaterialCategoryInstance(11 /* MATERIAL_CATEGORY.TEXTILE */), new MaterialCategoryInstance(12 /* MATERIAL_CATEGORY.METAL */)];
 export class EquipSlotStorage {
     // Retrieve instance of EquipSlotInstance 
     static get(id) {
-        if (!(id in this.instances)) {
+        if (!(id in EquipSlotStorage.instances)) {
             throw new Error(`Invalid EquipSlot id: ${id}`);
         }
-        return this.instances[id];
+        return EquipSlotStorage.instances[id];
     }
     static from_string(id) {
         if (!(id in EquipSlotConfiguration.SLOT_FROM_STRING)) {
             throw new Error(`Invalid EquipSlot id: ${id}`);
         }
-        return this.instances[EquipSlotConfiguration.SLOT_FROM_STRING[id]];
+        return EquipSlotStorage.instances[EquipSlotConfiguration.SLOT_FROM_STRING[id]];
     }
 }
 EquipSlotStorage.instances = [new EquipSlotInstance(0 /* EQUIP_SLOT.WEAPON */), new EquipSlotInstance(1 /* EQUIP_SLOT.SECONDARY */), new EquipSlotInstance(2 /* EQUIP_SLOT.AMULET */), new EquipSlotInstance(3 /* EQUIP_SLOT.MAIL */), new EquipSlotInstance(4 /* EQUIP_SLOT.PAULDRON_LEFT */), new EquipSlotInstance(5 /* EQUIP_SLOT.PAULDRON_RIGHT */), new EquipSlotInstance(6 /* EQUIP_SLOT.GAUNTLET_LEFT */), new EquipSlotInstance(7 /* EQUIP_SLOT.GAUNTLET_RIGHT */), new EquipSlotInstance(8 /* EQUIP_SLOT.BOOTS */), new EquipSlotInstance(9 /* EQUIP_SLOT.HELMET */), new EquipSlotInstance(10 /* EQUIP_SLOT.BELT */), new EquipSlotInstance(11 /* EQUIP_SLOT.ROBE */), new EquipSlotInstance(12 /* EQUIP_SLOT.SHIRT */), new EquipSlotInstance(13 /* EQUIP_SLOT.PANTS */), new EquipSlotInstance(14 /* EQUIP_SLOT.DRESS */), new EquipSlotInstance(15 /* EQUIP_SLOT.SOCKS */), new EquipSlotInstance(16 /* EQUIP_SLOT.NONE */)];
 export class ImpactStorage {
     // Retrieve instance of ImpactInstance 
     static get(id) {
-        if (!(id in this.instances)) {
+        if (!(id in ImpactStorage.instances)) {
             throw new Error(`Invalid Impact id: ${id}`);
         }
-        return this.instances[id];
+        return ImpactStorage.instances[id];
     }
     static from_string(id) {
         if (!(id in ImpactConfiguration.IMPACT_FROM_STRING)) {
             throw new Error(`Invalid Impact id: ${id}`);
         }
-        return this.instances[ImpactConfiguration.IMPACT_FROM_STRING[id]];
+        return ImpactStorage.instances[ImpactConfiguration.IMPACT_FROM_STRING[id]];
     }
 }
 ImpactStorage.instances = [new ImpactInstance(0 /* IMPACT_TYPE.POINT */), new ImpactInstance(1 /* IMPACT_TYPE.BLADE */), new ImpactInstance(2 /* IMPACT_TYPE.BLUNT */), new ImpactInstance(3 /* IMPACT_TYPE.NONE */)];
 export class WeaponStorage {
     // Retrieve instance of WeaponInstance 
     static get(id) {
-        if (!(id in this.instances)) {
+        if (!(id in WeaponStorage.instances)) {
             throw new Error(`Invalid Weapon id: ${id}`);
         }
-        return this.instances[id];
+        return WeaponStorage.instances[id];
     }
     static from_string(id) {
         if (!(id in WeaponConfiguration.WEAPON_FROM_STRING)) {
             throw new Error(`Invalid Weapon id: ${id}`);
         }
-        return this.instances[WeaponConfiguration.WEAPON_FROM_STRING[id]];
+        return WeaponStorage.instances[WeaponConfiguration.WEAPON_FROM_STRING[id]];
     }
 }
 WeaponStorage.instances = [new WeaponInstance(0 /* WEAPON.BOW_WOOD */), new WeaponInstance(1 /* WEAPON.SPEAR_WOOD_RED */), new WeaponInstance(2 /* WEAPON.SPEAR_WOOD_RED_BONE_RAT */), new WeaponInstance(3 /* WEAPON.DAGGER_BONE_RAT */), new WeaponInstance(4 /* WEAPON.SWORD_STEEL */), new WeaponInstance(5 /* WEAPON.MACE_WOOD_RED */)];
 export class ArmourStorage {
     // Retrieve instance of ArmourInstance 
     static get(id) {
-        if (!(id in this.instances)) {
+        if (!(id in ArmourStorage.instances)) {
             throw new Error(`Invalid Armour id: ${id}`);
         }
-        return this.instances[id];
+        return ArmourStorage.instances[id];
     }
     static from_string(id) {
         if (!(id in ArmourConfiguration.ARMOUR_FROM_STRING)) {
             throw new Error(`Invalid Armour id: ${id}`);
         }
-        return this.instances[ArmourConfiguration.ARMOUR_FROM_STRING[id]];
+        return ArmourStorage.instances[ArmourConfiguration.ARMOUR_FROM_STRING[id]];
     }
 }
 ArmourStorage.instances = [new ArmourInstance(0 /* ARMOUR.HELMET_SKULL_RAT */), new ArmourInstance(1 /* ARMOUR.HELMET_TEXTILE */), new ArmourInstance(2 /* ARMOUR.HELMET_LEATHER_RAT */), new ArmourInstance(3 /* ARMOUR.HELMET_HAIR_GRACI */), new ArmourInstance(4 /* ARMOUR.MAIL_BONE_RAT */), new ArmourInstance(5 /* ARMOUR.MAIL_LEATHER_RAT */), new ArmourInstance(6 /* ARMOUR.MAIL_TEXTILE */), new ArmourInstance(7 /* ARMOUR.MAIL_LEATHER_BALL */), new ArmourInstance(8 /* ARMOUR.MAIL_LEATHER_GRACI */), new ArmourInstance(9 /* ARMOUR.DRESS_MEAT_ELODINO */), new ArmourInstance(10 /* ARMOUR.PANTS_LEATHER_RAT */), new ArmourInstance(11 /* ARMOUR.PANTS_TEXTILE */), new ArmourInstance(12 /* ARMOUR.BOOTS_LEATHER_RAT */), new ArmourInstance(13 /* ARMOUR.GAUNTLET_RIGHT_LEATHER_RAT */), new ArmourInstance(14 /* ARMOUR.GAUNTLET_RIGHT_TEXTILE */), new ArmourInstance(15 /* ARMOUR.GAUNTLET_LEFT_LEATHER_RAT */), new ArmourInstance(16 /* ARMOUR.GAUNTLET_LEFT_TEXTILE */), new ArmourInstance(17 /* ARMOUR.SOCKS_TEXTILE */), new ArmourInstance(18 /* ARMOUR.PAULDRON_LEFT_BONE_RAT */), new ArmourInstance(19 /* ARMOUR.PAULDRON_LEFT_LEATHER_RAT */), new ArmourInstance(20 /* ARMOUR.PAULDRON_RIGHT_BONE_RAT */), new ArmourInstance(21 /* ARMOUR.ROBE_LEATHER_RAT */), new ArmourInstance(22 /* ARMOUR.BELT_TEXTILE */), new ArmourInstance(23 /* ARMOUR.SHIRT_TEXTILE */)];

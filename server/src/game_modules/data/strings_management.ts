@@ -1,7 +1,7 @@
 import { CharacterTemplate } from "../types";
-import { Character } from "../character/character";
-import { Inventory } from "../inventories/inventory";
-import { Equip } from "../inventories/equip";
+import { Character } from "./entities/character";
+import { Inventory } from "./entities/inventory";
+import { Equip } from "./entities/equip";
 
 export function character_to_string(data: Character) {
     return JSON.stringify({
@@ -18,6 +18,8 @@ export function character_to_string(data: Character) {
         battle_id: data.battle_id,
         user_id: data.user_id,
         location_id: data.location_id,
+
+        open_shop: data.open_shop,
 
         explored : data.explored,
         equip: data.equip,
@@ -60,6 +62,8 @@ export function string_to_character(s: string) {
     character._skills = data._skills
     character._perks = data._perks
     character._traits = data._traits
+
+    character.open_shop = data.open_shop
     return character
 }
 

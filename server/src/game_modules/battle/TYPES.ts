@@ -1,5 +1,5 @@
 import {Battle} from "./classes/battle"
-import {Character} from "../character/character"
+import {Character} from "../data/entities/character"
 import { action_points, battle_position } from "@custom_types/battle_data";
 
 export type BattleApCost = (battle: Battle, character: Character, ) => action_points;

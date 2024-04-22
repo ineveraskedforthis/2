@@ -4,19 +4,19 @@ exports.SocketManager = void 0;
 const user_1 = require("./user");
 const user_manager_1 = require("./user_manager");
 // import { SECTIONS } from "../static_data/map_definitions";
+const content_1 = require("../../.././../game_content/src/content");
+const actions_00_1 = require("../actions/actions_00");
+const crafts_storage_1 = require("../craft/crafts_storage");
+const skills_1 = require("../static_data/skills");
+const systems_communication_1 = require("../systems_communication");
+const actions_1 = require("./network_actions/actions");
+const alerts_1 = require("./network_actions/alerts");
 const auth_1 = require("./network_actions/auth");
 const common_validations_1 = require("./network_actions/common_validations");
-const alerts_1 = require("./network_actions/alerts");
-const actions_1 = require("./network_actions/actions");
-const actions_00_1 = require("../actions/actions_00");
-const run_event_1 = require("./network_actions/run_event");
-const systems_communication_1 = require("../systems_communication");
+const dialog_1 = require("./network_actions/dialog");
 const inventory_management_1 = require("./network_actions/inventory_management");
 const request_1 = require("./network_actions/request");
-const skills_1 = require("../static_data/skills");
-const crafts_storage_1 = require("../craft/crafts_storage");
-const dialog_1 = require("./network_actions/dialog");
-const content_1 = require("../../.././../game_content/src/content");
+const run_event_1 = require("./network_actions/run_event");
 class SocketManager {
     // sessions: {[_ in string]: number}
     constructor(io) {

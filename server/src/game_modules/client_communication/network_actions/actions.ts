@@ -1,16 +1,16 @@
-import { ActionManager } from "../../actions/manager";
+import { ActionPositionKeys, ActionUnitKeys, battle_position } from "@custom_types/battle_data";
+import { character_id } from "@custom_types/ids";
 import { CharacterAction } from "../../actions/actions_00";
+import { ActionManager } from "../../actions/manager";
+import { battle_action_character, battle_action_position, battle_action_self } from "../../battle/actions";
+import { CharactersHeap } from "../../battle/classes/heap";
+import { Data } from "../../data/data_objects";
+import { CharacterMapAction, TriggerResponse } from "../../data/entities/character";
 import { Convert } from "../../systems_communication";
 import { SocketWrapper, User } from "../user";
 import { UserManagement } from "../user_manager";
 import { Alerts } from "./alerts";
-import { CharacterMapAction, TriggerResponse } from "../../actions/types";
-import { battle_action_position, battle_action_self, battle_action_character } from "../../battle/actions";
 import { Validator } from "./common_validations";
-import { Data } from "../../data/data_objects";
-import { CharactersHeap } from "../../battle/classes/heap";
-import { character_id } from "@custom_types/ids";
-import { ActionPositionKeys, ActionUnitKeys, battle_position } from "@custom_types/battle_data";
 
 export namespace HandleAction {
     function response_to_alert(user: User, response: TriggerResponse) {
