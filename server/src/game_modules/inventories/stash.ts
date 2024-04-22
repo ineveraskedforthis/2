@@ -79,4 +79,10 @@ export class Stash {
             this.transfer(target, tag, this.get(tag))
         }
     }
+
+    clear() {
+        for (let tag of MaterialConfiguration.MATERIAL) {
+            this.set(tag, 0)
+        }
+    }
 }

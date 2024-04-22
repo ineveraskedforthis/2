@@ -411,6 +411,13 @@ var DataID;
             last_id_character = Math.max(x, last_id_character);
         }
         Character.update_last_id = update_last_id;
+        function for_each_ownership(character, callback) {
+            let locations = character_id_owned_location_set[character];
+            for (let id of locations.values()) {
+                callback(id);
+            }
+        }
+        Character.for_each_ownership = for_each_ownership;
         function unset_all_ownership(character) {
             let locations = character_id_owned_location_set[character];
             for (let id of locations.values()) {

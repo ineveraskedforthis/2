@@ -437,6 +437,13 @@ export namespace DataID {
             last_id_character = Math.max(x, last_id_character) as character_id
         }
 
+        export function for_each_ownership(character: character_id, callback : (location: location_id) => void) {
+            let locations = character_id_owned_location_set[character]
+            for (let id of locations.values()) {
+                callback(id)
+            }
+        }
+
         export function unset_all_ownership(character: character_id) {
             let locations = character_id_owned_location_set[character]
             for (let id of locations.values()) {

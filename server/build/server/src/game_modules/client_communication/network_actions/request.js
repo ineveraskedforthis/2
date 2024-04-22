@@ -50,7 +50,7 @@ var Request;
                 id: id,
                 room_cost: scripted_values_1.ScriptedValue.rest_price(character, location),
                 guests: guests.length,
-                durability: scripted_values_1.ScriptedValue.max_devastation - location.devastation,
+                durability: scripted_values_1.ScriptedValue.rest_quality(location),
                 owner_id: owner,
                 owner_name: name,
                 cell_id: location.cell_id,

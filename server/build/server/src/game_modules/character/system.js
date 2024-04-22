@@ -4,7 +4,6 @@ exports.CharacterSystem = void 0;
 const damage_types_1 = require("../damage_types");
 const Damage_1 = require("../Damage");
 const generate_loot_1 = require("../races/generate_loot");
-const ai_manager_1 = require("../AI/ai_manager");
 const basic_functions_1 = require("../calculations/basic_functions");
 const effects_1 = require("../effects/effects");
 const SkillList_1 = require("./SkillList");
@@ -13,6 +12,8 @@ const resists_1 = require("../races/resists");
 const item_system_1 = require("../systems/items/item_system");
 const data_objects_1 = require("../data/data_objects");
 const content_1 = require("../../.././../game_content/src/content");
+const user_manager_1 = require("../client_communication/user_manager");
+const decide_1 = require("../AI/Decide/decide");
 var ai_campaign_decision_timer = 0;
 var character_state_update_timer = 0;
 var CharacterSystem;
@@ -266,18 +267,25 @@ var CharacterSystem;
         return loot;
     }
     CharacterSystem.rgo_check = rgo_check;
+    function can_eat(character, material) {
+        if (character.race == "rat") {
+            if (material.category == 6 /* MATERIAL_CATEGORY.MEAT */)
+                return true;
+            if (material.category == 1 /* MATERIAL_CATEGORY.PLANT */)
+                return true;
+        }
+        if (material.category == 9 /* MATERIAL_CATEGORY.FRUIT */)
+            return true;
+        if (material.category == 8 /* MATERIAL_CATEGORY.FOOD */)
+            return true;
+        return false;
+    }
+    CharacterSystem.can_eat = can_eat;
     function update(dt) {
         ai_campaign_decision_timer += dt;
         character_state_update_timer += dt;
         if (ai_campaign_decision_timer > 8) {
-            data_objects_1.Data.Characters.for_each((character) => {
-                if (character.dead()) {
-                    return;
-                }
-                if (Math.random() > 0.6) {
-                    ai_manager_1.CampaignAI.decision(character);
-                }
-            });
+            (0, decide_1.decide)();
             ai_campaign_decision_timer = 0;
         }
         if (character_state_update_timer > 10) {
@@ -286,8 +294,7 @@ var CharacterSystem;
                     return;
                 }
                 if (!character.in_battle()) {
-                    effects_1.Effect.Change.rage(character, -1, "Rest" /* CHANGE_REASON.REST */);
-                    effects_1.Effect.rest_location_tick(character);
+                    effects_1.Effect.Change.rage(character, -2, "Rest" /* CHANGE_REASON.REST */);
                     for (const material_id of content_1.MaterialConfiguration.MATERIAL) {
                         const material = content_1.MaterialStorage.get(material_id);
                         if (material.category == 7 /* MATERIAL_CATEGORY.FISH */)
@@ -305,6 +312,14 @@ var CharacterSystem;
         }
     }
     CharacterSystem.update = update;
+    function eat(character, material) {
+        character.stash.inc(material.id, -1);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.STASH */);
+        effects_1.Effect.Change.hp(character, Math.round(material.unit_size * material.density * 20 + material.magic_power * 5 + 1), "Eating" /* CHANGE_REASON.EATING */);
+        effects_1.Effect.Change.stress(character, -Math.round(material.unit_size * material.density * 5 + material.magic_power * 10 + 1), "Eating" /* CHANGE_REASON.EATING */);
+        effects_1.Effect.Change.fatigue(character, -Math.round(material.unit_size * material.density * 20 + material.magic_power * 5 + 1), "Eating" /* CHANGE_REASON.EATING */);
+    }
+    CharacterSystem.eat = eat;
     function battle_update(character) {
     }
     CharacterSystem.battle_update = battle_update;
@@ -318,5 +333,23 @@ var CharacterSystem;
             character.equip.data.backpack.limit = 10;
     }
     CharacterSystem.close_shop = close_shop;
+    function can_bulk_craft(character, craft) {
+        for (const item of craft.input) {
+            if (character.stash.get(item.material) < item.amount) {
+                return false;
+            }
+        }
+        return true;
+    }
+    CharacterSystem.can_bulk_craft = can_bulk_craft;
+    function can_item_craft(character, craft) {
+        for (const item of craft.input) {
+            if (character.stash.get(item.material) < item.amount) {
+                return false;
+            }
+        }
+        return true;
+    }
+    CharacterSystem.can_item_craft = can_item_craft;
 })(CharacterSystem || (exports.CharacterSystem = CharacterSystem = {}));
 

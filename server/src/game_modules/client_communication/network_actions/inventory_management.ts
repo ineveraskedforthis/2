@@ -23,28 +23,17 @@ function r(f: (user: User, character: Character) => void): (sw: SocketWrapper) =
 
 export namespace InventoryCommands {
     export function eat(sw: SocketWrapper, msg: unknown) {
-        // console.log(msg)
-        // console.log(1)
+
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
         if (character.in_battle()) { return }
 
-        // console.log(2)
         const id = String(msg)
         if (!MaterialConfiguration.is_valid_string_id(id)) return
-        // console.log(3)
+
         const material = MaterialStorage.from_string(id);
         if ((material.category != MATERIAL_CATEGORY.FOOD) && (material.category != MATERIAL_CATEGORY.FRUIT)) return
-        // console.log(4)
-
         if (character.stash.get(material.id) == 0) Alerts.generic_user_alert(user, "alert", "You don't have this item")
-        // console.log(5)
-
-        character.stash.inc(material.id, -1)
-        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH)
-        Effect.Change.hp(character, Math.round(material.unit_size * material.density * 20 + material.magic_power * 5 + 1), CHANGE_REASON.EATING)
-        Effect.Change.stress(character, -Math.round(material.unit_size * material.density * 5 + material.magic_power * 10 + 1), CHANGE_REASON.EATING)
-        Effect.Change.fatigue(character, -Math.round(material.unit_size * material.density * 20 + material.magic_power * 5 + 1), CHANGE_REASON.EATING)
     }
 
     export function equip(sw: SocketWrapper, msg: number) {

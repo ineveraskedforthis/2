@@ -144,6 +144,7 @@ app.get('/', (req, res) => {
 server.listen(port, () => {
     console.log('listening on *:' + port);
 });
+require(".././../game_content/src/content.js");
 const game_launch_js_1 = require("./game_launch.js");
 const data_id_js_1 = require("./game_modules/data/data_id.js");
 const data_objects_js_1 = require("./game_modules/data/data_objects.js");
@@ -152,3 +153,4 @@ const systems_communication_js_1 = require("./game_modules/systems_communication
 exports.io = require('socket.io')(server, { path: '/socket.io' });
 exports.socket_manager = new socket_manager_js_1.SocketManager(exports.io);
 (0, game_launch_js_1.launch)(server);
+

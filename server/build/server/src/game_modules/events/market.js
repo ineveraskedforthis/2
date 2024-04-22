@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventMarket = void 0;
-const ACTIONS_BASIC_1 = require("../AI/ACTIONS_BASIC");
 const basic_functions_1 = require("../calculations/basic_functions");
 const user_manager_1 = require("../client_communication/user_manager");
 const system_1 = require("../market/system");
 const effects_1 = require("../effects/effects");
 const data_objects_1 = require("../data/data_objects");
 const data_id_1 = require("../data/data_id");
+const common_1 = require("../AI/HelperFunctions/common");
 var EventMarket;
 (function (EventMarket) {
     function buy(character, material, amount, price) {
@@ -38,7 +38,7 @@ var EventMarket;
         const order = data_objects_1.Data.MarketOrders.from_id(order_id);
         const seller = data_objects_1.Data.Characters.from_id(order.owner_id);
         if ((seller.user_id == undefined) && (result.tag == 'ok')) {
-            (0, ACTIONS_BASIC_1.roll_price_belief_sell_increase)(seller, order.material, (0, basic_functions_1.trim)(Math.min(amount, result.amount), 1, 100) / 50);
+            common_1.AIfunctions.roll_price_belief_sell_increase(seller, order.material, (0, basic_functions_1.trim)(Math.min(amount, result.amount), 1, 100) / 50);
         }
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 8 /* UI_Part.STASH */);
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 9 /* UI_Part.SAVINGS */);
@@ -56,7 +56,7 @@ var EventMarket;
         const order = data_objects_1.Data.MarketOrders.from_id(order_id);
         const buyer = data_objects_1.Data.Characters.from_id(order.owner_id);
         if ((seller.user_id == undefined) && (result.tag == 'ok')) {
-            (0, ACTIONS_BASIC_1.roll_price_belief_sell_decrease)(seller, order.material, (0, basic_functions_1.trim)(Math.min(amount, result.amount), 1, 100) / 50);
+            common_1.AIfunctions.roll_price_belief_sell_decrease(seller, order.material, (0, basic_functions_1.trim)(Math.min(amount, result.amount), 1, 100) / 50);
         }
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 8 /* UI_Part.STASH */);
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 9 /* UI_Part.SAVINGS */);
@@ -112,4 +112,60 @@ var EventMarket;
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 7 /* UI_Part.BELONGINGS */);
     }
     EventMarket.remove_bulk_order = remove_bulk_order;
+    function sell_smart_with_limits(character, material, min_price, max_amount) {
+        const sold = sell_with_limits(character, material, min_price, max_amount);
+        sell(character, material, max_amount - sold, min_price);
+    }
+    EventMarket.sell_smart_with_limits = sell_smart_with_limits;
+    function buy_smart_with_limits(character, material, max_price, max_amount) {
+        const bought = buy_with_limits(character, material, max_price, max_amount);
+        buy(character, material, max_amount = bought, max_price);
+    }
+    EventMarket.buy_smart_with_limits = buy_smart_with_limits;
+    function sell_with_limits(character, material, min_price, max_amount) {
+        let orders = data_id_1.DataID.Cells.market_order_id_list(character.cell_id);
+        let best_order = undefined;
+        let best_price = min_price;
+        for (let item of orders) {
+            let order = data_objects_1.Data.MarketOrders.from_id(item);
+            if (order.typ == 'buy')
+                continue;
+            if (order.material != material)
+                continue;
+            if ((best_price <= order.price) && (order.amount > 0)) {
+                best_price = order.price;
+                best_order = order;
+            }
+        }
+        if (best_order == undefined)
+            return 0;
+        if (character.savings.get() >= best_price) {
+            return execute_buy_order(character, best_order.id, Math.min(Math.floor(character.savings.get() / best_price), max_amount));
+        }
+        return 0;
+    }
+    EventMarket.sell_with_limits = sell_with_limits;
+    function buy_with_limits(character, material, max_price, max_amount) {
+        let orders = data_id_1.DataID.Cells.market_order_id_list(character.cell_id);
+        let best_order = undefined;
+        let best_price = max_price;
+        for (let item of orders) {
+            let order = data_objects_1.Data.MarketOrders.from_id(item);
+            if (order.typ == 'buy')
+                continue;
+            if (order.material != material)
+                continue;
+            if ((best_price >= order.price) && (order.amount > 0)) {
+                best_price = order.price;
+                best_order = order;
+            }
+        }
+        if (best_order == undefined)
+            return 0;
+        if (character.savings.get() >= best_price) {
+            return execute_sell_order(character, best_order.id, Math.min(Math.floor(character.savings.get() / best_price), max_amount));
+        }
+        return 0;
+    }
+    EventMarket.buy_with_limits = buy_with_limits;
 })(EventMarket || (exports.EventMarket = EventMarket = {}));

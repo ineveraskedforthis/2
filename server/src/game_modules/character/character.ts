@@ -57,8 +57,11 @@ export class Character {
 
     ai_state: AIstate;
     ai_memories: AImemory[];
+
     ai_price_belief_sell: Map<MATERIAL, money>;
     ai_price_belief_buy: Map<MATERIAL, money>;
+    ai_desired_stash: Stash;
+    ai_gathering_target: Stash;
 
     action: CharacterMapAction|undefined
     action_progress: number
@@ -126,6 +129,8 @@ export class Character {
         this.ai_memories = []
         this.ai_price_belief_buy = new Map()
         this.ai_price_belief_sell = new Map()
+        this.ai_desired_stash = new Stash()
+        this.ai_gathering_target = new Stash()
 
         this._skills = new SkillList()
         this._perks = {}
@@ -315,6 +320,25 @@ export class Character {
         return this.status.fatigue
     }
     get_stress() {
+        return this.status.stress
+    }
+
+    get hp() {
+        return this.status.hp
+    }
+    get hp_max() {
+        return MaxHP[this.max_hp]
+    }
+    get blood() {
+        return this.status.blood
+    }
+    get rage() {
+        return this.status.rage
+    }
+    get fatigue() {
+        return this.status.fatigue
+    }
+    get stress() {
         return this.status.stress
     }
 

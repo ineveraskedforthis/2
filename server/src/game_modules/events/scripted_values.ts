@@ -3,11 +3,15 @@ import { trim } from "../calculations/basic_functions";
 import { LocationInterface } from "../location/location_interface";
 import { money } from "@custom_types/common";
 import { Character } from "../character/character";
-import { DataID } from "../data/data_id";
 import { Data } from "../data/data_objects";
+import { CharacterSystem } from "../character/system";
 
 export namespace ScriptedValue {
     export const max_devastation = 100
+
+    export function rest_quality(location: LocationInterface) : number {
+        return max_devastation - location.devastation
+    }
 
     export function rest_price(character: Character, location: LocationInterface) : money {
         if (location.owner_id == character.id) return 0 as money;
@@ -63,9 +67,11 @@ export namespace ScriptedValue {
      * @return {number} The target fatigue.
      */
     export function target_fatigue(character: Character, location: LocationInterface): number {
+        const skill = CharacterSystem.skill(character, 'travelling')
+
         return rest_target_fatigue(
             rest_tier(character, location),
-            max_devastation - location.devastation,
+            ScriptedValue.rest_quality(location) + skill,
             character.race
         )
     }
@@ -94,9 +100,11 @@ export namespace ScriptedValue {
      * @return {number} The target fatigue.
      */
     export function target_stress(character: Character, location: LocationInterface): number {
+        const skill = CharacterSystem.skill(character, 'travelling')
+
         return rest_target_stress(
             rest_tier(character, location),
-            max_devastation - location.devastation,
+            ScriptedValue.rest_quality(location) + Math.floor(skill / 5),
             character.race
         )
     }

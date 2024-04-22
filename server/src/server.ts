@@ -152,7 +152,7 @@ server.listen(port, () => {
     console.log('listening on *:' + port);
 });
 
-
+import "@content/content.js"
 import { launch } from "./game_launch.js";
 import { DataID } from './game_modules/data/data_id.js';
 import { Data } from './game_modules/data/data_objects.js';

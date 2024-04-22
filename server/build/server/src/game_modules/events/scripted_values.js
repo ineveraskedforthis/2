@@ -3,9 +3,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ScriptedValue = void 0;
 const basic_functions_1 = require("../calculations/basic_functions");
 const data_objects_1 = require("../data/data_objects");
+const system_1 = require("../character/system");
 var ScriptedValue;
 (function (ScriptedValue) {
     ScriptedValue.max_devastation = 100;
+    function rest_quality(location) {
+        return ScriptedValue.max_devastation - location.devastation;
+    }
+    ScriptedValue.rest_quality = rest_quality;
     function rest_price(character, location) {
         if (location.owner_id == character.id)
             return 0;
@@ -62,7 +67,8 @@ var ScriptedValue;
      * @return {number} The target fatigue.
      */
     function target_fatigue(character, location) {
-        return rest_target_fatigue(rest_tier(character, location), ScriptedValue.max_devastation - location.devastation, character.race);
+        const skill = system_1.CharacterSystem.skill(character, 'travelling');
+        return rest_target_fatigue(rest_tier(character, location), ScriptedValue.rest_quality(location) + skill, character.race);
     }
     ScriptedValue.target_fatigue = target_fatigue;
     /**
@@ -92,7 +98,8 @@ var ScriptedValue;
      * @return {number} The target fatigue.
      */
     function target_stress(character, location) {
-        return rest_target_stress(rest_tier(character, location), ScriptedValue.max_devastation - location.devastation, character.race);
+        const skill = system_1.CharacterSystem.skill(character, 'travelling');
+        return rest_target_stress(rest_tier(character, location), ScriptedValue.rest_quality(location) + Math.floor(skill / 5), character.race);
     }
     ScriptedValue.target_stress = target_stress;
 })(ScriptedValue || (exports.ScriptedValue = ScriptedValue = {}));

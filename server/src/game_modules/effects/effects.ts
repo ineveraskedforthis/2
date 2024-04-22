@@ -282,29 +282,6 @@ export namespace Effect {
         location.devastation = trim(location.devastation - x, 0, ScriptedValue.max_devastation)
     }
 
-    export function rest_location_tick(character: Character) {
-        let location = Data.Locations.from_id(character.location_id)
-
-        if (location.owner_id != character.id) {
-            return
-        }
-
-        const tier = ScriptedValue.rest_tier(character, location)
-        let fatigue_target = ScriptedValue.rest_target_fatigue(tier, ScriptedValue.max_devastation - location.devastation, character.race)
-        let stress_target = ScriptedValue.rest_target_stress(tier, ScriptedValue.max_devastation - location.devastation, character.race)
-        if (fatigue_target < character.get_fatigue()) {
-            let fatigue_change = trim(-5, fatigue_target - character.get_fatigue(), 0)
-            Effect.Change.fatigue(character, fatigue_change, CHANGE_REASON.REST)
-        }
-
-        if (stress_target < character.get_stress()) {
-            let stress_change = trim(-5, stress_target - character.get_stress(), 0)
-            Effect.Change.stress(character, stress_change, CHANGE_REASON.REST)
-        }
-
-        location_quality_reduction_roll(location)
-    }
-
     export function spoilage(character: Character, good: MATERIAL, rate: number) {
         let dice = Math.random()
         if (dice < rate) {

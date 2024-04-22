@@ -8,8 +8,6 @@ const market_1 = require("../../events/market");
 const system_1 = require("../../market/system");
 const data_objects_1 = require("../../data/data_objects");
 const content_1 = require("../../../.././../game_content/src/content");
-const effects_1 = require("../../effects/effects");
-const user_manager_1 = require("../user_manager");
 function r(f) {
     return (sw) => {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
@@ -21,31 +19,20 @@ function r(f) {
 var InventoryCommands;
 (function (InventoryCommands) {
     function eat(sw, msg) {
-        // console.log(msg)
-        // console.log(1)
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined)
             return;
         if (character.in_battle()) {
             return;
         }
-        // console.log(2)
         const id = String(msg);
         if (!content_1.MaterialConfiguration.is_valid_string_id(id))
             return;
-        // console.log(3)
         const material = content_1.MaterialStorage.from_string(id);
         if ((material.category != 8 /* MATERIAL_CATEGORY.FOOD */) && (material.category != 9 /* MATERIAL_CATEGORY.FRUIT */))
             return;
-        // console.log(4)
         if (character.stash.get(material.id) == 0)
             alerts_1.Alerts.generic_user_alert(user, "alert", "You don't have this item");
-        // console.log(5)
-        character.stash.inc(material.id, -1);
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.STASH */);
-        effects_1.Effect.Change.hp(character, Math.round(material.unit_size * material.density * 20 + material.magic_power * 5 + 1), "Eating" /* CHANGE_REASON.EATING */);
-        effects_1.Effect.Change.stress(character, -Math.round(material.unit_size * material.density * 5 + material.magic_power * 10 + 1), "Eating" /* CHANGE_REASON.EATING */);
-        effects_1.Effect.Change.fatigue(character, -Math.round(material.unit_size * material.density * 20 + material.magic_power * 5 + 1), "Eating" /* CHANGE_REASON.EATING */);
     }
     InventoryCommands.eat = eat;
     function equip(sw, msg) {

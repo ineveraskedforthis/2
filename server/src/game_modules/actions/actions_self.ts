@@ -51,7 +51,6 @@ export const rest: CharacterMapAction = {
 
     check:  function(char:Character, cell: cell_id): TriggerResponse {
         if (char.in_battle()) return NotificationResponse.InBattle
-        const skill = CharacterSystem.skill(char, 'travelling')
         const location = Data.Locations.from_id(char.location_id)
         const price = ScriptedValue.rest_price(char, location)
         if (char.savings.get() < price) {
@@ -61,8 +60,9 @@ export const rest: CharacterMapAction = {
             }
             return {response: "Not enough resources", value: [lack_data]}
         }
-        const target_fatigue = ScriptedValue.rest_target_fatigue(ScriptedValue.rest_tier(char, location), skill, char.race)
-        const target_stress = ScriptedValue.rest_target_stress(ScriptedValue.rest_tier(char, location), skill, char.race)
+
+        const target_fatigue = ScriptedValue.target_fatigue(char, location);
+        const target_stress = ScriptedValue.target_stress(char, location)
         if ((char.get_fatigue() <= target_fatigue) && (char.get_stress() <= target_stress)) {
             return { response : 'Notification:', value: `You can't rest further in this location: Only ${target_fatigue} fatigue and ${target_stress} stress is achievable `}
         }
@@ -70,12 +70,14 @@ export const rest: CharacterMapAction = {
     },
 
     result:  function(char:Character, cell: cell_id) {
-        const skill = CharacterSystem.skill(char, 'travelling')
         const location = Data.Locations.from_id(char.location_id)
-        const target_fatigue = ScriptedValue.rest_target_fatigue(ScriptedValue.rest_tier(char, location), skill, char.race)
-        const target_stress = ScriptedValue.rest_target_stress(ScriptedValue.rest_tier(char, location), skill, char.race)
+
+        const target_fatigue = ScriptedValue.target_fatigue(char, location);
+        const target_stress = ScriptedValue.target_stress(char, location);
+
         if (target_fatigue < char.get_fatigue()) Effect.Set.fatigue(char, target_fatigue, CHANGE_REASON.REST)
         if (target_stress < char.get_stress()) Effect.Set.stress(char, target_stress, CHANGE_REASON.REST)
+        Effect.location_quality_reduction_roll(location)
 
         UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
     },

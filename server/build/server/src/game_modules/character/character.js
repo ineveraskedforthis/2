@@ -51,6 +51,8 @@ class Character {
         this.ai_memories = [];
         this.ai_price_belief_buy = new Map();
         this.ai_price_belief_sell = new Map();
+        this.ai_desired_stash = new stash_1.Stash();
+        this.ai_gathering_target = new stash_1.Stash();
         this._skills = new SkillList_1.SkillList();
         this._perks = {};
         this._traits = {};
@@ -209,6 +211,24 @@ class Character {
         return this.status.fatigue;
     }
     get_stress() {
+        return this.status.stress;
+    }
+    get hp() {
+        return this.status.hp;
+    }
+    get hp_max() {
+        return max_hp_1.MaxHP[this.max_hp];
+    }
+    get blood() {
+        return this.status.blood;
+    }
+    get rage() {
+        return this.status.rage;
+    }
+    get fatigue() {
+        return this.status.fatigue;
+    }
+    get stress() {
         return this.status.stress;
     }
     range() {

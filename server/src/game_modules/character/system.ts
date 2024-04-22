@@ -1,4 +1,4 @@
-import { skill } from "@custom_types/inventory";
+import { CraftBulkTemplate, CraftItemTemplate, skill } from "@custom_types/inventory";
 import { CharacterTemplate } from "../types";
 import { melee_attack_type } from "@custom_types/common";
 import { location_id } from "@custom_types/ids";
@@ -9,7 +9,6 @@ import { damage_types, DmgOps } from "../damage_types";
 import { Damage } from "../Damage";
 import { Character } from "./character";
 import { Loot } from "../races/generate_loot";
-import { CampaignAI } from "../AI/ai_manager";
 import { trim } from "../calculations/basic_functions";
 import { CHANGE_REASON, Effect } from "../effects/effects";
 import { money } from "@custom_types/common";
@@ -19,8 +18,11 @@ import { BaseStats } from "../races/stats";
 import { BaseResists } from "../races/resists";
 import { ItemSystem } from "../systems/items/item_system";
 import { Data } from "../data/data_objects";
-import { EQUIP_SLOT, IMPACT_TYPE, MATERIAL, MATERIAL_CATEGORY, MaterialConfiguration, MaterialStorage } from "@content/content";
+import { EQUIP_SLOT, IMPACT_TYPE, MATERIAL, MATERIAL_CATEGORY, MaterialConfiguration, MaterialData, MaterialStorage } from "@content/content";
 import { weapon_skill_tag } from "../client_communication/network_actions/updates";
+import { UI_Part } from "../client_communication/causality_graph";
+import { UserManagement } from "../client_communication/user_manager";
+import { decide } from "../AI/Decide/decide";
 var ai_campaign_decision_timer = 0
 var character_state_update_timer = 0
 
@@ -286,22 +288,26 @@ export namespace CharacterSystem {
         return loot
     }
 
+    export function can_eat(character: Character, material: MaterialData) : boolean {
+        if (character.race == "rat") {
+            if (material.category == MATERIAL_CATEGORY.MEAT) return true
+            if (material.category == MATERIAL_CATEGORY.PLANT) return true
+        }
+
+        if (material.category == MATERIAL_CATEGORY.FRUIT) return true
+        if (material.category == MATERIAL_CATEGORY.FOOD) return true
+
+        return false
+    }
+
     export function update(dt: number) {
         ai_campaign_decision_timer += dt
         character_state_update_timer += dt
 
         if (ai_campaign_decision_timer > 8) {
-            Data.Characters.for_each((character) => {
-                if (character.dead()) {
-                    return
-                }
-                if (Math.random() > 0.6) {
-                    CampaignAI.decision(character)
-                }
-            })
+            decide()
             ai_campaign_decision_timer = 0
         }
-
 
         if (character_state_update_timer > 10) {
             Data.Characters.for_each((character) => {
@@ -309,8 +315,7 @@ export namespace CharacterSystem {
                     return
                 }
                 if (!character.in_battle()) {
-                    Effect.Change.rage(character, -1, CHANGE_REASON.REST)
-                    Effect.rest_location_tick(character)
+                    Effect.Change.rage(character, -2, CHANGE_REASON.REST);
                     for (const material_id of MaterialConfiguration.MATERIAL) {
                         const material = MaterialStorage.get(material_id)
                         if (material.category == MATERIAL_CATEGORY.FISH) Effect.spoilage(character, material_id, 0.01)
@@ -325,6 +330,14 @@ export namespace CharacterSystem {
         }
     }
 
+    export function eat(character: Character, material: MaterialData) {
+        character.stash.inc(material.id, -1)
+        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH)
+        Effect.Change.hp(character, Math.round(material.unit_size * material.density * 20 + material.magic_power * 5 + 1), CHANGE_REASON.EATING)
+        Effect.Change.stress(character, -Math.round(material.unit_size * material.density * 5 + material.magic_power * 10 + 1), CHANGE_REASON.EATING)
+        Effect.Change.fatigue(character, -Math.round(material.unit_size * material.density * 20 + material.magic_power * 5 + 1), CHANGE_REASON.EATING)
+    }
+
     export function battle_update(character: Character) {
 
     }
@@ -337,5 +350,25 @@ export namespace CharacterSystem {
     export function close_shop(character: Character) {
         character.open_shop = false,
         character.equip.data.backpack.limit = 10
+    }
+
+    export function can_bulk_craft(character: Character, craft: CraftBulkTemplate) {
+        for (const item of craft.input) {
+            if (character.stash.get(item.material) < item.amount) {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    export function can_item_craft(character: Character, craft: CraftItemTemplate) {
+        for (const item of craft.input) {
+            if (character.stash.get(item.material) < item.amount) {
+                return false
+            }
+        }
+
+        return true
     }
 }

@@ -259,25 +259,6 @@ var Effect;
         location.devastation = (0, basic_functions_1.trim)(location.devastation - x, 0, scripted_values_1.ScriptedValue.max_devastation);
     }
     Effect.location_repair = location_repair;
-    function rest_location_tick(character) {
-        let location = data_objects_1.Data.Locations.from_id(character.location_id);
-        if (location.owner_id != character.id) {
-            return;
-        }
-        const tier = scripted_values_1.ScriptedValue.rest_tier(character, location);
-        let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, scripted_values_1.ScriptedValue.max_devastation - location.devastation, character.race);
-        let stress_target = scripted_values_1.ScriptedValue.rest_target_stress(tier, scripted_values_1.ScriptedValue.max_devastation - location.devastation, character.race);
-        if (fatigue_target < character.get_fatigue()) {
-            let fatigue_change = (0, basic_functions_1.trim)(-5, fatigue_target - character.get_fatigue(), 0);
-            Effect.Change.fatigue(character, fatigue_change, "Rest" /* CHANGE_REASON.REST */);
-        }
-        if (stress_target < character.get_stress()) {
-            let stress_change = (0, basic_functions_1.trim)(-5, stress_target - character.get_stress(), 0);
-            Effect.Change.stress(character, stress_change, "Rest" /* CHANGE_REASON.REST */);
-        }
-        location_quality_reduction_roll(location);
-    }
-    Effect.rest_location_tick = rest_location_tick;
     function spoilage(character, good, rate) {
         let dice = Math.random();
         if (dice < rate) {

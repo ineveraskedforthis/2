@@ -60,7 +60,7 @@ export namespace Request {
                 id: id,
                 room_cost: ScriptedValue.rest_price(character, location),
                 guests: guests.length,
-                durability: ScriptedValue.max_devastation - location.devastation,
+                durability: ScriptedValue.rest_quality(location),
                 owner_id: owner,
                 owner_name: name,
                 cell_id: location.cell_id,

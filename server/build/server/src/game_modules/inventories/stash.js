@@ -76,6 +76,11 @@ class Stash {
             this.transfer(target, tag, this.get(tag));
         }
     }
+    clear() {
+        for (let tag of content_1.MaterialConfiguration.MATERIAL) {
+            this.set(tag, 0);
+        }
+    }
 }
 exports.Stash = Stash;
 
