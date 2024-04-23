@@ -33,7 +33,7 @@ var BattleEvent;
             alerts_1.Alerts.new_unit(battle, unit);
             alerts_1.Alerts.battle_event_simple(battle, 'unit_join', unit);
             if (battle.grace_period > 0)
-                battle.grace_period = 5;
+                battle.grace_period = 8;
         }
         else {
             battle.queue.push({

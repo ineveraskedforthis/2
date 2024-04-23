@@ -223,15 +223,6 @@ export namespace Alerts {
         }
     }
 
-    export function battle_update_data(battle: Battle) {
-        const data = BattleSystem.data(battle)
-        for (let unit of battle.heap) {
-            if (unit == undefined) continue;
-            const character = Data.Characters.from_id(unit)
-            generic_character_alert(character, 'battle-update-units', data)
-        }
-    }
-
     export function battle_update_units(battle: Battle) {
         for (let unit of battle.heap) {
             if (unit == undefined) continue;

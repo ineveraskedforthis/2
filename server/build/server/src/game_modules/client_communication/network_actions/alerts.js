@@ -198,16 +198,6 @@ var Alerts;
         }
     }
     Alerts.battle_event_target_position = battle_event_target_position;
-    function battle_update_data(battle) {
-        const data = system_1.BattleSystem.data(battle);
-        for (let unit of battle.heap) {
-            if (unit == undefined)
-                continue;
-            const character = data_objects_1.Data.Characters.from_id(unit);
-            generic_character_alert(character, 'battle-update-units', data);
-        }
-    }
-    Alerts.battle_update_data = battle_update_data;
     function battle_update_units(battle) {
         for (let unit of battle.heap) {
             if (unit == undefined)

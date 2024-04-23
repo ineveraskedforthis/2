@@ -81,9 +81,11 @@ export namespace BattleImage {
             reset()
         }
 
+        BattleStorage.clear()
         for (let [_, unit] of Object.entries(data)) {
             load_unit(unit)
         }
+
         socket.emit('req-player-index')
         // socket.emit('req-flee-chance')
 
@@ -123,11 +125,16 @@ export namespace BattleImage {
     }
 
     export function handle_keyframe(keyframe: BattleKeyframeSocket) {
+
         console.log("handle keyframe:")
         console.log(keyframe)
         BattleStorage.update_old_keyframe()
         for (const unit of keyframe.data) {
-            BattleStorage.update_unit_data(unit)
+            if (unit.action.action == "unit_left") {
+                BattleStorage.remove_unit(unit.id)
+            } else {
+                BattleStorage.update_unit_data(unit)
+            }
         }
         request_actions()
     }
@@ -265,6 +272,8 @@ export namespace BattleImage {
     }
 
     export function update_action(data: BattleActionData, hotkey: string) {
+        console.log("update action: ", data.tag)
+        console.log(data)
         if (!ActionsListWidget.update_action(data)) {
             add_action(data, hotkey)
         }

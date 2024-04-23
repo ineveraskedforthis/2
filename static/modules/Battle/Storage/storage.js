@@ -27,6 +27,7 @@ export class BattleStorage {
     }
     static update_unit_data(unit) {
         if (this.units_data[unit.id] == undefined) {
+            this.register_unit(unit);
             console.log("attempt to update unit which doesn't exist in storage but who cares");
             return;
         }
@@ -55,6 +56,7 @@ export class BattleStorage {
             index++;
         }
         const character = BattleStorage.units[index];
+        this.associated_table.data = this.associated_table.data.filter((item) => item.id != unit);
         this._units.splice(index, 1);
         delete this.units_data[character];
     }

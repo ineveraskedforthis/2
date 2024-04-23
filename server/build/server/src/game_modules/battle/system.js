@@ -59,7 +59,7 @@ var BattleSystem;
         character.battle_id = battle.id;
         events_1.BattleEvent.NewUnit(battle, character, character.next_turn_after);
         console.log(`${character.get_name()} joins battle ${battle.id}`);
-        alerts_1.Alerts.battle_update_data(battle);
+        alerts_1.Alerts.battle_to_character(battle, character);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 22 /* UI_Part.BATTLE */);
         return unit;
     }

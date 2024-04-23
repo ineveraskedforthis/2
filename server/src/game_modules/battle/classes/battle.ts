@@ -44,7 +44,7 @@ export class Battle implements BattleHeap {
         this.date_of_last_turn = '%'
         this.waiting_for_input = false
         this.last_event_index = 0
-        this.grace_period = 6
+        this.grace_period = 10
         this.stopped = false
 
         this.battle_history = []

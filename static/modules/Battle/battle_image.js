@@ -63,6 +63,7 @@ export var BattleImage;
             BattleView.regenerate_tiles();
             reset();
         }
+        BattleStorage.clear();
         for (let [_, unit] of Object.entries(data)) {
             load_unit(unit);
         }
@@ -103,7 +104,12 @@ export var BattleImage;
         console.log(keyframe);
         BattleStorage.update_old_keyframe();
         for (const unit of keyframe.data) {
-            BattleStorage.update_unit_data(unit);
+            if (unit.action.action == "unit_left") {
+                BattleStorage.remove_unit(unit.id);
+            }
+            else {
+                BattleStorage.update_unit_data(unit);
+            }
         }
         request_actions();
     }
@@ -236,6 +242,8 @@ export var BattleImage;
     }
     BattleImage.add_action = add_action;
     function update_action(data, hotkey) {
+        console.log("update action: ", data.tag);
+        console.log(data);
         if (!ActionsListWidget.update_action(data)) {
             add_action(data, hotkey);
         }

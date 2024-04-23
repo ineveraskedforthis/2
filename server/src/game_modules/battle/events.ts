@@ -37,7 +37,7 @@ export namespace BattleEvent {
             CharactersHeap.add_unit(battle, unit)
             Alerts.new_unit(battle, unit)
             Alerts.battle_event_simple(battle, 'unit_join', unit)
-            if (battle.grace_period > 0) battle.grace_period = 5
+            if (battle.grace_period > 0) battle.grace_period = 8
         } else {
             battle.queue.push({
                 delay: delay,

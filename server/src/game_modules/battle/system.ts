@@ -64,7 +64,7 @@ export namespace BattleSystem {
         BattleEvent.NewUnit(battle, character, character.next_turn_after)
 
         console.log(`${character.get_name()} joins battle ${battle.id}`)
-        Alerts.battle_update_data(battle)
+        Alerts.battle_to_character(battle, character)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)
         return unit
     }
