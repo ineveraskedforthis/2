@@ -186,9 +186,6 @@ var AIfunctions;
         if (next_cell != undefined) {
             manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, actor, next_cell);
         }
-        else {
-            console.log('BLOCKED PATH!!!');
-        }
     }
     AIfunctions.go_to_location = go_to_location;
     function check_local_demand_for_material(actor, material) {

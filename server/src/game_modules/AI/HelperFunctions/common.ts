@@ -203,8 +203,6 @@ export namespace AIfunctions {
         let next_cell = MapSystem.find_path(actor.cell_id, target.cell_id);
         if (next_cell != undefined) {
             ActionManager.start_action(CharacterAction.MOVE, actor, next_cell);
-        } else {
-            console.log('BLOCKED PATH!!!');
         }
     }
 

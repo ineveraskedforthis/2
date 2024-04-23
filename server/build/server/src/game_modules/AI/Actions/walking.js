@@ -95,7 +95,10 @@ storage_1.AIActionsStorage.register_action_location({
     potential_targets(actor) {
         let result = data_id_1.DataID.Cells.locations(actor.cell_id).map(data_objects_1.Data.Locations.from_id).filter((item) => item.berries > 0);
         for (const neighbour of data_objects_1.Data.World.neighbours(actor.cell_id)) {
-            result = result.concat(data_id_1.DataID.Cells.locations(neighbour).map(data_objects_1.Data.Locations.from_id).filter((item) => item.berries > 0));
+            result = result
+                .concat(data_id_1.DataID.Cells.locations(neighbour)
+                .map(data_objects_1.Data.Locations.from_id)
+                .filter((item) => item.berries > 0));
         }
         return result;
     },

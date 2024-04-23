@@ -117,7 +117,10 @@ AIActionsStorage.register_action_location({
     potential_targets(actor) {
         let result = DataID.Cells.locations(actor.cell_id).map(Data.Locations.from_id).filter((item) => item.berries > 0)
         for (const neighbour of Data.World.neighbours(actor.cell_id)) {
-            result = result.concat(DataID.Cells.locations(neighbour).map(Data.Locations.from_id).filter((item) => item.berries > 0))
+            result = result
+            .concat(DataID.Cells.locations(neighbour)
+                .map(Data.Locations.from_id)
+                .filter((item) => item.berries > 0))
         }
         return result
     },
