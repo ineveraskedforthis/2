@@ -113,7 +113,8 @@ storage_1.AIActionsStorage.register_action_location({
             + actor.ai_gathering_target.get(28 /* MATERIAL.BERRY_FIE */)
             + actor.ai_gathering_target.get(29 /* MATERIAL.BERRY_ZAZ */)
             - common_1.AIfunctions.check_local_supply_for_material(actor, 28 /* MATERIAL.BERRY_FIE */)
-            - common_1.AIfunctions.check_local_supply_for_material(actor, 29 /* MATERIAL.BERRY_ZAZ */);
+            - common_1.AIfunctions.check_local_supply_for_material(actor, 29 /* MATERIAL.BERRY_ZAZ */)
+            - actor.savings.get() / 5;
         return desired / 100;
     },
     // AIs are pretty shortsighted
@@ -151,7 +152,8 @@ storage_1.AIActionsStorage.register_action_location({
             - actor.stash.get(31 /* MATERIAL.WOOD_RED */)
             + common_1.AIfunctions.check_local_demand_for_material(actor, 31 /* MATERIAL.WOOD_RED */)
             - common_1.AIfunctions.check_local_supply_for_material(actor, 31 /* MATERIAL.WOOD_RED */)
-            + actor.ai_gathering_target.get(31 /* MATERIAL.WOOD_RED */);
+            + actor.ai_gathering_target.get(31 /* MATERIAL.WOOD_RED */)
+            - actor.savings.get() / 5;
         return desired / 100;
     },
     // AIs are pretty shortsighted
@@ -187,7 +189,8 @@ storage_1.AIActionsStorage.register_action_location({
             - actor.stash.get(2 /* MATERIAL.COTTON */)
             + common_1.AIfunctions.check_local_demand_for_material(actor, 2 /* MATERIAL.COTTON */)
             - common_1.AIfunctions.check_local_supply_for_material(actor, 2 /* MATERIAL.COTTON */)
-            + actor.ai_gathering_target.get(2 /* MATERIAL.COTTON */);
+            + actor.ai_gathering_target.get(2 /* MATERIAL.COTTON */)
+            - actor.savings.get() / 5;
         return desired / 100 + Math.random() * 0.1;
     },
     // AIs are pretty shortsighted
@@ -225,7 +228,8 @@ storage_1.AIActionsStorage.register_action_location({
             - actor.stash.get(26 /* MATERIAL.FISH_OKU */)
             + common_1.AIfunctions.check_local_demand_for_material(actor, 26 /* MATERIAL.FISH_OKU */)
             - common_1.AIfunctions.check_local_supply_for_material(actor, 26 /* MATERIAL.FISH_OKU */)
-            + actor.ai_gathering_target.get(26 /* MATERIAL.FISH_OKU */);
+            + actor.ai_gathering_target.get(26 /* MATERIAL.FISH_OKU */)
+            - actor.savings.get() / 5;
         return desired / 100 + Math.random() * 0.1;
     },
     // AIs are pretty shortsighted

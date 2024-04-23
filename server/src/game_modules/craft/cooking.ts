@@ -45,7 +45,7 @@ export namespace Cooking {
     export const berries =
         new_craft_bulk(
             'berry_to_zaz',
-            [{material: MATERIAL.BERRY_ZAZ, amount: 100}],
+            [{material: MATERIAL.BERRY_ZAZ, amount: 20}],
             [{material: MATERIAL.ZAZ, amount: 1}],
             [{skill: 'cooking', difficulty: 20}, {skill: 'magic_mastery', difficulty: 40}]
         )

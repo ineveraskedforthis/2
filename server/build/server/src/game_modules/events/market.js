@@ -119,7 +119,7 @@ var EventMarket;
     EventMarket.sell_smart_with_limits = sell_smart_with_limits;
     function buy_smart_with_limits(character, material, max_price, max_amount) {
         const bought = buy_with_limits(character, material, max_price, max_amount);
-        buy(character, material, max_amount = bought, max_price);
+        buy(character, material, max_amount - bought, max_price);
     }
     EventMarket.buy_smart_with_limits = buy_smart_with_limits;
     function sell_with_limits(character, material, min_price, max_amount) {

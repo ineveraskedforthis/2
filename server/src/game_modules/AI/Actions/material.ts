@@ -46,7 +46,7 @@ AIActionsStorage.register_action_self({
         const good_crafts = AIfunctions.profitable_bulk_craft(actor)
         for (const item of good_crafts) {
             for (const input of item.craft.input) {
-                actor.ai_desired_stash.inc(input.material, input.amount)
+                actor.ai_desired_stash.inc(input.material, input.amount) * 10
             }
         }
 
@@ -54,7 +54,7 @@ AIActionsStorage.register_action_self({
         const good_item_craft = AIfunctions.profitable_item_craft(actor)
         for (const item of good_item_craft) {
             for (const input of item.input) {
-                actor.ai_desired_stash.inc(input.material, input.amount)
+                actor.ai_desired_stash.inc(input.material, input.amount) * 10
             }
         }
 
@@ -189,7 +189,7 @@ AIActionsStorage.register_action_self({
 AIActionsStorage.register_action_material({
     tag: "buy",
     utility(actor, target) {
-        return (actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id)) / 10
+        return (actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id)) / 5
     },
     potential_targets(actor) {
         return MaterialConfiguration.MATERIAL.map(MaterialStorage.get)

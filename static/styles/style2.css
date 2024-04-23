@@ -17,6 +17,10 @@ div {
 
 }
 
+.height-half {
+    height: 50%;
+}
+
 .height-fill {
     position: relative;
     height: -moz-available;          /* WebKit-based browsers will ignore this. */

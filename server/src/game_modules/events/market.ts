@@ -132,7 +132,7 @@ export namespace EventMarket {
 
     export function buy_smart_with_limits(character: Character, material: MATERIAL, max_price: money, max_amount: number) {
         const bought = buy_with_limits(character, material, max_price, max_amount)
-        buy(character, material, max_amount = bought, max_price)
+        buy(character, material, max_amount - bought, max_price)
     }
 
     export function sell_with_limits(character: Character, material: MATERIAL, min_price: money, max_amount: number) : number {

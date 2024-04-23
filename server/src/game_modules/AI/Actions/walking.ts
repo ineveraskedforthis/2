@@ -140,6 +140,7 @@ AIActionsStorage.register_action_location({
             + actor.ai_gathering_target.get(MATERIAL.BERRY_ZAZ)
             - AIfunctions.check_local_supply_for_material(actor, MATERIAL.BERRY_FIE)
             - AIfunctions.check_local_supply_for_material(actor, MATERIAL.BERRY_ZAZ)
+            - actor.savings.get() / 5
 
         return desired / 100
     },
@@ -184,6 +185,7 @@ AIActionsStorage.register_action_location({
             + AIfunctions.check_local_demand_for_material(actor, MATERIAL.WOOD_RED)
             - AIfunctions.check_local_supply_for_material(actor, MATERIAL.WOOD_RED)
             + actor.ai_gathering_target.get(MATERIAL.WOOD_RED)
+            - actor.savings.get() / 5
 
         return desired / 100
     },
@@ -227,6 +229,7 @@ AIActionsStorage.register_action_location({
             + AIfunctions.check_local_demand_for_material(actor, MATERIAL.COTTON)
             - AIfunctions.check_local_supply_for_material(actor, MATERIAL.COTTON)
             + actor.ai_gathering_target.get(MATERIAL.COTTON)
+            - actor.savings.get() / 5
 
         return desired / 100 + Math.random() * 0.1
     },
@@ -271,6 +274,7 @@ AIActionsStorage.register_action_location({
             + AIfunctions.check_local_demand_for_material(actor, MATERIAL.FISH_OKU)
             - AIfunctions.check_local_supply_for_material(actor, MATERIAL.FISH_OKU)
             + actor.ai_gathering_target.get(MATERIAL.FISH_OKU)
+            - actor.savings.get() / 5
 
         return desired / 100 + Math.random() * 0.1
     },
