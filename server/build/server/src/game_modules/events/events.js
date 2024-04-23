@@ -412,6 +412,7 @@ var Event;
         if (!system_2.CharacterSystem.is_empty_inventory(target)) {
             alerts_1.Alerts.alert(robber, "Your backpack is full");
         }
+        user_manager_1.UserManagement.add_user_to_update_queue(robber.user_id, 9 /* UI_Part.SAVINGS */);
         user_manager_1.UserManagement.add_user_to_update_queue(robber.user_id, 8 /* UI_Part.STASH */);
         user_manager_1.UserManagement.add_user_to_update_queue(robber.user_id, 10 /* UI_Part.INVENTORY */);
         user_manager_1.UserManagement.add_user_to_update_queue(robber.user_id, 13 /* UI_Part.LOCAL_CHARACTERS */);

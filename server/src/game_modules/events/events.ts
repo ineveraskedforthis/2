@@ -457,6 +457,7 @@ export namespace Event {
             Alerts.alert(robber, "Your backpack is full")
         }
 
+        UserManagement.add_user_to_update_queue(robber.user_id, UI_Part.SAVINGS)
         UserManagement.add_user_to_update_queue(robber.user_id, UI_Part.STASH)
         UserManagement.add_user_to_update_queue(robber.user_id, UI_Part.INVENTORY)
         UserManagement.add_user_to_update_queue(robber.user_id, UI_Part.LOCAL_CHARACTERS)
