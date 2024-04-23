@@ -219,7 +219,7 @@ export namespace MapSystem {
             let heur_score = 9999
             next = -1
             for (let i = 0; i < right; i++) {
-                let tmp = dist(queue[i], start) / 100000
+                let tmp = dist(queue[i], end) / 100000
                 if ((tmp < heur_score) && (!used[queue[i]])) {
                     next = i;
                     heur_score = tmp

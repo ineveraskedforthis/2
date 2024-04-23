@@ -63,7 +63,7 @@ var Dialog;
             name: target_character.get_name(),
             race: target_character.race,
             factions: data_id_1.DataID.Reputation.character(target_character.id).map(systems_communication_1.Convert.reputation_to_socket),
-            current_goal: target_character.ai_state,
+            current_goal: target_character.current_ai_action,
             perks: {},
             skills: {},
             model: target_character.model,

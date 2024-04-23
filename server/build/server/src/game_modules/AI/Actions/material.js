@@ -71,7 +71,7 @@ storage_1.AIActionsStorage.register_action_self({
         for (let item of bulk_crafts) {
             if (item.profit <= 0)
                 continue;
-            if (character_conditions_1.CharacterCondition.can_bulk_craft(actor, item.craft)) {
+            if (character_conditions_1.CharacterCondition.can_potentially_bulk_craft(actor, item.craft)) {
                 return 0.8;
             }
         }
@@ -85,6 +85,9 @@ storage_1.AIActionsStorage.register_action_self({
         for (let item of bulk_crafts) {
             if (item.profit <= 0)
                 continue;
+            for (const input of item.craft.input) {
+                system_1.MarketOrders.remove_by_condition(actor, input.material);
+            }
             manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[item.craft.id], actor, actor.cell_id);
         }
     }
@@ -142,12 +145,7 @@ storage_1.AIActionsStorage.register_action_material({
 storage_1.AIActionsStorage.register_action_self({
     tag: "sell-equip-item",
     utility(actor, target) {
-        for (let [index, item] of Object.entries(actor.equip.data.backpack.items)) {
-            if (item == undefined)
-                continue;
-            return 1;
-        }
-        return 0;
+        return actor.equip.data.backpack.items.length / 10;
     },
     potential_targets(actor) {
         return [actor];

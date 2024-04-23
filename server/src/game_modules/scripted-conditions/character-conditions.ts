@@ -25,6 +25,16 @@ export namespace CharacterCondition {
         return true
     }
 
+    export function can_potentially_bulk_craft(character: Character, craft: CraftBulkTemplate) {
+        for (const item of craft.input) {
+            if (character.stash.get(item.material) + character.trade_stash.get(item.material) < item.amount) {
+                return false
+            }
+        }
+
+        return true
+    }
+
     export function can_item_craft(character: Character, craft: CraftItemTemplate) {
         for (const item of craft.input) {
             if (character.stash.get(item.material) < item.amount) {

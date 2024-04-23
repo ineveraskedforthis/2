@@ -8,6 +8,7 @@ const market_1 = require("../../events/market");
 const system_1 = require("../../market/system");
 const data_objects_1 = require("../../data/data_objects");
 const content_1 = require("../../../.././../game_content/src/content");
+const character_1 = require("../../scripted-effects/character");
 function r(f) {
     return (sw) => {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
@@ -33,6 +34,7 @@ var InventoryCommands;
             return;
         if (character.stash.get(material.id) == 0)
             alerts_1.Alerts.generic_user_alert(user, "alert", "You don't have this item");
+        character_1.CharacterEffect.eat(character, material);
     }
     InventoryCommands.eat = eat;
     function equip(sw, msg) {

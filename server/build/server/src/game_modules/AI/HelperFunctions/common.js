@@ -17,10 +17,29 @@ const system_3 = require("../../battle/system");
 const TRIGGERS_1 = require("../../battle/TRIGGERS");
 const character_conditions_1 = require("../../scripted-conditions/character-conditions");
 const craft_1 = require("../../scripted-values/craft");
+const effects_1 = require("../../effects/effects");
 exports.base_price = 1;
 exports.directions = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1]];
 var AIfunctions;
 (function (AIfunctions) {
+    function has_home(character) {
+        return character.home_location_id !== undefined;
+    }
+    AIfunctions.has_home = has_home;
+    function home_cell(character) {
+        if (character.home_location_id !== undefined)
+            return data_objects_1.Data.Locations.from_id(character.home_location_id).cell_id;
+        return undefined;
+    }
+    AIfunctions.home_cell = home_cell;
+    function at_home_cell(character) {
+        const home = home_cell(character);
+        if (home) {
+            return character.cell_id == home;
+        }
+        return true;
+    }
+    AIfunctions.at_home_cell = at_home_cell;
     function is_loot(material) {
         const data = content_1.MaterialStorage.get(material);
         if (data.category == 3 /* MATERIAL_CATEGORY.BONE */)
@@ -51,6 +70,15 @@ var AIfunctions;
         return total_weight;
     }
     AIfunctions.loot_weight = loot_weight;
+    function trade_stash_weight(actor) {
+        let total_weight = 0;
+        for (const material of content_1.MaterialConfiguration.MATERIAL) {
+            const data = content_1.MaterialStorage.get(material);
+            total_weight += actor.trade_stash.get(material) * data.unit_size * data.density;
+        }
+        return total_weight;
+    }
+    AIfunctions.trade_stash_weight = trade_stash_weight;
     function food_weight(actor) {
         let total_weight = 0;
         for (const material of content_1.MaterialConfiguration.MATERIAL) {
@@ -186,23 +214,39 @@ var AIfunctions;
         if (next_cell != undefined) {
             manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, actor, next_cell);
         }
+        else {
+            effects_1.Effect.enter_location(actor.id, target.id);
+        }
     }
     AIfunctions.go_to_location = go_to_location;
     function check_local_demand_for_material(actor, material) {
         let demanded = 0;
         const demand = data_id_1.DataID.Cells.market_order_id_list(actor.cell_id).map(data_objects_1.Data.MarketOrders.from_id);
         for (const item of demand) {
-            if (item.owner_id == actor.id)
-                continue;
             if ((item.material == material)
                 || (item.typ == "buy")
-                || (item.price >= AIfunctions.sell_price(actor, material))) {
+            // || (item.price >= AIfunctions.sell_price(actor, material))
+            ) {
                 demanded += item.amount;
             }
         }
         return demanded;
     }
     AIfunctions.check_local_demand_for_material = check_local_demand_for_material;
+    function check_local_supply_for_material(actor, material) {
+        let supplied = 0;
+        const demand = data_id_1.DataID.Cells.market_order_id_list(actor.cell_id).map(data_objects_1.Data.MarketOrders.from_id);
+        for (const item of demand) {
+            if ((item.material == material)
+                || (item.typ == "sell")
+            // || (item.price >= AIfunctions.buy_price(actor, material))
+            ) {
+                supplied += item.amount;
+            }
+        }
+        return supplied;
+    }
+    AIfunctions.check_local_supply_for_material = check_local_supply_for_material;
     function update_price_beliefs(character) {
         let orders = data_id_1.DataID.Cells.market_order_id_list(character.cell_id);
         // initialisation

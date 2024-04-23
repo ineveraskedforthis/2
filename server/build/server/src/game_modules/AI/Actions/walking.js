@@ -21,7 +21,9 @@ storage_1.AIActionsStorage.register_action_location({
         const utility_fatigue = Math.max(0, fatigue - 0.2);
         const utility_stress = Math.max(0, stress - 0.5);
         const weight = common_1.AIfunctions.loot_weight(actor) / 20;
-        return 0.05 + utility_fatigue + utility_stress + lack_of_hp + weight;
+        const trade_stash_weight = common_1.AIfunctions.trade_stash_weight(actor) / 20;
+        const backpack_size = actor.equip.data.backpack.items.length;
+        return 0.05 + utility_fatigue + utility_stress + lack_of_hp + weight + trade_stash_weight + backpack_size / 10;
     },
     potential_targets(actor) {
         const pre_result = [];
@@ -39,13 +41,34 @@ storage_1.AIActionsStorage.register_action_location({
         common_1.AIfunctions.go_to_location(actor, target);
     }
 });
+storage_1.AIActionsStorage.register_action_location({
+    tag: "stay-home",
+    utility(actor, target) {
+        if (data_objects_1.Data.Locations.from_id(actor.location_id).cell_id != target.cell_id) {
+            return 0;
+        }
+        const trade_stash_weight = common_1.AIfunctions.trade_stash_weight(actor) / 20;
+        const backpack_size = actor.equip.data.backpack.items.length;
+        return (trade_stash_weight + backpack_size / 10) * 0.1 + 0.01;
+    },
+    potential_targets(actor) {
+        const home = data_objects_1.Data.Locations.from_id(actor.location_id);
+        if (home !== undefined) {
+            return [home];
+        }
+        return [];
+    },
+    action(actor, target) {
+        common_1.AIfunctions.go_to_location(actor, target);
+    }
+});
 storage_1.AIActionsStorage.register_action_cell({
     tag: "walk",
     utility(actor, target) {
         if (actor.open_shop) {
             return 0;
         }
-        return 0.1;
+        return 0.01;
     },
     potential_targets(actor) {
         const cell = data_objects_1.Data.Cells.from_id(actor.cell_id);
@@ -88,7 +111,9 @@ storage_1.AIActionsStorage.register_action_location({
             - actor.stash.get(28 /* MATERIAL.BERRY_FIE */)
             - actor.stash.get(29 /* MATERIAL.BERRY_ZAZ */)
             + actor.ai_gathering_target.get(28 /* MATERIAL.BERRY_FIE */)
-            + actor.ai_gathering_target.get(29 /* MATERIAL.BERRY_ZAZ */);
+            + actor.ai_gathering_target.get(29 /* MATERIAL.BERRY_ZAZ */)
+            - common_1.AIfunctions.check_local_supply_for_material(actor, 28 /* MATERIAL.BERRY_FIE */)
+            - common_1.AIfunctions.check_local_supply_for_material(actor, 29 /* MATERIAL.BERRY_ZAZ */);
         return desired / 100;
     },
     // AIs are pretty shortsighted
@@ -117,7 +142,7 @@ storage_1.AIActionsStorage.register_action_location({
 storage_1.AIActionsStorage.register_action_location({
     tag: "gather-wood",
     utility(actor, target) {
-        if (target.berries == 0)
+        if (target.forest == 0)
             return 0;
         if (actor.open_shop)
             return 0;
@@ -125,6 +150,7 @@ storage_1.AIActionsStorage.register_action_location({
             + 10
             - actor.stash.get(31 /* MATERIAL.WOOD_RED */)
             + common_1.AIfunctions.check_local_demand_for_material(actor, 31 /* MATERIAL.WOOD_RED */)
+            - common_1.AIfunctions.check_local_supply_for_material(actor, 31 /* MATERIAL.WOOD_RED */)
             + actor.ai_gathering_target.get(31 /* MATERIAL.WOOD_RED */);
         return desired / 100;
     },
@@ -160,6 +186,7 @@ storage_1.AIActionsStorage.register_action_location({
             + 10
             - actor.stash.get(2 /* MATERIAL.COTTON */)
             + common_1.AIfunctions.check_local_demand_for_material(actor, 2 /* MATERIAL.COTTON */)
+            - common_1.AIfunctions.check_local_supply_for_material(actor, 2 /* MATERIAL.COTTON */)
             + actor.ai_gathering_target.get(2 /* MATERIAL.COTTON */);
         return desired / 100 + Math.random() * 0.1;
     },
@@ -189,15 +216,16 @@ storage_1.AIActionsStorage.register_action_location({
 storage_1.AIActionsStorage.register_action_location({
     tag: "fish",
     utility(actor, target) {
-        if (target.cotton == 0)
+        if (target.fish == 0)
             return 0;
         if (actor.open_shop)
             return 0;
-        let desired = actor.ai_desired_stash.get(2 /* MATERIAL.COTTON */)
+        let desired = actor.ai_desired_stash.get(26 /* MATERIAL.FISH_OKU */)
             + 10
-            - actor.stash.get(2 /* MATERIAL.COTTON */)
-            + common_1.AIfunctions.check_local_demand_for_material(actor, 2 /* MATERIAL.COTTON */)
-            + actor.ai_gathering_target.get(2 /* MATERIAL.COTTON */);
+            - actor.stash.get(26 /* MATERIAL.FISH_OKU */)
+            + common_1.AIfunctions.check_local_demand_for_material(actor, 26 /* MATERIAL.FISH_OKU */)
+            - common_1.AIfunctions.check_local_supply_for_material(actor, 26 /* MATERIAL.FISH_OKU */)
+            + actor.ai_gathering_target.get(26 /* MATERIAL.FISH_OKU */);
         return desired / 100 + Math.random() * 0.1;
     },
     // AIs are pretty shortsighted

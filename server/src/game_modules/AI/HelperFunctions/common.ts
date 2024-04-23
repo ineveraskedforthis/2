@@ -22,6 +22,8 @@ import { Battle } from "../../battle/classes/battle";
 import { BattleTriggers } from "../../battle/TRIGGERS";
 import { CharacterCondition } from "../../scripted-conditions/character-conditions";
 import { CraftValues } from "../../scripted-values/craft";
+import { cell_id, location_id } from "@custom_types/ids";
+import { Effect } from "../../effects/effects";
 
 export const base_price = 1 as money
 
@@ -40,6 +42,24 @@ type PriceEstimator = (character: Character, material: MATERIAL) => money
 export const directions = [[0, 1], [0 ,-1] ,[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
 
 export namespace AIfunctions {
+    export function has_home(character: Character) : boolean {
+        return character.home_location_id !== undefined
+    }
+
+    export function home_cell(character: Character) : cell_id|undefined {
+        if (character.home_location_id !== undefined)
+            return Data.Locations.from_id(character.home_location_id).cell_id
+        return undefined
+    }
+
+    export function at_home_cell(character: Character) : boolean {
+        const home = home_cell(character)
+        if (home) {
+            return character.cell_id == home
+        }
+        return true
+    }
+
     export function is_loot(material: MATERIAL) {
         const data = MaterialStorage.get(material)
         if (data.category == MATERIAL_CATEGORY.BONE) return true
@@ -60,6 +80,15 @@ export namespace AIfunctions {
                 const data = MaterialStorage.get(material)
                 total_weight += actor.stash.get(material) * data.unit_size * data.density
             }
+        }
+        return total_weight
+    }
+
+    export function trade_stash_weight(actor: Character) : number {
+        let total_weight = 0
+        for (const material of MaterialConfiguration.MATERIAL) {
+            const data = MaterialStorage.get(material)
+            total_weight += actor.trade_stash.get(material) * data.unit_size * data.density
         }
         return total_weight
     }
@@ -203,6 +232,8 @@ export namespace AIfunctions {
         let next_cell = MapSystem.find_path(actor.cell_id, target.cell_id);
         if (next_cell != undefined) {
             ActionManager.start_action(CharacterAction.MOVE, actor, next_cell);
+        } else {
+            Effect.enter_location(actor.id, target.id)
         }
     }
 
@@ -211,18 +242,33 @@ export namespace AIfunctions {
 
         const demand = DataID.Cells.market_order_id_list(actor.cell_id).map(Data.MarketOrders.from_id)
         for (const item of demand) {
-            if (item.owner_id == actor.id) continue;
-
             if (
                 (item.material == material)
                 || (item.typ == "buy")
-                || (item.price >= AIfunctions.sell_price(actor, material))
+                // || (item.price >= AIfunctions.sell_price(actor, material))
             ) {
                 demanded += item.amount
             }
         }
 
         return demanded
+    }
+
+    export function check_local_supply_for_material(actor: Character, material: MATERIAL) {
+        let supplied = 0
+
+        const demand = DataID.Cells.market_order_id_list(actor.cell_id).map(Data.MarketOrders.from_id)
+        for (const item of demand) {
+            if (
+                (item.material == material)
+                || (item.typ == "sell")
+                // || (item.price >= AIfunctions.buy_price(actor, material))
+            ) {
+                supplied += item.amount
+            }
+        }
+
+        return supplied
     }
 
 

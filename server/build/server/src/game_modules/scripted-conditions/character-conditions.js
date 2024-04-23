@@ -26,6 +26,15 @@ var CharacterCondition;
         return true;
     }
     CharacterCondition.can_bulk_craft = can_bulk_craft;
+    function can_potentially_bulk_craft(character, craft) {
+        for (const item of craft.input) {
+            if (character.stash.get(item.material) + character.trade_stash.get(item.material) < item.amount) {
+                return false;
+            }
+        }
+        return true;
+    }
+    CharacterCondition.can_potentially_bulk_craft = can_potentially_bulk_craft;
     function can_item_craft(character, craft) {
         for (const item of craft.input) {
             if (character.stash.get(item.material) < item.amount) {

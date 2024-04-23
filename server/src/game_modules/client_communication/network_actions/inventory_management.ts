@@ -12,6 +12,7 @@ import { money } from "@custom_types/common";
 import { CHANGE_REASON, Effect } from "../../effects/effects";
 import { UI_Part } from "../causality_graph";
 import { UserManagement } from "../user_manager";
+import { CharacterEffect } from "../../scripted-effects/character";
 
 function r(f: (user: User, character: Character) => void): (sw: SocketWrapper) => void {
     return (sw: SocketWrapper) => {
@@ -34,6 +35,8 @@ export namespace InventoryCommands {
         const material = MaterialStorage.from_string(id);
         if ((material.category != MATERIAL_CATEGORY.FOOD) && (material.category != MATERIAL_CATEGORY.FRUIT)) return
         if (character.stash.get(material.id) == 0) Alerts.generic_user_alert(user, "alert", "You don't have this item")
+
+        CharacterEffect.eat(character, material)
     }
 
     export function equip(sw: SocketWrapper, msg: number) {

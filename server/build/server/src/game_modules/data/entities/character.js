@@ -58,8 +58,7 @@ class Character {
         this.cleared = false;
         this.action_progress = 0;
         this.action_duration = 0;
-        this.ai_state = "idle" /* AIstate.Idle */;
-        this.ai_memories = [];
+        this.current_ai_action = "idle";
         this.ai_price_belief_buy = new Map();
         this.ai_price_belief_sell = new Map();
         this.ai_desired_stash = new stash_1.Stash();

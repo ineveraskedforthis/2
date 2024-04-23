@@ -40,9 +40,8 @@ export function decide() {
         }
 
         if (best) {
-            // if (character.race == "human")
-                // console.log(character.name, best.tag)
             best.action(character, best.target)
+            character.current_ai_action = best.tag
         }
     })
 }

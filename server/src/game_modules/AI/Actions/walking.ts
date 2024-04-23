@@ -24,8 +24,10 @@ AIActionsStorage.register_action_location({
         const utility_fatigue = Math.max(0, fatigue - 0.2);
         const utility_stress = Math.max(0, stress - 0.5);
         const weight = AIfunctions.loot_weight(actor) / 20;
+        const trade_stash_weight = AIfunctions.trade_stash_weight(actor) / 20
+        const backpack_size = actor.equip.data.backpack.items.length
 
-        return 0.05 + utility_fatigue + utility_stress + lack_of_hp + weight;
+        return 0.05 + utility_fatigue + utility_stress + lack_of_hp + weight + trade_stash_weight + backpack_size / 10;
     },
     potential_targets(actor) {
         const pre_result: location_id[] = [];
@@ -45,6 +47,33 @@ AIActionsStorage.register_action_location({
     }
 });
 
+AIActionsStorage.register_action_location({
+    tag: "stay-home",
+
+    utility(actor, target) {
+        if (Data.Locations.from_id(actor.location_id).cell_id != target.cell_id) {
+            return 0;
+        }
+
+        const trade_stash_weight = AIfunctions.trade_stash_weight(actor) / 20
+        const backpack_size = actor.equip.data.backpack.items.length
+
+        return (trade_stash_weight + backpack_size / 10) * 0.1 + 0.01
+    },
+
+    potential_targets(actor) {
+        const home = Data.Locations.from_id(actor.location_id)
+        if (home !== undefined) {
+            return [home]
+        }
+        return []
+    },
+
+    action(actor, target) {
+        AIfunctions.go_to_location(actor, target)
+    }
+})
+
 
 AIActionsStorage.register_action_cell({
     tag: "walk",
@@ -53,7 +82,7 @@ AIActionsStorage.register_action_cell({
         if (actor.open_shop) {
             return 0
         }
-        return 0.1
+        return 0.01
     },
 
     potential_targets(actor) {
@@ -109,6 +138,8 @@ AIActionsStorage.register_action_location({
             - actor.stash.get(MATERIAL.BERRY_ZAZ)
             + actor.ai_gathering_target.get(MATERIAL.BERRY_FIE)
             + actor.ai_gathering_target.get(MATERIAL.BERRY_ZAZ)
+            - AIfunctions.check_local_supply_for_material(actor, MATERIAL.BERRY_FIE)
+            - AIfunctions.check_local_supply_for_material(actor, MATERIAL.BERRY_ZAZ)
 
         return desired / 100
     },
@@ -143,7 +174,7 @@ AIActionsStorage.register_action_location({
     tag: "gather-wood",
 
     utility(actor, target) {
-        if (target.berries == 0) return 0
+        if (target.forest == 0) return 0
         if (actor.open_shop) return 0
 
         let desired =
@@ -151,6 +182,7 @@ AIActionsStorage.register_action_location({
             + 10
             - actor.stash.get(MATERIAL.WOOD_RED)
             + AIfunctions.check_local_demand_for_material(actor, MATERIAL.WOOD_RED)
+            - AIfunctions.check_local_supply_for_material(actor, MATERIAL.WOOD_RED)
             + actor.ai_gathering_target.get(MATERIAL.WOOD_RED)
 
         return desired / 100
@@ -193,6 +225,7 @@ AIActionsStorage.register_action_location({
             + 10
             - actor.stash.get(MATERIAL.COTTON)
             + AIfunctions.check_local_demand_for_material(actor, MATERIAL.COTTON)
+            - AIfunctions.check_local_supply_for_material(actor, MATERIAL.COTTON)
             + actor.ai_gathering_target.get(MATERIAL.COTTON)
 
         return desired / 100 + Math.random() * 0.1
@@ -228,15 +261,16 @@ AIActionsStorage.register_action_location({
     tag: "fish",
 
     utility(actor, target) {
-        if (target.cotton == 0) return 0
+        if (target.fish == 0) return 0
         if (actor.open_shop) return 0
 
         let desired =
-            actor.ai_desired_stash.get(MATERIAL.COTTON)
+            actor.ai_desired_stash.get(MATERIAL.FISH_OKU)
             + 10
-            - actor.stash.get(MATERIAL.COTTON)
-            + AIfunctions.check_local_demand_for_material(actor, MATERIAL.COTTON)
-            + actor.ai_gathering_target.get(MATERIAL.COTTON)
+            - actor.stash.get(MATERIAL.FISH_OKU)
+            + AIfunctions.check_local_demand_for_material(actor, MATERIAL.FISH_OKU)
+            - AIfunctions.check_local_supply_for_material(actor, MATERIAL.FISH_OKU)
+            + actor.ai_gathering_target.get(MATERIAL.FISH_OKU)
 
         return desired / 100 + Math.random() * 0.1
     },

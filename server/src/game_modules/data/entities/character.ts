@@ -4,7 +4,6 @@ import { PerksTable, TraitsTable } from "@custom_types/character";
 import { money, status_type } from "@custom_types/common";
 import { cell_id, character_id, location_id, user_id } from "@custom_types/ids";
 import { trim } from "../../calculations/basic_functions";
-import { AImemory, AIstate } from "../../character/AIstate";
 import { SkillList } from "../../character/SkillList";
 import { MaxHP, MaxHPTag } from "../../races/max_hp";
 import { BaseResistTag } from "../../races/resists";
@@ -103,8 +102,7 @@ export class Character {
     explored: Partial<Record<cell_id, boolean>>;
     next_cell: cell_id
 
-    ai_state: AIstate;
-    ai_memories: AImemory[];
+    current_ai_action: string
 
     ai_price_belief_sell: Map<MATERIAL, money>;
     ai_price_belief_buy: Map<MATERIAL, money>;
@@ -173,8 +171,7 @@ export class Character {
         this.action_progress = 0
         this.action_duration = 0
 
-        this.ai_state = AIstate.Idle;
-        this.ai_memories = []
+        this.current_ai_action = "idle"
         this.ai_price_belief_buy = new Map()
         this.ai_price_belief_sell = new Map()
         this.ai_desired_stash = new Stash()
