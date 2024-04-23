@@ -1,5 +1,6 @@
 import { CharacterView } from "@custom_types/responses"
 import { CharacterDataExpanded } from "./Types/character"
+import { location_id } from "@custom_types/ids"
 
 export const local_actions = ['fish', 'gather_wood', 'gather_cotton', 'hunt', 'clean', 'rest', 'gather_berries'] as const
 export type local_action = typeof local_actions[number]
@@ -25,6 +26,7 @@ type globals = {
     prev_mouse_y: number | null,
     pressed: boolean,
     selected_character: number | undefined,
+    selected_location: location_id | undefined,
     map_zoom: number,
     keep_doing: undefined|local_action
     map_context_dissapear_time: number|undefined
@@ -51,6 +53,7 @@ export var globals: globals = {
     prev_mouse_y: null,
     pressed: false,
     selected_character: undefined,
+    selected_location: undefined,
     map_zoom: 1,
     keep_doing: undefined,
     map_context_dissapear_time: undefined,

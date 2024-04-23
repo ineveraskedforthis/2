@@ -16,6 +16,7 @@ export var globals = {
     prev_mouse_y: null,
     pressed: false,
     selected_character: undefined,
+    selected_location: undefined,
     map_zoom: 1,
     keep_doing: undefined,
     map_context_dissapear_time: undefined,

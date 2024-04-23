@@ -1,6 +1,6 @@
 import { socket } from "../Socket/socket.js";
 import { List } from "../../widgets/List/list.js";
-import { elementById, selectHTMLs } from "../HTMLwrappers/common.js";
+import { elementById, select, selectHTMLs } from "../HTMLwrappers/common.js";
 import { globals } from "../globals.js";
 import { image_url } from "../BackgroundImage/background_image.js";
 const columns_mini = [
@@ -45,6 +45,32 @@ const columns = [
         custom_style: ["flex-1-0-5"]
     },
     {
+        header_text: "Your location",
+        type: "string",
+        value: (item) => {
+            if (globals.character_data?.location_id.value == item.id)
+                return "X";
+            return "";
+        },
+        custom_style: ["flex-1-0-5"]
+    },
+    {
+        header_text: "Pop.",
+        type: "number",
+        value: (item) => item.guests,
+        custom_style: ["flex-0-0-50px"]
+    },
+    {
+        header_text: "Enter",
+        type: "string",
+        value(item) {
+            return "Enter";
+        },
+        onclick: (item) => enter_location(item.id),
+        viable: (item) => true,
+        custom_style: ["flex-1-0-5"]
+    },
+    {
         header_text: "Select",
         type: "string",
         value(item) {
@@ -66,28 +92,16 @@ const columns = [
         value: (item) => item.owner_name,
         custom_style: ["flex-1-0-5"]
     },
-    {
-        header_text: "Pop.",
-        type: "number",
-        value: (item) => item.guests,
-        custom_style: ["flex-0-0-50px"]
-    },
-    {
-        header_text: "Your location",
-        type: "string",
-        value: (item) => {
-            if (globals.character_data?.location_id.value == item.id)
-                return "X";
-            return "";
-        },
-        custom_style: ["flex-1-0-5"]
-    }
 ];
 const lists = [];
 export function init_locations() {
     const locations_list = new List(elementById("location-list"));
     locations_list.columns = columns;
     locations_list.sorted_column = 0;
+    locations_list.per_line_class_by_item = (item) => {
+        let result = ['list-item-location-' + item.id];
+        return result;
+    };
     elementById('claim-location-button').onclick = create_plot;
     for (const container of selectHTMLs('.locations-display-mini')) {
         lists.push(new_mini_location_list(container));
@@ -124,8 +138,22 @@ function repair_location(id) {
         socket.emit('repair-location', { id: id });
     };
 }
+function select_location(id) {
+    if (globals.selected_location != undefined) {
+        let character_div = select('.list-item-location-' + globals.selected_location);
+        for (const item of character_div) {
+            item.classList.remove('selected');
+        }
+    }
+    globals.selected_location = id;
+    let character_div = select('.list-item-location-' + id);
+    for (const item of character_div) {
+        item.classList.add('selected');
+    }
+}
 function display_location_data(b) {
     return () => {
+        select_location(b.id);
         let image_container = elementById("selected-location-image");
         image_container.style.backgroundImage = image_url(b.terrain, b.forest, b.house_level, b.urbanisation);
         elementById("enter-location-button").onclick = enter_location(b.id);
