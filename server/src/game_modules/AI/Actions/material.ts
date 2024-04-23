@@ -189,15 +189,15 @@ AIActionsStorage.register_action_self({
 AIActionsStorage.register_action_material({
     tag: "buy",
     utility(actor, target) {
-        return (actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id) - actor.trade_stash.get(target.id)) / 10
+        return (actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id)) / 10
     },
     potential_targets(actor) {
         return MaterialConfiguration.MATERIAL.map(MaterialStorage.get)
     },
     action(actor, target) {
         MarketOrders.remove_by_condition(actor, target.id)
-        const amount_to_sell = actor.stash.get(target.id) - actor.ai_desired_stash.get(target.id)
-        EventMarket.buy_smart_with_limits(actor, target.id, AIfunctions.buy_price(actor, target.id), amount_to_sell)
+        const amount_to_buy = actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id)
+        EventMarket.buy_smart_with_limits(actor, target.id, AIfunctions.buy_price(actor, target.id), amount_to_buy)
     }
 })
 

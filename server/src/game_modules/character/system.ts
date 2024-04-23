@@ -82,12 +82,21 @@ export namespace CharacterSystem {
                 }
                 if (!character.in_battle()) {
                     Effect.Change.rage(character, -2, CHANGE_REASON.REST);
-                    for (const material_id of MaterialConfiguration.MATERIAL) {
-                        const material = MaterialStorage.get(material_id)
-                        if (material.category == MATERIAL_CATEGORY.FISH) Effect.spoilage(character, material_id, 0.01)
-                        if (material.category == MATERIAL_CATEGORY.MEAT) Effect.spoilage(character, material_id, 0.01)
-                        if (material.category == MATERIAL_CATEGORY.FRUIT) Effect.spoilage(character, material_id, 0.01)
-                        if (material.category == MATERIAL_CATEGORY.FOOD) Effect.spoilage(character, material_id, 0.001)
+                }
+                // spoilage
+                for (const material_id of MaterialConfiguration.MATERIAL) {
+                    const material = MaterialStorage.get(material_id)
+                    if (material.category == MATERIAL_CATEGORY.FISH) Effect.spoilage(character, material_id, 0.01)
+                    if (material.category == MATERIAL_CATEGORY.MEAT) Effect.spoilage(character, material_id, 0.01)
+                    if (material.category == MATERIAL_CATEGORY.FRUIT) Effect.spoilage(character, material_id, 0.01)
+                    if (material.category == MATERIAL_CATEGORY.FOOD) Effect.spoilage(character, material_id, 0.001)
+                }
+                // hunger
+                {
+                    if (character.hp_max < character.hp * 2) {
+                        Effect.Change.hp(character, -1, CHANGE_REASON.HUNGER)
+                    } else {
+                        Effect.Change.fatigue(character, 1, CHANGE_REASON.HUNGER)
                     }
                 }
             })

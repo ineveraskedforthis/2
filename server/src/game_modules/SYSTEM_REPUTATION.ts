@@ -1,6 +1,7 @@
 import { Character } from "./data/entities/character";
 import { DataID } from "./data/data_id";
 import { hostile } from "./races/racial_hostility";
+import { AIfunctions } from "./AI/HelperFunctions/common";
 
 export function handle_attack_reputation_change(attacker: Character, defender: Character, AOE_flag: boolean) {
     if (AOE_flag) return;
@@ -27,6 +28,11 @@ export function is_enemy_characters(character: Character, target_character: Char
     if (character.dead()){
         // console.log('i am dead')
         return false
+    }
+
+    //prey check
+    if (AIfunctions.considers_prey(character.race, target_character.race)) {
+        return true
     }
 
     // hostility check:

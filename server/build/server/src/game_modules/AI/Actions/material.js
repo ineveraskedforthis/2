@@ -173,15 +173,15 @@ storage_1.AIActionsStorage.register_action_self({
 storage_1.AIActionsStorage.register_action_material({
     tag: "buy",
     utility(actor, target) {
-        return (actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id) - actor.trade_stash.get(target.id)) / 10;
+        return (actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id)) / 10;
     },
     potential_targets(actor) {
         return content_1.MaterialConfiguration.MATERIAL.map(content_1.MaterialStorage.get);
     },
     action(actor, target) {
         system_1.MarketOrders.remove_by_condition(actor, target.id);
-        const amount_to_sell = actor.stash.get(target.id) - actor.ai_desired_stash.get(target.id);
-        market_1.EventMarket.buy_smart_with_limits(actor, target.id, common_1.AIfunctions.buy_price(actor, target.id), amount_to_sell);
+        const amount_to_buy = actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id);
+        market_1.EventMarket.buy_smart_with_limits(actor, target.id, common_1.AIfunctions.buy_price(actor, target.id), amount_to_buy);
     }
 });
 storage_1.AIActionsStorage.register_action_self({

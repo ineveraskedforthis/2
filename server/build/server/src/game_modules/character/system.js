@@ -71,16 +71,26 @@ var CharacterSystem;
                 }
                 if (!character.in_battle()) {
                     effects_1.Effect.Change.rage(character, -2, "Rest" /* CHANGE_REASON.REST */);
-                    for (const material_id of content_1.MaterialConfiguration.MATERIAL) {
-                        const material = content_1.MaterialStorage.get(material_id);
-                        if (material.category == 7 /* MATERIAL_CATEGORY.FISH */)
-                            effects_1.Effect.spoilage(character, material_id, 0.01);
-                        if (material.category == 6 /* MATERIAL_CATEGORY.MEAT */)
-                            effects_1.Effect.spoilage(character, material_id, 0.01);
-                        if (material.category == 9 /* MATERIAL_CATEGORY.FRUIT */)
-                            effects_1.Effect.spoilage(character, material_id, 0.01);
-                        if (material.category == 8 /* MATERIAL_CATEGORY.FOOD */)
-                            effects_1.Effect.spoilage(character, material_id, 0.001);
+                }
+                // spoilage
+                for (const material_id of content_1.MaterialConfiguration.MATERIAL) {
+                    const material = content_1.MaterialStorage.get(material_id);
+                    if (material.category == 7 /* MATERIAL_CATEGORY.FISH */)
+                        effects_1.Effect.spoilage(character, material_id, 0.01);
+                    if (material.category == 6 /* MATERIAL_CATEGORY.MEAT */)
+                        effects_1.Effect.spoilage(character, material_id, 0.01);
+                    if (material.category == 9 /* MATERIAL_CATEGORY.FRUIT */)
+                        effects_1.Effect.spoilage(character, material_id, 0.01);
+                    if (material.category == 8 /* MATERIAL_CATEGORY.FOOD */)
+                        effects_1.Effect.spoilage(character, material_id, 0.001);
+                }
+                // hunger
+                {
+                    if (character.hp_max < character.hp * 2) {
+                        effects_1.Effect.Change.hp(character, -1, "Hunger" /* CHANGE_REASON.HUNGER */);
+                    }
+                    else {
+                        effects_1.Effect.Change.fatigue(character, 1, "Hunger" /* CHANGE_REASON.HUNGER */);
                     }
                 }
             });

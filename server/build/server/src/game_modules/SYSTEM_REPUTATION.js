@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.is_enemy_characters = exports.can_talk = exports.handle_attack_reputation_change = void 0;
 const data_id_1 = require("./data/data_id");
 const racial_hostility_1 = require("./races/racial_hostility");
+const common_1 = require("./AI/HelperFunctions/common");
 function handle_attack_reputation_change(attacker, defender, AOE_flag) {
     if (AOE_flag)
         return;
@@ -30,6 +31,10 @@ function is_enemy_characters(character, target_character) {
     if (character.dead()) {
         // console.log('i am dead')
         return false;
+    }
+    //prey check
+    if (common_1.AIfunctions.considers_prey(character.race, target_character.race)) {
+        return true;
     }
     // hostility check:
     // if there is no racial hostility, then check for reputational hostility
