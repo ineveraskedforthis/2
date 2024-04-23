@@ -9,6 +9,7 @@ const system_1 = require("../../map/system");
 const common_1 = require("../HelperFunctions/common");
 const basic_functions_1 = require("../../calculations/basic_functions");
 const effects_1 = require("../../effects/effects");
+const character_1 = require("../../scripted-values/character");
 storage_1.AIActionsStorage.register_action_location({
     tag: "go-home",
     utility(actor, target) {
@@ -47,9 +48,9 @@ storage_1.AIActionsStorage.register_action_location({
         if (data_objects_1.Data.Locations.from_id(actor.location_id).cell_id != target.cell_id) {
             return 0;
         }
-        const trade_stash_weight = common_1.AIfunctions.trade_stash_weight(actor) / 20;
-        const backpack_size = actor.equip.data.backpack.items.length;
-        return (trade_stash_weight + backpack_size / 10) * 0.1 + 0.01;
+        const unsold_items = common_1.AIfunctions.trade_stash_weight(actor) / 100;
+        const backpack_size = common_1.AIfunctions.items_for_sale(actor) / 10;
+        return unsold_items + backpack_size;
     },
     potential_targets(actor) {
         const home = data_objects_1.Data.Locations.from_id(actor.location_id);
@@ -98,63 +99,111 @@ storage_1.AIActionsStorage.register_action_cell({
         manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, actor, target.id);
     },
 });
+// AIs are pretty shortsighted
+function locations_nearby(actor, predicate) {
+    let result = data_id_1.DataID.Cells.locations(actor.cell_id).map(data_objects_1.Data.Locations.from_id).filter(predicate);
+    for (const neighbour of data_objects_1.Data.World.neighbours(actor.cell_id)) {
+        result = result
+            .concat(data_id_1.DataID.Cells.locations(neighbour)
+            .map(data_objects_1.Data.Locations.from_id)
+            .filter((item) => item.berries > 0));
+    }
+    return result;
+}
+function inner_desire(actor, material) {
+    return (actor.ai_desired_stash.get(material) - actor.stash.get(material)) / 50;
+}
+function for_sale_desire(actor, material) {
+    return (actor.ai_gathering_target.get(material)
+        - actor.stash.get(material)
+        + common_1.AIfunctions.check_local_demand_for_material(actor, material)
+        - common_1.AIfunctions.check_local_supply_for_material(actor, material)) / 50;
+}
+function toward_action(actor, target, action) {
+    if (target.cell_id == actor.cell_id) {
+        effects_1.Effect.enter_location(actor.id, target.id);
+        manager_1.ActionManager.start_action(action, actor, actor.cell_id);
+    }
+    else {
+        common_1.AIfunctions.go_to_location(actor, target);
+    }
+}
 storage_1.AIActionsStorage.register_action_location({
-    tag: "gather-berries",
+    tag: "gather-fie-for-sell",
     utility(actor, target) {
         if (target.berries == 0)
             return 0;
         if (actor.open_shop)
             return 0;
-        let desired = actor.ai_desired_stash.get(28 /* MATERIAL.BERRY_FIE */)
-            + actor.ai_desired_stash.get(29 /* MATERIAL.BERRY_ZAZ */)
-            + 10
-            - actor.stash.get(28 /* MATERIAL.BERRY_FIE */)
-            - actor.stash.get(29 /* MATERIAL.BERRY_ZAZ */)
-            + actor.ai_gathering_target.get(28 /* MATERIAL.BERRY_FIE */)
-            + actor.ai_gathering_target.get(29 /* MATERIAL.BERRY_ZAZ */)
-            - common_1.AIfunctions.check_local_supply_for_material(actor, 28 /* MATERIAL.BERRY_FIE */)
-            - common_1.AIfunctions.check_local_supply_for_material(actor, 29 /* MATERIAL.BERRY_ZAZ */)
-            - actor.savings.get() / 5;
-        return desired / 100;
+        return for_sale_desire(actor, 28 /* MATERIAL.BERRY_FIE */) + Math.random() * 0.1 - actor.savings.get() / 1000;
     },
-    // AIs are pretty shortsighted
     potential_targets(actor) {
-        let result = data_id_1.DataID.Cells.locations(actor.cell_id).map(data_objects_1.Data.Locations.from_id).filter((item) => item.berries > 0);
-        for (const neighbour of data_objects_1.Data.World.neighbours(actor.cell_id)) {
-            result = result
-                .concat(data_id_1.DataID.Cells.locations(neighbour)
-                .map(data_objects_1.Data.Locations.from_id)
-                .filter((item) => item.berries > 0));
-        }
-        return result;
+        return locations_nearby(actor, (item) => item.berries > 0);
     },
     action(actor, target) {
+        common_1.AIfunctions.update_price_beliefs(actor);
         actor.ai_gathering_target.set(28 /* MATERIAL.BERRY_FIE */, common_1.AIfunctions.check_local_demand_for_material(actor, 28 /* MATERIAL.BERRY_FIE */));
-        actor.ai_gathering_target.set(29 /* MATERIAL.BERRY_ZAZ */, common_1.AIfunctions.check_local_demand_for_material(actor, 29 /* MATERIAL.BERRY_ZAZ */));
-        if (target.cell_id == actor.cell_id) {
-            effects_1.Effect.enter_location(actor.id, target.id);
-            manager_1.ActionManager.start_action(actions_00_1.CharacterAction.GATHER_BERRIES, actor, actor.cell_id);
-        }
-        else {
-            common_1.AIfunctions.go_to_location(actor, target);
-        }
+        toward_action(actor, target, actions_00_1.CharacterAction.GATHER_BERRIES);
     }
 });
 storage_1.AIActionsStorage.register_action_location({
-    tag: "gather-wood",
+    tag: "gather-fie-for-yourself",
+    utility(actor, target) {
+        if (target.berries == 0)
+            return 0;
+        if (actor.open_shop)
+            return 0;
+        return inner_desire(actor, 28 /* MATERIAL.BERRY_FIE */) + Math.random() * 0.1 - actor.savings.get() / 1000;
+    },
+    potential_targets(actor) {
+        return locations_nearby(actor, (item) => item.berries > 0);
+    },
+    action(actor, target) {
+        toward_action(actor, target, actions_00_1.CharacterAction.GATHER_BERRIES);
+    }
+});
+storage_1.AIActionsStorage.register_action_location({
+    tag: "gather-zazberry-for-sell",
+    utility(actor, target) {
+        if (target.berries == 0)
+            return 0;
+        if (actor.open_shop)
+            return 0;
+        return for_sale_desire(actor, 29 /* MATERIAL.BERRY_ZAZ */) + Math.random() * 0.1 - actor.savings.get() / 1000;
+    },
+    potential_targets(actor) {
+        return locations_nearby(actor, (item) => item.berries > 0);
+    },
+    action(actor, target) {
+        common_1.AIfunctions.update_price_beliefs(actor);
+        actor.ai_gathering_target.set(29 /* MATERIAL.BERRY_ZAZ */, common_1.AIfunctions.check_local_demand_for_material(actor, 28 /* MATERIAL.BERRY_FIE */));
+        toward_action(actor, target, actions_00_1.CharacterAction.GATHER_BERRIES);
+    }
+});
+storage_1.AIActionsStorage.register_action_location({
+    tag: "gather-zazberry-for-yourself",
+    utility(actor, target) {
+        if (target.berries == 0)
+            return 0;
+        if (actor.open_shop)
+            return 0;
+        return inner_desire(actor, 29 /* MATERIAL.BERRY_ZAZ */) + Math.random() * 0.1 - actor.savings.get() / 1000;
+    },
+    potential_targets(actor) {
+        return locations_nearby(actor, (item) => item.berries > 0);
+    },
+    action(actor, target) {
+        toward_action(actor, target, actions_00_1.CharacterAction.GATHER_BERRIES);
+    }
+});
+storage_1.AIActionsStorage.register_action_location({
+    tag: "gather-wood-to-sell",
     utility(actor, target) {
         if (target.forest == 0)
             return 0;
         if (actor.open_shop)
             return 0;
-        let desired = actor.ai_desired_stash.get(31 /* MATERIAL.WOOD_RED */)
-            + 10
-            - actor.stash.get(31 /* MATERIAL.WOOD_RED */)
-            + common_1.AIfunctions.check_local_demand_for_material(actor, 31 /* MATERIAL.WOOD_RED */)
-            - common_1.AIfunctions.check_local_supply_for_material(actor, 31 /* MATERIAL.WOOD_RED */)
-            + actor.ai_gathering_target.get(31 /* MATERIAL.WOOD_RED */)
-            - actor.savings.get() / 5;
-        return desired / 100;
+        return for_sale_desire(actor, 31 /* MATERIAL.WOOD_RED */) + Math.random() * 0.1 - actor.savings.get() / 1000;
     },
     // AIs are pretty shortsighted
     potential_targets(actor) {
@@ -167,6 +216,7 @@ storage_1.AIActionsStorage.register_action_location({
         return result;
     },
     action(actor, target) {
+        common_1.AIfunctions.update_price_beliefs(actor);
         actor.ai_gathering_target.set(31 /* MATERIAL.WOOD_RED */, common_1.AIfunctions.check_local_demand_for_material(actor, 31 /* MATERIAL.WOOD_RED */));
         if (target.cell_id == actor.cell_id) {
             effects_1.Effect.enter_location(actor.id, target.id);
@@ -178,20 +228,48 @@ storage_1.AIActionsStorage.register_action_location({
     }
 });
 storage_1.AIActionsStorage.register_action_location({
-    tag: "gather-cotton",
+    tag: "gather-wood-for-yourself",
+    utility(actor, target) {
+        if (target.forest == 0)
+            return 0;
+        if (actor.open_shop)
+            return 0;
+        let desired = actor.ai_desired_stash.get(31 /* MATERIAL.WOOD_RED */)
+            - actor.stash.get(31 /* MATERIAL.WOOD_RED */);
+        return desired / 50 - actor.savings.get() / 1000;
+    },
+    // AIs are pretty shortsighted
+    potential_targets(actor) {
+        let result = data_id_1.DataID.Cells.locations(actor.cell_id).map(data_objects_1.Data.Locations.from_id).filter((item) => item.forest > 0);
+        for (const neighbour of data_objects_1.Data.World.neighbours(actor.cell_id)) {
+            result = result.concat(data_id_1.DataID.Cells.locations(neighbour)
+                .map(data_objects_1.Data.Locations.from_id)
+                .filter((item) => (item.forest > 0) && (system_1.MapSystem.can_move(data_objects_1.Data.World.id_to_coordinate(item.cell_id)))));
+        }
+        return result;
+    },
+    action(actor, target) {
+        if (target.cell_id == actor.cell_id) {
+            effects_1.Effect.enter_location(actor.id, target.id);
+            manager_1.ActionManager.start_action(actions_00_1.CharacterAction.GATHER_WOOD, actor, actor.cell_id);
+        }
+        else {
+            common_1.AIfunctions.go_to_location(actor, target);
+        }
+    }
+});
+storage_1.AIActionsStorage.register_action_location({
+    tag: "gather-cotton-to-sell",
     utility(actor, target) {
         if (target.cotton == 0)
             return 0;
         if (actor.open_shop)
             return 0;
-        let desired = actor.ai_desired_stash.get(2 /* MATERIAL.COTTON */)
-            + 10
-            - actor.stash.get(2 /* MATERIAL.COTTON */)
+        let disbalance = +actor.ai_gathering_target.get(2 /* MATERIAL.COTTON */)
             + common_1.AIfunctions.check_local_demand_for_material(actor, 2 /* MATERIAL.COTTON */)
             - common_1.AIfunctions.check_local_supply_for_material(actor, 2 /* MATERIAL.COTTON */)
-            + actor.ai_gathering_target.get(2 /* MATERIAL.COTTON */)
-            - actor.savings.get() / 5;
-        return desired / 100 + Math.random() * 0.1;
+            - actor.stash.get(2 /* MATERIAL.COTTON */);
+        return disbalance / 50 + Math.random() * 0.1 - actor.savings.get() / 1000;
     },
     // AIs are pretty shortsighted
     potential_targets(actor) {
@@ -206,6 +284,7 @@ storage_1.AIActionsStorage.register_action_location({
         return result;
     },
     action(actor, target) {
+        common_1.AIfunctions.update_price_beliefs(actor);
         actor.ai_gathering_target.set(2 /* MATERIAL.COTTON */, common_1.AIfunctions.check_local_demand_for_material(actor, 2 /* MATERIAL.COTTON */));
         if (target.cell_id == actor.cell_id) {
             effects_1.Effect.enter_location(actor.id, target.id);
@@ -217,20 +296,51 @@ storage_1.AIActionsStorage.register_action_location({
     }
 });
 storage_1.AIActionsStorage.register_action_location({
-    tag: "fish",
+    tag: "gather-cotton-for-yourself",
+    utility(actor, target) {
+        if (target.cotton == 0)
+            return 0;
+        if (actor.open_shop)
+            return 0;
+        let desired = actor.ai_desired_stash.get(2 /* MATERIAL.COTTON */)
+            - actor.stash.get(2 /* MATERIAL.COTTON */);
+        return desired / 50 + Math.random() * 0.1 - actor.savings.get() / 1000;
+    },
+    // AIs are pretty shortsighted
+    potential_targets(actor) {
+        let result = data_id_1.DataID.Cells.locations(actor.cell_id).map(data_objects_1.Data.Locations.from_id).filter((item) => item.cotton > 0);
+        for (const neighbour of data_objects_1.Data.World.neighbours(actor.cell_id)) {
+            result =
+                result
+                    .concat(data_id_1.DataID.Cells.locations(neighbour)
+                    .map(data_objects_1.Data.Locations.from_id)
+                    .filter((item) => (item.cotton > 0) && (system_1.MapSystem.can_move(data_objects_1.Data.World.id_to_coordinate(item.cell_id)))));
+        }
+        return result;
+    },
+    action(actor, target) {
+        if (target.cell_id == actor.cell_id) {
+            effects_1.Effect.enter_location(actor.id, target.id);
+            manager_1.ActionManager.start_action(actions_00_1.CharacterAction.GATHER_COTTON, actor, actor.cell_id);
+        }
+        else {
+            common_1.AIfunctions.go_to_location(actor, target);
+        }
+    }
+});
+storage_1.AIActionsStorage.register_action_location({
+    tag: "fish-to-sell",
     utility(actor, target) {
         if (target.fish == 0)
             return 0;
         if (actor.open_shop)
             return 0;
-        let desired = actor.ai_desired_stash.get(26 /* MATERIAL.FISH_OKU */)
-            + 10
-            - actor.stash.get(26 /* MATERIAL.FISH_OKU */)
-            + common_1.AIfunctions.check_local_demand_for_material(actor, 26 /* MATERIAL.FISH_OKU */)
+        let desired = +common_1.AIfunctions.check_local_demand_for_material(actor, 26 /* MATERIAL.FISH_OKU */)
             - common_1.AIfunctions.check_local_supply_for_material(actor, 26 /* MATERIAL.FISH_OKU */)
             + actor.ai_gathering_target.get(26 /* MATERIAL.FISH_OKU */)
-            - actor.savings.get() / 5;
-        return desired / 100 + Math.random() * 0.1;
+            - actor.stash.get(26 /* MATERIAL.FISH_OKU */);
+        const skill = character_1.CharacterValues.skill(actor, "fishing");
+        return (desired / 50 + Math.random() * 0.1) * skill / 100 - actor.savings.get() / 2000;
     },
     // AIs are pretty shortsighted
     potential_targets(actor) {
@@ -245,7 +355,42 @@ storage_1.AIActionsStorage.register_action_location({
         return result;
     },
     action(actor, target) {
+        common_1.AIfunctions.update_price_beliefs(actor);
         actor.ai_gathering_target.set(26 /* MATERIAL.FISH_OKU */, common_1.AIfunctions.check_local_demand_for_material(actor, 26 /* MATERIAL.FISH_OKU */));
+        if (target.cell_id == actor.cell_id) {
+            effects_1.Effect.enter_location(actor.id, target.id);
+            manager_1.ActionManager.start_action(actions_00_1.CharacterAction.FISH, actor, actor.cell_id);
+        }
+        else {
+            common_1.AIfunctions.go_to_location(actor, target);
+        }
+    }
+});
+storage_1.AIActionsStorage.register_action_location({
+    tag: "fish-for-yourself",
+    utility(actor, target) {
+        if (target.fish == 0)
+            return 0;
+        if (actor.open_shop)
+            return 0;
+        let desired = actor.ai_desired_stash.get(26 /* MATERIAL.FISH_OKU */)
+            - actor.stash.get(26 /* MATERIAL.FISH_OKU */);
+        const skill = character_1.CharacterValues.skill(actor, "fishing");
+        return (desired / 50 + Math.random() * 0.1) * skill / 100 - actor.savings.get() / 2000;
+    },
+    // AIs are pretty shortsighted
+    potential_targets(actor) {
+        let result = data_id_1.DataID.Cells.locations(actor.cell_id).map(data_objects_1.Data.Locations.from_id).filter((item) => item.fish > 0);
+        for (const neighbour of data_objects_1.Data.World.neighbours(actor.cell_id)) {
+            result =
+                result
+                    .concat(data_id_1.DataID.Cells.locations(neighbour)
+                    .map(data_objects_1.Data.Locations.from_id)
+                    .filter((item) => (item.fish > 0) && (system_1.MapSystem.can_move(data_objects_1.Data.World.id_to_coordinate(item.cell_id)))));
+        }
+        return result;
+    },
+    action(actor, target) {
         if (target.cell_id == actor.cell_id) {
             effects_1.Effect.enter_location(actor.id, target.id);
             manager_1.ActionManager.start_action(actions_00_1.CharacterAction.FISH, actor, actor.cell_id);

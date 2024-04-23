@@ -26,6 +26,17 @@ var AIfunctions;
         return character.home_location_id !== undefined;
     }
     AIfunctions.has_home = has_home;
+    function items_for_sale(character) {
+        let total = 0;
+        for (const item_id of character.equip.data.backpack.items) {
+            const item = data_objects_1.Data.Items.from_id(item_id);
+            if (item.price !== undefined) {
+                total++;
+            }
+        }
+        return total;
+    }
+    AIfunctions.items_for_sale = items_for_sale;
     function home_cell(character) {
         if (character.home_location_id !== undefined)
             return data_objects_1.Data.Locations.from_id(character.home_location_id).cell_id;
@@ -70,6 +81,22 @@ var AIfunctions;
         return total_weight;
     }
     AIfunctions.loot_weight = loot_weight;
+    function stash_disbalance(actor) {
+        let total = 0;
+        for (const material of content_1.MaterialConfiguration.MATERIAL) {
+            total += Math.abs(actor.stash.get(material) - actor.ai_desired_stash.get(material));
+        }
+        return total;
+    }
+    AIfunctions.stash_disbalance = stash_disbalance;
+    function stash_overflow(actor) {
+        let total = 0;
+        for (const material of content_1.MaterialConfiguration.MATERIAL) {
+            total += Math.max(0, actor.stash.get(material) - actor.ai_desired_stash.get(material));
+        }
+        return total;
+    }
+    AIfunctions.stash_overflow = stash_overflow;
     function trade_stash_weight(actor) {
         let total_weight = 0;
         for (const material of content_1.MaterialConfiguration.MATERIAL) {
@@ -216,6 +243,7 @@ var AIfunctions;
         }
         else {
             effects_1.Effect.enter_location(actor.id, target.id);
+            update_price_beliefs(actor);
         }
     }
     AIfunctions.go_to_location = go_to_location;
@@ -224,7 +252,7 @@ var AIfunctions;
         const demand = data_id_1.DataID.Cells.market_order_id_list(actor.cell_id).map(data_objects_1.Data.MarketOrders.from_id);
         for (const item of demand) {
             if ((item.material == material)
-                || (item.typ == "buy")
+                && (item.typ == "buy")
             // || (item.price >= AIfunctions.sell_price(actor, material))
             ) {
                 demanded += item.amount;
@@ -238,7 +266,7 @@ var AIfunctions;
         const demand = data_id_1.DataID.Cells.market_order_id_list(actor.cell_id).map(data_objects_1.Data.MarketOrders.from_id);
         for (const item of demand) {
             if ((item.material == material)
-                || (item.typ == "sell")
+                && (item.typ == "sell")
             // || (item.price >= AIfunctions.buy_price(actor, material))
             ) {
                 supplied += item.amount;
@@ -392,7 +420,6 @@ var AIfunctions;
     AIfunctions.battles_in_cell = battles_in_cell;
     function check_local_battles(agent) {
         let battles = battles_in_cell(agent);
-        // console.log(battles)
         for (let item of battles) {
             let battle = data_objects_1.Data.Battles.from_id(item);
             if (!(system_3.BattleSystem.battle_finished(battle))) {
@@ -409,7 +436,6 @@ var AIfunctions;
     AIfunctions.check_local_battles = check_local_battles;
     function join_local_battle(agent) {
         let battles = battles_in_cell(agent);
-        // console.log(battles)
         for (let item of battles) {
             let battle = data_objects_1.Data.Battles.from_id(item);
             if (!(system_3.BattleSystem.battle_finished(battle))) {

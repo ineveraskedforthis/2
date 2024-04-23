@@ -46,6 +46,18 @@ export namespace AIfunctions {
         return character.home_location_id !== undefined
     }
 
+    export function items_for_sale(character: Character) : number {
+        let total = 0
+        for (const item_id of character.equip.data.backpack.items) {
+            const item = Data.Items.from_id(item_id)
+            if (item.price !== undefined) {
+                total++;
+            }
+        }
+
+        return total
+    }
+
     export function home_cell(character: Character) : cell_id|undefined {
         if (character.home_location_id !== undefined)
             return Data.Locations.from_id(character.home_location_id).cell_id
@@ -82,6 +94,22 @@ export namespace AIfunctions {
             }
         }
         return total_weight
+    }
+
+    export function stash_disbalance(actor: Character) : number {
+        let total = 0
+        for (const material of MaterialConfiguration.MATERIAL) {
+            total += Math.abs(actor.stash.get(material) - actor.ai_desired_stash.get(material))
+        }
+        return total
+    }
+
+    export function stash_overflow(actor: Character) : number {
+        let total = 0
+        for (const material of MaterialConfiguration.MATERIAL) {
+            total += Math.max(0, actor.stash.get(material) - actor.ai_desired_stash.get(material))
+        }
+        return total
     }
 
     export function trade_stash_weight(actor: Character) : number {
@@ -234,6 +262,7 @@ export namespace AIfunctions {
             ActionManager.start_action(CharacterAction.MOVE, actor, next_cell);
         } else {
             Effect.enter_location(actor.id, target.id)
+            update_price_beliefs(actor)
         }
     }
 
@@ -244,7 +273,7 @@ export namespace AIfunctions {
         for (const item of demand) {
             if (
                 (item.material == material)
-                || (item.typ == "buy")
+                && (item.typ == "buy")
                 // || (item.price >= AIfunctions.sell_price(actor, material))
             ) {
                 demanded += item.amount
@@ -261,7 +290,7 @@ export namespace AIfunctions {
         for (const item of demand) {
             if (
                 (item.material == material)
-                || (item.typ == "sell")
+                && (item.typ == "sell")
                 // || (item.price >= AIfunctions.buy_price(actor, material))
             ) {
                 supplied += item.amount
@@ -425,7 +454,6 @@ export namespace AIfunctions {
 
     export function check_local_battles(agent: Character) {
         let battles = battles_in_cell(agent)
-        // console.log(battles)
         for (let item of battles) {
             let battle = Data.Battles.from_id(item)
             if (!(BattleSystem.battle_finished(battle))) {
@@ -441,7 +469,6 @@ export namespace AIfunctions {
 
     export function join_local_battle(agent: Character) {
         let battles = battles_in_cell(agent)
-        // console.log(battles)
         for (let item of battles) {
             let battle = Data.Battles.from_id(item)
             if (!(BattleSystem.battle_finished(battle))) {

@@ -27,6 +27,7 @@ storage_1.AIActionsStorage.register_action_self({
         return [actor];
     },
     action(actor) {
+        common_1.AIfunctions.update_price_beliefs(actor);
         actor.ai_desired_stash.clear();
         // investments for rich characters:
         if (actor.savings.get() > 1000) {
@@ -55,11 +56,11 @@ storage_1.AIActionsStorage.register_action_self({
             }
         }
         //arrows:
-        if (character_1.CharacterValues.skill(actor, "ranged") > 30) {
+        if (character_1.CharacterValues.skill(actor, "ranged") > 20) {
             actor.ai_desired_stash.inc(0 /* MATERIAL.ARROW_BONE */, 40);
         }
         //zaz for mages
-        if (character_1.CharacterValues.skill(actor, "magic_mastery") > 30) {
+        if (character_1.CharacterValues.skill(actor, "magic_mastery") > 10) {
             actor.ai_desired_stash.inc(30 /* MATERIAL.ZAZ */, 40);
         }
     }
@@ -81,6 +82,7 @@ storage_1.AIActionsStorage.register_action_self({
         return [actor];
     },
     action(actor, target) {
+        common_1.AIfunctions.update_price_beliefs(actor);
         const bulk_crafts = common_1.AIfunctions.profitable_bulk_craft(actor);
         for (let item of bulk_crafts) {
             if (item.profit <= 0)
@@ -95,6 +97,7 @@ storage_1.AIActionsStorage.register_action_self({
 storage_1.AIActionsStorage.register_action_self({
     tag: "craft-item",
     utility(actor, target) {
+        common_1.AIfunctions.update_price_beliefs(actor);
         const bulk_crafts = common_1.AIfunctions.profitable_item_craft(actor);
         for (let item of bulk_crafts) {
             if (character_conditions_1.CharacterCondition.can_item_craft(actor, item)) {
@@ -117,7 +120,7 @@ storage_1.AIActionsStorage.register_action_material({
     tag: "eat",
     utility(actor, target) {
         if (character_conditions_1.CharacterCondition.can_eat(actor, target)) {
-            return common_1.AIfunctions.lack_of_hp(actor) + actor.fatigue / 200 + actor.stress / 200;
+            return common_1.AIfunctions.lack_of_hp(actor) * 2 + actor.fatigue / 200 + actor.stress / 200;
         }
         return 0;
     },
@@ -131,12 +134,13 @@ storage_1.AIActionsStorage.register_action_material({
 storage_1.AIActionsStorage.register_action_material({
     tag: "sell",
     utility(actor, target) {
-        return (actor.stash.get(target.id) - actor.ai_desired_stash.get(target.id)) / 10;
+        return (actor.stash.get(target.id) - actor.ai_desired_stash.get(target.id)) / 50;
     },
     potential_targets(actor) {
         return content_1.MaterialConfiguration.MATERIAL.map(content_1.MaterialStorage.get);
     },
     action(actor, target) {
+        common_1.AIfunctions.update_price_beliefs(actor);
         system_1.MarketOrders.remove_by_condition(actor, target.id);
         const amount_to_sell = actor.stash.get(target.id) - actor.ai_desired_stash.get(target.id);
         market_1.EventMarket.sell_smart_with_limits(actor, target.id, common_1.AIfunctions.sell_price(actor, target.id), amount_to_sell);
@@ -173,12 +177,13 @@ storage_1.AIActionsStorage.register_action_self({
 storage_1.AIActionsStorage.register_action_material({
     tag: "buy",
     utility(actor, target) {
-        return (actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id)) / 5;
+        return (actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id)) / 50;
     },
     potential_targets(actor) {
         return content_1.MaterialConfiguration.MATERIAL.map(content_1.MaterialStorage.get);
     },
     action(actor, target) {
+        common_1.AIfunctions.update_price_beliefs(actor);
         system_1.MarketOrders.remove_by_condition(actor, target.id);
         const amount_to_buy = actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id);
         market_1.EventMarket.buy_smart_with_limits(actor, target.id, common_1.AIfunctions.buy_price(actor, target.id), amount_to_buy);

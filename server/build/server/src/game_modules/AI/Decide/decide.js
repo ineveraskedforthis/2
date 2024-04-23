@@ -20,7 +20,6 @@ function decide() {
             const targets = item.potential_targets(character);
             for (const target of targets) {
                 const utility = item.utility(character, target);
-                // console.log(item.tag, utility)
                 if ((best == undefined) || best.utility < utility) {
                     best = {
                         tag: item.tag,
@@ -32,6 +31,9 @@ function decide() {
             }
         }
         if (best) {
+            if (character.name == "Guard 1") {
+                console.log(best.tag, best.utility);
+            }
             best.action(character, best.target);
             character.current_ai_action = best.tag;
         }
