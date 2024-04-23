@@ -31,9 +31,6 @@ function decide() {
             }
         }
         if (best) {
-            if (character.name == "Guard 1") {
-                console.log(best.tag, best.utility);
-            }
             best.action(character, best.target);
             character.current_ai_action = best.tag;
         }
