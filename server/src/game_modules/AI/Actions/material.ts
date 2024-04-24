@@ -154,7 +154,7 @@ AIActionsStorage.register_action_material({
             if (order.material != target.id) continue;
             if (order.typ == "buy") continue;
             if (order.price != actor.ai_price_sell_expectation[target.id]) {
-                desire_to_update_prices += order.amount / 30
+                desire_to_update_prices += order.amount * actor.ai_price_sell_expectation[target.id] / 30
             }
         }
         return (actor.stash.get(target.id) - actor.ai_desired_stash.get(target.id)) / 50 + desire_to_update_prices
@@ -209,7 +209,7 @@ AIActionsStorage.register_action_material({
             if (order.material != target.id) continue;
             if (order.typ == "sell") continue;
             if (order.price != actor.ai_price_buy_expectation[target.id]) {
-                desire_to_update_prices += order.amount / 30
+                desire_to_update_prices += order.amount * order.price / 30
             }
         }
         return (actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id)) / 50
