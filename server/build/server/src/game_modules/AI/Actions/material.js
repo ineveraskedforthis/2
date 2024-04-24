@@ -143,7 +143,7 @@ storage_1.AIActionsStorage.register_action_material({
             if (order.typ == "buy")
                 continue;
             if (order.price != actor.ai_price_sell_expectation[target.id]) {
-                return 2;
+                return 100;
             }
         }
         return (actor.stash.get(target.id) - actor.ai_desired_stash.get(target.id)) / 50 + desire_to_update_prices;
@@ -197,7 +197,7 @@ storage_1.AIActionsStorage.register_action_material({
             if (order.typ == "sell")
                 continue;
             if (order.price != actor.ai_price_buy_expectation[target.id]) {
-                return 2;
+                return 100;
             }
         }
         return (actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id)) / 50;
