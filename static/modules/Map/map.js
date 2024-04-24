@@ -1,6 +1,6 @@
 /* eslint-disable no-redeclare */
 /*global images, battle_image*/
-import { get_pos_in_canvas } from '../common.js';
+import { get_pos_in_canvas, lerp } from '../common.js';
 import { globals, is_action_repeatable, local_actions } from '../globals.js';
 import { socket } from "../Socket/socket.js";
 import { select } from '../HTMLwrappers/common.js';
@@ -130,7 +130,7 @@ export class Map {
         this.buffer_context = this.buffer.getContext('2d');
         this.container = container;
         this.hex_side = 23;
-        this.camera = [0, 0]; //[50, 600];
+        this._camera = [0, 0]; //[50, 600];
         this.hex_shift = [0, 0]; //[-100, -680];
         this.selected = [0, 0];
         this.hex_h = this.hex_side * Math.sqrt(3) / 2;
@@ -139,6 +139,21 @@ export class Map {
         this.forest = [];
         this.urban = [];
         this.rat_lairs = [];
+    }
+    get camera() {
+        const target = globals.current_map_movement_target;
+        if (target) {
+            const target_canvas = this.hex_center(target);
+            const current_cell = this.hex_center(globals.current_map_position);
+            return [
+                lerp(this._camera[0], this._camera[0] + target_canvas[0] - current_cell[0], globals.movement_progress),
+                lerp(this._camera[1], this._camera[1] + target_canvas[1] - current_cell[1], globals.movement_progress)
+            ];
+        }
+        return this._camera;
+    }
+    set camera(data) {
+        this._camera = data;
     }
     update_canvas_size() {
         this.canvas.width = this.container.clientWidth;
@@ -149,8 +164,7 @@ export class Map {
     }
     update_camera() {
         let temp = this.hex_center(globals.current_map_position);
-        this.camera[0] = temp[0] - this.canvas.width / 2;
-        this.camera[1] = temp[1] - this.canvas.height / 2;
+        this.camera = [temp[0] - this.canvas.width / 2, temp[1] - this.canvas.height / 2];
     }
     load_terrain(data) {
         if (this.terrain[data.x] == undefined) {
@@ -354,8 +368,7 @@ export class Map {
         }
     }
     move([dx, dy]) {
-        this.camera[0] -= dx;
-        this.camera[1] -= dy;
+        this.camera = [this.camera[0] - dx, this.camera[1] - dy];
     }
     get_hex([x, y]) {
         x = x + this.camera[0] + this.hex_shift[0];
@@ -476,12 +489,14 @@ function send_move_action(target, action) {
         if (adj_flag) {
             globals.current_map_movement_target = target;
             globals.movement_in_process = true;
+            globals.movement_progress = 0;
             socket.emit('move', coord_to_x_y(target));
         }
         else {
             const next_cell = globals.current_path[globals.current_path_step + 1];
             globals.current_map_movement_target = next_cell;
             globals.movement_in_process = true;
+            globals.movement_progress = 0;
             socket.emit('move', coord_to_x_y(next_cell));
         }
     }
@@ -489,6 +504,7 @@ function send_move_action(target, action) {
         globals.current_path_step += 1;
         const next_cell = globals.current_path[globals.current_path_step + 1];
         globals.current_map_movement_target = next_cell;
+        globals.movement_progress = 0;
         if (next_cell == undefined)
             return;
         socket.emit('move', coord_to_x_y(next_cell));
@@ -573,9 +589,9 @@ export function draw_map_related_stuff(maps, delta) {
         }
         else {
             let bar = div.querySelector('span');
-            bar.style.width = Math.min(Math.floor(globals.action_time / globals.action_total_time * 10000) / 100, 100) + '%';
+            bar.style.width = Math.min(Math.floor(globals.action_time / 1.4 / globals.action_total_time * 10000) / 100, 100) + '%';
             if (globals.movement_in_process) {
-                globals.movement_progress = Math.min(1, globals.action_ratio);
+                globals.movement_progress = Math.min(1, globals.action_ratio * 1.6);
             }
         }
     }
