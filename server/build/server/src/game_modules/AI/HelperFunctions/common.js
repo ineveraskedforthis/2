@@ -307,11 +307,11 @@ var AIfunctions;
     }
     AIfunctions.update_price_beliefs = update_price_beliefs;
     function unsold_price_update(character, material, times) {
-        character.ai_price_buy_log_precision[material] -= 0.001 * times;
+        character.ai_price_sell_log_precision[material] -= 0.001 * times;
     }
     AIfunctions.unsold_price_update = unsold_price_update;
     function unbought_price_update(character, material, times) {
-        character.ai_price_sell_log_precision[material] -= 0.001 * times;
+        character.ai_price_buy_log_precision[material] -= 0.001 * times;
     }
     AIfunctions.unbought_price_update = unbought_price_update;
     function seen_buy_order_price_update(character, material, times, seen_price) {

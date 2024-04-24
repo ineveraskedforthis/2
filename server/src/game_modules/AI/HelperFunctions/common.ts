@@ -334,11 +334,11 @@ export namespace AIfunctions {
     }
 
     export function unsold_price_update(character: Character, material: MATERIAL, times: number) {
-        character.ai_price_buy_log_precision[material] -= 0.001 * times
+        character.ai_price_sell_log_precision[material] -= 0.001 * times
     }
 
     export function unbought_price_update(character: Character, material: MATERIAL, times: number) {
-        character.ai_price_sell_log_precision[material] -= 0.001 * times
+        character.ai_price_buy_log_precision[material] -= 0.001 * times
     }
 
     export function seen_buy_order_price_update(character: Character, material: MATERIAL, times: number, seen_price: number) {
