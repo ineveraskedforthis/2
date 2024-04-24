@@ -41,8 +41,13 @@ export namespace EventMarket {
         const order = Data.MarketOrders.from_id(order_id)
         const seller = Data.Characters.from_id(order.owner_id)
 
-        if ((seller.user_id == undefined) && (result.tag == 'ok')) {
-            AIfunctions.roll_price_belief_sell_increase(seller, order.material, trim(Math.min(amount, result.amount), 1, 100) / 50)
+        if (result.tag == 'ok') {
+            if (seller.user_id == undefined) {
+                AIfunctions.on_sale_price_update(seller, order.material, result.amount)
+            }
+            if (buyer.user_id == undefined) {
+                AIfunctions.on_buyment_price_update(buyer, order.amount, result.amount)
+            }
         }
 
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.STASH)
@@ -63,8 +68,13 @@ export namespace EventMarket {
         const order = Data.MarketOrders.from_id(order_id)
         const buyer = Data.Characters.from_id(order.owner_id)
 
-        if ((seller.user_id == undefined) && (result.tag == 'ok')) {
-            AIfunctions.roll_price_belief_sell_decrease(seller, order.material, trim(Math.min(amount, result.amount), 1, 100) / 50)
+        if (result.tag == 'ok') {
+            if (seller.user_id == undefined) {
+                AIfunctions.on_sale_price_update(seller, order.material, result.amount)
+            }
+            if (buyer.user_id == undefined) {
+                AIfunctions.on_buyment_price_update(buyer, order.amount, result.amount)
+            }
         }
 
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.STASH)

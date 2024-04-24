@@ -194,11 +194,11 @@ export namespace AIfunctions {
     }
 
     export function buy_price( character: Character, material: MATERIAL) {
-        return character.ai_price_belief_buy.get(material) || base_price;
+        return character.ai_price_buy_expectation[material] as money;
     }
 
     export function sell_price(character: Character, material: MATERIAL) {
-        return character.ai_price_belief_sell.get(material)|| base_price;
+        return character.ai_price_sell_expectation[material] as money;
     }
 
     export function price_norm(character: Character, items_vector: priced_box[]): number {
@@ -305,139 +305,102 @@ export namespace AIfunctions {
         let orders = DataID.Cells.market_order_id_list(character.cell_id)
         // initialisation
 
-        for (let material of MaterialConfiguration.MATERIAL) {
-            let value_buy = character.ai_price_belief_buy.get(material)
-            let value_sell = character.ai_price_belief_sell.get(material)
-
-            if (value_buy == undefined) {
-                character.ai_price_belief_buy.set(material, base_price)
-            }
-            if (value_sell == undefined) {
-                character.ai_price_belief_sell.set(material, base_price)
-            }
-        }
-
         // updating price beliefs as you go
         for (let item of orders) {
             let order = Data.MarketOrders.from_id(item)
-            if (order.typ == "buy") {
-                let belief = character.ai_price_belief_sell.get(order.material)
-                if (belief == undefined) {
-                    character.ai_price_belief_sell.set(order.material, order.price)
-                } else {
-                    character.ai_price_belief_sell.set(order.material, Math.round(order.price / 10 + belief * 9 / 10) as money)
+            if (order.owner_id == character.id) {
+                if (order.typ == "buy") {
+                    unbought_price_update(character, order.material, order.amount)
                 }
-            }
-
-            if (order.typ == "sell") {
-                let belief = character.ai_price_belief_buy.get(order.material)
-                if (belief == undefined) {
-                    character.ai_price_belief_buy.set(order.material, order.price)
-                } else {
-                    character.ai_price_belief_buy.set(order.material, Math.round(order.price / 10 + belief * 9 / 10) as money)
-                }
-            }
-        }
-
-        //if we are selling, then we want to decrease price
-        //if we are buying, we want to increase it slowly
-
-
-        const personal_orders = DataID.Character.market_orders_list(character.id)
-
-        for (const item of personal_orders) {
-            const order = Data.MarketOrders.from_id(item)
-            //if our order is huge, we are more likely to change price: we want to fulfill it asap!
-            const probability = order.amount / 50
-            const dice = Math.random()
-
-            if (order.typ == "buy") {
-                const belief = buy_price(character, order.material)
-                if (dice < probability) {
-                    character.ai_price_belief_buy.set(order.material, (belief + 1) as money)
-                }
-            }
-
-            if (order.typ == "sell") {
-                const belief = sell_price(character, order.material)
-                if (dice < probability) {
-                    character.ai_price_belief_sell.set(order.material, Math.max(1, (belief - 1)) as money)
-                }
-            }
-        }
-
-        //adding a bit of healthy noise
-        character.ai_price_belief_buy.forEach((value, key, map) => {
-            if (value > 1) {
-                if (character.trade_stash.get(key) > 0) {
-                    let amount = character.trade_stash.get(key) + character.stash.get(key) - 10
-                    let dice = Math.random()
-                    if (dice < amount / 30) {
-                        map.set(key, value - 1 as money)
-                    }
-                }
-                let dice = Math.random()
-                if (dice < 0.2) {
-                    map.set(key, value - 1 as money)
-                }
-                if (dice > 0.8) {
-                    map.set(key, value + 1 as money)
-                }
-
-                let dice_2 = Math.random()
-                if (dice_2 * value > 50) {
-                    map.set(key, value - 1 as money)
+                if (order.typ == "sell") {
+                    unsold_price_update(character, order.material, order.amount)
                 }
             } else {
-                let dice = Math.random()
-                if (dice > 0.8) {
-                    map.set(key, value + 1 as money)
+                if (order.typ == "buy") {
+                    seen_buy_order_price_update(character, order.material, order.amount, order.price)
+                }
+                if (order.typ == "sell") {
+                    seen_sell_order_price_update(character, order.material, order.amount, order.price)
                 }
             }
-        });
+        }
 
-        character.ai_price_belief_sell.forEach((value, key, map) => {
-            if (value > 1) {
-                let dice = Math.random()
-                if (dice < 0.2) {
-                    map.set(key, value - 1 as money)
-                }
-                if (dice > 0.8) {
-                    map.set(key, value + 1 as money)
-                }
-
-                let dice_2 = Math.random()
-                if (dice_2 * value > 50) {
-                    map.set(key, value - 1 as money)
-                }
-            } else {
-                let dice = Math.random()
-                if (dice > 0.8) {
-                    map.set(key, value + 1 as money)
-                }
-            }
-        });
-    }
-
-    export function roll_price_belief_sell_increase(character: Character, material: MATERIAL, probability: number) {
-        let dice = Math.random()
-        let current = character.ai_price_belief_sell.get(material)
-        if (current == undefined) {
-            character.ai_price_belief_sell.set(material, 1 as money)
-        } else if (dice < probability) {
-            character.ai_price_belief_sell.set(material, current + 1 as money)
+        for (const material of MaterialConfiguration.MATERIAL) {
+            character.ai_price_buy_log_precision[material] -= 0.001
+            character.ai_price_sell_log_precision[material] -= 0.001
+            update_sell_price(character, material)
+            update_buy_price(character, material)
         }
     }
 
-    export function roll_price_belief_sell_decrease(character: Character, material: MATERIAL, probability: number) {
-        let dice = Math.random()
-        let current = character.ai_price_belief_sell.get(material)
-        if (current == undefined) {
-            character.ai_price_belief_sell.set(material, 1 as money)
-        } else if (dice < probability) {
-            character.ai_price_belief_sell.set(material, current - 1 as money)
+    export function unsold_price_update(character: Character, material: MATERIAL, times: number) {
+        character.ai_price_buy_log_precision[material] -= 0.001 * times
+    }
+
+    export function unbought_price_update(character: Character, material: MATERIAL, times: number) {
+        character.ai_price_sell_log_precision[material] -= 0.001 * times
+    }
+
+    export function seen_buy_order_price_update(character: Character, material: MATERIAL, times: number, seen_price: number) {
+        if (seen_price >= character.ai_price_sell_expectation[material]) {
+            character.ai_price_sell_log_precision[material] += 0.001 * times
+        }
+        if (seen_price < character.ai_price_sell_expectation[material]) {
+            character.ai_price_sell_log_precision[material] -= 0.001 * times
         }
     }
+
+    export function seen_sell_order_price_update(character: Character, material: MATERIAL, times: number, seen_price: number) {
+        if (seen_price > character.ai_price_buy_expectation[material]) {
+            character.ai_price_buy_log_precision[material] -= 0.001 * times
+        }
+        if (seen_price <= character.ai_price_buy_expectation[material]) {
+            character.ai_price_buy_log_precision[material] += 0.001 * times
+        }
+    }
+
+    export function update_sell_price(character: Character, material: MATERIAL) {
+        const sign = Math.sign(character.ai_price_sell_log_precision[material])
+        const amplitude = Math.floor(Math.abs(character.ai_price_sell_log_precision[material]))
+
+        if (amplitude > 2) {
+            character.ai_price_sell_log_precision[material] -= sign
+            character.ai_price_sell_expectation[material] += sign
+        }
+
+        validate_price(character, material)
+    }
+
+    export function update_buy_price(character: Character, material: MATERIAL) {
+        const sign = Math.sign(character.ai_price_buy_log_precision[material])
+        const amplitude = Math.floor(Math.abs(character.ai_price_buy_log_precision[material]))
+
+        if (amplitude > 2) {
+            character.ai_price_buy_log_precision[material] -= sign
+            character.ai_price_buy_expectation[material] -= sign
+        }
+
+        validate_price(character, material)
+    }
+
+    export function on_sale_price_update(character: Character, material: MATERIAL, times: number) {
+        character.ai_price_sell_log_precision[material] += 0.05 * times;
+    }
+
+    export function on_buyment_price_update(character: Character, material: MATERIAL, times: number) {
+        character.ai_price_buy_log_precision[material] += 0.05 * times;
+    }
+
+    export function validate_price(character: Character, material: MATERIAL,) {
+        if (character.ai_price_buy_expectation[material] < 1) {
+            character.ai_price_buy_expectation[material] = 1
+        }
+        if (character.ai_price_sell_expectation[material] < 1) {
+            character.ai_price_sell_expectation[material] = 1
+        }
+    }
+
+
 
     export function battles_in_cell(char: Character) {
         let battles:battle_id[] = []

@@ -2,6 +2,9 @@ export class MaterialConfiguration {
     static get zero_record() {
         return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,];
     }
+    static get ones_record() {
+        return [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,];
+    }
     static is_valid_id(id) {
         return id in this.MATERIAL;
     }
@@ -31,6 +34,9 @@ export class MaterialCategoryConfiguration {
     static get zero_record() {
         return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,];
     }
+    static get ones_record() {
+        return [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,];
+    }
     static is_valid_id(id) {
         return id in this.CATEGORY;
     }
@@ -51,6 +57,9 @@ export class EquipSlotConfiguration {
     static get zero_record() {
         return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,];
     }
+    static get ones_record() {
+        return [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,];
+    }
     static is_valid_id(id) {
         return id in this.SLOT;
     }
@@ -70,6 +79,9 @@ EquipSlotConfiguration.EQUIP_SLOT_NAME = ["Weapon", "Secondary", "Amulet", "Ches
 export class ImpactConfiguration {
     static get zero_record() {
         return [0, 0, 0, 0,];
+    }
+    static get ones_record() {
+        return [1, 1, 1, 1,];
     }
     static is_valid_id(id) {
         return id in this.IMPACT;
@@ -95,6 +107,9 @@ export class WeaponConfiguration {
     static get zero_record() {
         return [0, 0, 0, 0, 0, 0,];
     }
+    static get ones_record() {
+        return [1, 1, 1, 1, 1, 1,];
+    }
     static is_valid_id(id) {
         return id in this.WEAPON;
     }
@@ -112,8 +127,8 @@ WeaponConfiguration.WEAPON_MATERIAL = [31 /* MATERIAL.WOOD_RED */, 31 /* MATERIA
 WeaponConfiguration.WEAPON_MATERIAL_STRING = ["wood-red", "wood-red", "small-bone-rat", "bone-rat", "steel", "wood-red",];
 WeaponConfiguration.WEAPON_SECONDARY_MATERIAL = [31 /* MATERIAL.WOOD_RED */, 31 /* MATERIAL.WOOD_RED */, 31 /* MATERIAL.WOOD_RED */, 7 /* MATERIAL.BONE_RAT */, 31 /* MATERIAL.WOOD_RED */, 31 /* MATERIAL.WOOD_RED */,];
 WeaponConfiguration.WEAPON_SECONDARY_MATERIAL_STRING = ["wood-red", "wood-red", "wood-red", "bone-rat", "wood-red", "wood-red",];
-WeaponConfiguration.WEAPON_IMPACT = [2 /* IMPACT_TYPE.BLUNT */, 0 /* IMPACT_TYPE.POINT */, 0 /* IMPACT_TYPE.POINT */, 0 /* IMPACT_TYPE.POINT */, 1 /* IMPACT_TYPE.BLADE */, 2 /* IMPACT_TYPE.BLUNT */,];
-WeaponConfiguration.WEAPON_IMPACT_STRING = ["blunt", "point", "point", "point", "blade", "blunt",];
+WeaponConfiguration.WEAPON_IMPACT = [2 /* IMPACT_TYPE.BLUNT */, 0 /* IMPACT_TYPE.POINT */, 0 /* IMPACT_TYPE.POINT */, 1 /* IMPACT_TYPE.BLADE */, 1 /* IMPACT_TYPE.BLADE */, 2 /* IMPACT_TYPE.BLUNT */,];
+WeaponConfiguration.WEAPON_IMPACT_STRING = ["blunt", "point", "point", "blade", "blade", "blunt",];
 // Numbers: 
 WeaponConfiguration.WEAPON_MAGIC_POWER = [0, 0, 0, 0, 0, 0,];
 WeaponConfiguration.WEAPON_SIZE = [0.75, 1.5, 1.5, 0.5, 1.0, 3.0,];
@@ -125,6 +140,9 @@ WeaponConfiguration.WEAPON_NAME = ["Bow", "Spear", "Spear", "Dagger", "Sword", "
 export class ArmourConfiguration {
     static get zero_record() {
         return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,];
+    }
+    static get ones_record() {
+        return [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,];
     }
     static is_valid_id(id) {
         return id in this.ARMOUR;

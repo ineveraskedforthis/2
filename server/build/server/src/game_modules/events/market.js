@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventMarket = void 0;
 const common_1 = require("../AI/HelperFunctions/common");
-const basic_functions_1 = require("../calculations/basic_functions");
 const user_manager_1 = require("../client_communication/user_manager");
 const data_id_1 = require("../data/data_id");
 const data_objects_1 = require("../data/data_objects");
@@ -37,8 +36,13 @@ var EventMarket;
         let result = system_1.MarketOrders.execute_sell_order(order_id, amount, buyer);
         const order = data_objects_1.Data.MarketOrders.from_id(order_id);
         const seller = data_objects_1.Data.Characters.from_id(order.owner_id);
-        if ((seller.user_id == undefined) && (result.tag == 'ok')) {
-            common_1.AIfunctions.roll_price_belief_sell_increase(seller, order.material, (0, basic_functions_1.trim)(Math.min(amount, result.amount), 1, 100) / 50);
+        if (result.tag == 'ok') {
+            if (seller.user_id == undefined) {
+                common_1.AIfunctions.on_sale_price_update(seller, order.material, result.amount);
+            }
+            if (buyer.user_id == undefined) {
+                common_1.AIfunctions.on_buyment_price_update(buyer, order.amount, result.amount);
+            }
         }
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 8 /* UI_Part.STASH */);
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 9 /* UI_Part.SAVINGS */);
@@ -55,8 +59,13 @@ var EventMarket;
         const result = system_1.MarketOrders.execute_buy_order(order_id, amount, seller);
         const order = data_objects_1.Data.MarketOrders.from_id(order_id);
         const buyer = data_objects_1.Data.Characters.from_id(order.owner_id);
-        if ((seller.user_id == undefined) && (result.tag == 'ok')) {
-            common_1.AIfunctions.roll_price_belief_sell_decrease(seller, order.material, (0, basic_functions_1.trim)(Math.min(amount, result.amount), 1, 100) / 50);
+        if (result.tag == 'ok') {
+            if (seller.user_id == undefined) {
+                common_1.AIfunctions.on_sale_price_update(seller, order.material, result.amount);
+            }
+            if (buyer.user_id == undefined) {
+                common_1.AIfunctions.on_buyment_price_update(buyer, order.amount, result.amount);
+            }
         }
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 8 /* UI_Part.STASH */);
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 9 /* UI_Part.SAVINGS */);

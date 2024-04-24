@@ -11,6 +11,7 @@ import { EventInventory } from "../../events/inventory_events";
 import { CharacterCondition } from "../../scripted-conditions/character-conditions";
 import { CharacterValues } from "../../scripted-values/character";
 import { CharacterEffect } from "../../scripted-effects/character";
+import { DataID } from "../../data/data_id";
 
 // Used instead of a part of old crafting routine
 // to decide required amounts of materials character needs
@@ -147,7 +148,16 @@ AIActionsStorage.register_action_material({
 AIActionsStorage.register_action_material({
     tag: "sell",
     utility(actor, target) {
-        return (actor.stash.get(target.id) - actor.ai_desired_stash.get(target.id)) / 50
+        let desire_to_update_prices = 0
+        for (const order_id of DataID.Character.market_orders_list(actor.id)) {
+            const order = Data.MarketOrders.from_id(order_id)
+            if (order.material != target.id) continue;
+            if (order.typ == "buy") continue;
+            if (order.price != actor.ai_price_sell_expectation[target.id]) {
+                desire_to_update_prices += order.amount / 30
+            }
+        }
+        return (actor.stash.get(target.id) - actor.ai_desired_stash.get(target.id)) / 50 + desire_to_update_prices
     },
     potential_targets(actor) {
         return MaterialConfiguration.MATERIAL.map(MaterialStorage.get)
@@ -193,6 +203,15 @@ AIActionsStorage.register_action_self({
 AIActionsStorage.register_action_material({
     tag: "buy",
     utility(actor, target) {
+        let desire_to_update_prices = 0
+        for (const order_id of DataID.Character.market_orders_list(actor.id)) {
+            const order = Data.MarketOrders.from_id(order_id)
+            if (order.material != target.id) continue;
+            if (order.typ == "sell") continue;
+            if (order.price != actor.ai_price_buy_expectation[target.id]) {
+                desire_to_update_prices += order.amount / 30
+            }
+        }
         return (actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id)) / 50
     },
     potential_targets(actor) {

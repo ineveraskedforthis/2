@@ -52,12 +52,18 @@ export namespace Dialog {
             return
         }
 
-        let data_buy = Object.fromEntries(target_character.ai_price_belief_buy)
-        let data_sell = Object.fromEntries(target_character.ai_price_belief_sell)
+        let buy = target_character.ai_price_buy_expectation
+        let sell = target_character.ai_price_sell_expectation
 
-        // console.log(data_buy, data_sell)
+        let buy_precision = target_character.ai_price_buy_log_precision
+        let sell_precision = target_character.ai_price_sell_log_precision
 
-        sw.socket.emit('character-prices', {buy: data_buy, sell: data_sell})
+        sw.socket.emit('character-prices', {
+            buy: buy,
+            sell: sell,
+            buy_log_precision: buy_precision,
+            sell_log_precision: sell_precision
+        })
     }
 
 

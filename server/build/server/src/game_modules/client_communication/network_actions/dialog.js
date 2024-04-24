@@ -46,10 +46,16 @@ var Dialog;
         if ((character == undefined || target_character == undefined)) {
             return;
         }
-        let data_buy = Object.fromEntries(target_character.ai_price_belief_buy);
-        let data_sell = Object.fromEntries(target_character.ai_price_belief_sell);
-        // console.log(data_buy, data_sell)
-        sw.socket.emit('character-prices', { buy: data_buy, sell: data_sell });
+        let buy = target_character.ai_price_buy_expectation;
+        let sell = target_character.ai_price_sell_expectation;
+        let buy_precision = target_character.ai_price_buy_log_precision;
+        let sell_precision = target_character.ai_price_sell_log_precision;
+        sw.socket.emit('character-prices', {
+            buy: buy,
+            sell: sell,
+            buy_log_precision: buy_precision,
+            sell_log_precision: sell_precision
+        });
     }
     Dialog.request_prices = request_prices;
     function request_greeting(sw, character_id) {

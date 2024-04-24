@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Character = exports.NotificationResponse = exports.ResponseOK = void 0;
+const content_1 = require("../../../.././../game_content/src/content");
 const basic_functions_1 = require("../../calculations/basic_functions");
 const SkillList_1 = require("../../character/SkillList");
 const max_hp_1 = require("../../races/max_hp");
@@ -59,8 +60,10 @@ class Character {
         this.action_progress = 0;
         this.action_duration = 0;
         this.current_ai_action = "idle";
-        this.ai_price_belief_buy = new Map();
-        this.ai_price_belief_sell = new Map();
+        this.ai_price_buy_expectation = content_1.MaterialConfiguration.ones_record;
+        this.ai_price_sell_expectation = content_1.MaterialConfiguration.ones_record;
+        this.ai_price_buy_log_precision = content_1.MaterialConfiguration.zero_record;
+        this.ai_price_sell_log_precision = content_1.MaterialConfiguration.zero_record;
         this.ai_desired_stash = new stash_1.Stash();
         this.ai_gathering_target = new stash_1.Stash();
         this._skills = new SkillList_1.SkillList();
@@ -252,3 +255,4 @@ class Character {
     }
 }
 exports.Character = Character;
+

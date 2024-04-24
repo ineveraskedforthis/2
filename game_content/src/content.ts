@@ -192,6 +192,9 @@ export class MaterialConfiguration {
     static get zero_record() : Record<MATERIAL, number> {
         return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
     }
+    static get ones_record() : Record<MATERIAL, number> {
+        return [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ]
+    }
     static is_valid_id(id: number): id is MATERIAL {
         return id in this.MATERIAL 
     }
@@ -228,6 +231,9 @@ export class MaterialCategoryConfiguration {
     static get zero_record() : Record<MATERIAL_CATEGORY, number> {
         return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
     }
+    static get ones_record() : Record<MATERIAL_CATEGORY, number> {
+        return [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ]
+    }
     static is_valid_id(id: number): id is MATERIAL_CATEGORY {
         return id in this.CATEGORY 
     }
@@ -255,6 +261,9 @@ export class EquipSlotConfiguration {
     static get zero_record() : Record<EQUIP_SLOT, number> {
         return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
     }
+    static get ones_record() : Record<EQUIP_SLOT, number> {
+        return [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ]
+    }
     static is_valid_id(id: number): id is EQUIP_SLOT {
         return id in this.SLOT 
     }
@@ -281,6 +290,9 @@ export class ImpactConfiguration {
     static IMPACT_TO_STRING : Record<IMPACT_TYPE, impact_type_string_id> = ["point", "blade", "blunt", "none", ]
     static get zero_record() : Record<IMPACT_TYPE, number> {
         return [0, 0, 0, 0, ]
+    }
+    static get ones_record() : Record<IMPACT_TYPE, number> {
+        return [1, 1, 1, 1, ]
     }
     static is_valid_id(id: number): id is IMPACT_TYPE {
         return id in this.IMPACT 
@@ -313,6 +325,9 @@ export class WeaponConfiguration {
     static get zero_record() : Record<WEAPON, number> {
         return [0, 0, 0, 0, 0, 0, ]
     }
+    static get ones_record() : Record<WEAPON, number> {
+        return [1, 1, 1, 1, 1, 1, ]
+    }
     static is_valid_id(id: number): id is WEAPON {
         return id in this.WEAPON 
     }
@@ -328,8 +343,8 @@ export class WeaponConfiguration {
     static WEAPON_MATERIAL_STRING : Record<WEAPON, material_string_id> = ["wood-red", "wood-red", "small-bone-rat", "bone-rat", "steel", "wood-red", ]
     static WEAPON_SECONDARY_MATERIAL : Record<WEAPON, MATERIAL> = [MATERIAL.WOOD_RED, MATERIAL.WOOD_RED, MATERIAL.WOOD_RED, MATERIAL.BONE_RAT, MATERIAL.WOOD_RED, MATERIAL.WOOD_RED, ]
     static WEAPON_SECONDARY_MATERIAL_STRING : Record<WEAPON, material_string_id> = ["wood-red", "wood-red", "wood-red", "bone-rat", "wood-red", "wood-red", ]
-    static WEAPON_IMPACT : Record<WEAPON, IMPACT_TYPE> = [IMPACT_TYPE.BLUNT, IMPACT_TYPE.POINT, IMPACT_TYPE.POINT, IMPACT_TYPE.POINT, IMPACT_TYPE.BLADE, IMPACT_TYPE.BLUNT, ]
-    static WEAPON_IMPACT_STRING : Record<WEAPON, impact_type_string_id> = ["blunt", "point", "point", "point", "blade", "blunt", ]
+    static WEAPON_IMPACT : Record<WEAPON, IMPACT_TYPE> = [IMPACT_TYPE.BLUNT, IMPACT_TYPE.POINT, IMPACT_TYPE.POINT, IMPACT_TYPE.BLADE, IMPACT_TYPE.BLADE, IMPACT_TYPE.BLUNT, ]
+    static WEAPON_IMPACT_STRING : Record<WEAPON, impact_type_string_id> = ["blunt", "point", "point", "blade", "blade", "blunt", ]
 
     // Numbers: 
 
@@ -350,6 +365,9 @@ export class ArmourConfiguration {
     static ARMOUR_TO_STRING : Record<ARMOUR, armour_string_id> = ["helmet-skull-rat", "helmet-textile", "helmet-leather-rat", "helmet-hair-graci", "mail-bone-rat", "mail-leather-rat", "mail-textile", "mail-leather-ball", "mail-leather-graci", "dress-meat-elodino", "pants-leather-rat", "pants-textile", "boots-leather-rat", "gauntlet-right-leather-rat", "gauntlet-right-textile", "gauntlet-left-leather-rat", "gauntlet-left-textile", "socks-textile", "pauldron-left-bone-rat", "pauldron-left-leather-rat", "pauldron-right-bone-rat", "robe-leather-rat", "belt-textile", "shirt-textile", ]
     static get zero_record() : Record<ARMOUR, number> {
         return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
+    }
+    static get ones_record() : Record<ARMOUR, number> {
+        return [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ]
     }
     static is_valid_id(id: number): id is ARMOUR {
         return id in this.ARMOUR 

@@ -2,7 +2,7 @@ import { globals } from './modules/globals.js';
 import { socket } from "./modules/Socket/socket.js";
 import { SKILL_NAMES } from './SKILL_NAMES.js';
 import { elementById } from './modules/HTMLwrappers/common.js';
-import { EquipSlotStorage, MaterialStorage } from './content.js';
+import { EquipSlotStorage, MaterialConfiguration, MaterialStorage } from './content.js';
 import { EQUIPMENT_TAGS } from "./modules/CharacterImage/equip_strings.js";
 // export const slots_front_end = ['weapon', 'secondary', 'amulet', 'mail', 'greaves', 'left_pauldron', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'belt', 'robe', 'shirt', 'pants'] as const
 // tmp.typ = this.typ;
@@ -160,12 +160,16 @@ function build_dialog(data) {
 }
 function convert_prices_data_to_string(data) {
     let buy_string = "I think one could buy the following goods with these prices: <br>";
-    for (let [k, v] of Object.entries(data.buy)) {
-        buy_string += MaterialStorage.get(k).name + ': ' + v + '<br>';
+    for (const material of MaterialConfiguration.MATERIAL) {
+        const value = data.buy[material];
+        const deviation = Math.floor(1 / Math.exp(data.buy_log_precision[material]));
+        buy_string += `${MaterialStorage.get(material).name}: ${value} +- ${deviation} <br>`;
     }
     let sell_string = "I think one could sell the following goods with these prices: <br>";
-    for (let [k, v] of Object.entries(data.sell)) {
-        sell_string += MaterialStorage.get(k).name + ': ' + v + '<br>';
+    for (const material of MaterialConfiguration.MATERIAL) {
+        const value = data.sell[material];
+        const deviation = Math.floor(1 / Math.exp(data.sell_log_precision[material]));
+        sell_string += `${MaterialStorage.get(material).name}: ${value} +- ${deviation} <br>`;
     }
     return buy_string + sell_string;
 }

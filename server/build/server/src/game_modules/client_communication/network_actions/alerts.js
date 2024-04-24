@@ -308,14 +308,14 @@ var Alerts;
         function material_transfer(from, to, what, amount, reason) {
             if (amount == 0)
                 return;
-            Alerts.log_to_character(from, `You transfered ${amount} of ${content_1.MaterialStorage.get(what).name} to ${to.name}(${to.id}). Reason:${reason}`);
-            Alerts.log_to_character(to, `You got ${amount} of ${content_1.MaterialStorage.get(what).name} from ${from.name}(${to.id}). Reason:${reason}`);
+            Alerts.log_to_character(from, `You transfered ${amount} of ${content_1.MaterialStorage.get(what).name} to ${to.name}(${to.id}). Reason: ${reason}`);
+            Alerts.log_to_character(to, `You got ${amount} of ${content_1.MaterialStorage.get(what).name} from ${from.name}(${to.id}). Reason: ${reason}`);
         }
         Log.material_transfer = material_transfer;
         function stash_change(character, what, amount, reason) {
             if (amount == 0)
                 return;
-            Alerts.log_to_character(character, `Your stash of ${content_1.MaterialStorage.get(what).name} changed by ${amount}. Reason:${reason}`);
+            Alerts.log_to_character(character, `Your stash of ${content_1.MaterialStorage.get(what).name} changed by ${amount}. Reason: ${reason}`);
         }
         Log.stash_change = stash_change;
         function hp_change(character, d, reason) {

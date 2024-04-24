@@ -13,6 +13,7 @@ const inventory_events_1 = require("../../events/inventory_events");
 const character_conditions_1 = require("../../scripted-conditions/character-conditions");
 const character_1 = require("../../scripted-values/character");
 const character_2 = require("../../scripted-effects/character");
+const data_id_1 = require("../../data/data_id");
 // Used instead of a part of old crafting routine
 // to decide required amounts of materials character needs
 storage_1.AIActionsStorage.register_action_self({
@@ -134,7 +135,18 @@ storage_1.AIActionsStorage.register_action_material({
 storage_1.AIActionsStorage.register_action_material({
     tag: "sell",
     utility(actor, target) {
-        return (actor.stash.get(target.id) - actor.ai_desired_stash.get(target.id)) / 50;
+        let desire_to_update_prices = 0;
+        for (const order_id of data_id_1.DataID.Character.market_orders_list(actor.id)) {
+            const order = data_objects_1.Data.MarketOrders.from_id(order_id);
+            if (order.material != target.id)
+                continue;
+            if (order.typ == "buy")
+                continue;
+            if (order.price != actor.ai_price_sell_expectation[target.id]) {
+                desire_to_update_prices += order.amount / 30;
+            }
+        }
+        return (actor.stash.get(target.id) - actor.ai_desired_stash.get(target.id)) / 50 + desire_to_update_prices;
     },
     potential_targets(actor) {
         return content_1.MaterialConfiguration.MATERIAL.map(content_1.MaterialStorage.get);
@@ -177,6 +189,17 @@ storage_1.AIActionsStorage.register_action_self({
 storage_1.AIActionsStorage.register_action_material({
     tag: "buy",
     utility(actor, target) {
+        let desire_to_update_prices = 0;
+        for (const order_id of data_id_1.DataID.Character.market_orders_list(actor.id)) {
+            const order = data_objects_1.Data.MarketOrders.from_id(order_id);
+            if (order.material != target.id)
+                continue;
+            if (order.typ == "sell")
+                continue;
+            if (order.price != actor.ai_price_buy_expectation[target.id]) {
+                desire_to_update_prices += order.amount / 30;
+            }
+        }
         return (actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id)) / 50;
     },
     potential_targets(actor) {

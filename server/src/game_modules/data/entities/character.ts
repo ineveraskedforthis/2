@@ -1,4 +1,4 @@
-import { MATERIAL } from "@content/content";
+import { MATERIAL, MaterialConfiguration } from "@content/content";
 import { action_points, battle_id, battle_position } from "@custom_types/battle_data";
 import { PerksTable, TraitsTable } from "@custom_types/character";
 import { money, status_type } from "@custom_types/common";
@@ -104,8 +104,13 @@ export class Character {
 
     current_ai_action: string
 
-    ai_price_belief_sell: Map<MATERIAL, money>;
-    ai_price_belief_buy: Map<MATERIAL, money>;
+    // ai_price_belief_sell: Map<MATERIAL, money>;
+    // ai_price_belief_buy: Map<MATERIAL, money>;
+    ai_price_sell_expectation: Record<MATERIAL, number>
+    ai_price_sell_log_precision: Record<MATERIAL, number>
+    ai_price_buy_expectation: Record<MATERIAL, number>
+    ai_price_buy_log_precision: Record<MATERIAL, number>
+
     ai_desired_stash: Stash;
     ai_gathering_target: Stash;
 
@@ -172,8 +177,13 @@ export class Character {
         this.action_duration = 0
 
         this.current_ai_action = "idle"
-        this.ai_price_belief_buy = new Map()
-        this.ai_price_belief_sell = new Map()
+
+        this.ai_price_buy_expectation = MaterialConfiguration.ones_record
+        this.ai_price_sell_expectation = MaterialConfiguration.ones_record
+
+        this.ai_price_buy_log_precision = MaterialConfiguration.zero_record
+        this.ai_price_sell_log_precision = MaterialConfiguration.zero_record
+
         this.ai_desired_stash = new Stash()
         this.ai_gathering_target = new Stash()
 

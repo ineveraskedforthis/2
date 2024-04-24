@@ -325,13 +325,13 @@ export namespace Alerts {
 
         export function material_transfer(from: Character, to: Character, what: MATERIAL, amount: number, reason: CHANGE_REASON) {
             if (amount == 0) return;
-            Alerts.log_to_character(from, `You transfered ${amount} of ${MaterialStorage.get(what).name} to ${to.name}(${to.id}). Reason:${reason}`)
-            Alerts.log_to_character(to, `You got ${amount} of ${MaterialStorage.get(what).name} from ${from.name}(${to.id}). Reason:${reason}`)
+            Alerts.log_to_character(from, `You transfered ${amount} of ${MaterialStorage.get(what).name} to ${to.name}(${to.id}). Reason: ${reason}`)
+            Alerts.log_to_character(to, `You got ${amount} of ${MaterialStorage.get(what).name} from ${from.name}(${to.id}). Reason: ${reason}`)
         }
 
         export function stash_change(character: Character, what: MATERIAL, amount: number, reason: CHANGE_REASON) {
             if (amount == 0) return;
-            Alerts.log_to_character(character, `Your stash of ${MaterialStorage.get(what).name} changed by ${amount}. Reason:${reason}`)
+            Alerts.log_to_character(character, `Your stash of ${MaterialStorage.get(what).name} changed by ${amount}. Reason: ${reason}`)
         }
 
         export function hp_change(character: Character, d: number, reason: CHANGE_REASON) {
