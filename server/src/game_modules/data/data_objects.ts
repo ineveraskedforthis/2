@@ -489,6 +489,10 @@ export namespace Data {
                     }
                     index++
                 }
+
+                for (const index of to_remove) {
+                    character.equip.data.backpack.items.splice(index)
+                }
             }
             loaded_flag.Characters = true
             console.log('characters loaded')
