@@ -41,7 +41,8 @@ export const enum CHANGE_REASON {
     EQUIPMENT_ENCHANT = "Equipment enchant",
     MOVED_TO_TRADE_STASH = "Moving to trade stash",
     TRADE = "Trade",
-    HUNGER = "Hunger"
+    HUNGER = "Hunger",
+    SPOILAGE = "Spoilage"
 }
 
 export namespace Effect {
@@ -288,6 +289,7 @@ export namespace Effect {
             let current_amount = character.stash.get(good)
             let integer = (Math.random() < 0.5) ? 1 : 0
             let spoiled_amount = Math.max(integer, Math.floor(current_amount * rate))
+            Alerts.Log.stash_change(character, good, -spoiled_amount, CHANGE_REASON.SPOILAGE)
             character.stash.set(good, current_amount - spoiled_amount)
             UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH)
         }

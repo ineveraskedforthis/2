@@ -265,6 +265,7 @@ var Effect;
             let current_amount = character.stash.get(good);
             let integer = (Math.random() < 0.5) ? 1 : 0;
             let spoiled_amount = Math.max(integer, Math.floor(current_amount * rate));
+            alerts_1.Alerts.Log.stash_change(character, good, -spoiled_amount, "Spoilage" /* CHANGE_REASON.SPOILAGE */);
             character.stash.set(good, current_amount - spoiled_amount);
             user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.STASH */);
         }

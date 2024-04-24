@@ -329,6 +329,11 @@ export namespace Alerts {
             Alerts.log_to_character(to, `You got ${amount} of ${MaterialStorage.get(what).name} from ${from.name}(${to.id}). Reason:${reason}`)
         }
 
+        export function stash_change(character: Character, what: MATERIAL, amount: number, reason: CHANGE_REASON) {
+            if (amount == 0) return;
+            Alerts.log_to_character(character, `Your stash of ${MaterialStorage.get(what).name} changed by ${amount}. Reason:${reason}`)
+        }
+
         export function hp_change(character: Character, d: number, reason: CHANGE_REASON) {
             Alerts.log_to_character(character, `Your hp changed by ${d}. Reason: ${reason}`)
         }
