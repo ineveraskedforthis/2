@@ -65,8 +65,8 @@ var Data;
         Factions.load(exports.save_path.FACTIONS, exports.save_path.SPAWN_POINTS);
         World.load();
         Locations.load(exports.save_path.BUILDINGS);
-        Characters.load(exports.save_path.CHARACTERS);
         Items.load();
+        Characters.load(exports.save_path.CHARACTERS);
         MarketOrders.load();
         // ItemOrders.load()
         Reputation.load(exports.save_path.REPUTATION);
@@ -419,6 +419,16 @@ var Data;
                 }
                 const character = (0, strings_management_1.string_to_character)(line);
                 character_id_object[character.id] = character;
+                // validation:
+                const to_remove = [];
+                var index = 0;
+                for (const item of character.equip.data.backpack.items) {
+                    if (Data.Items.from_id(item) == undefined) {
+                        console.log("DETECTED INVALID ITEM");
+                        to_remove.push(index);
+                    }
+                    index++;
+                }
             }
             loaded_flag.Characters = true;
             console.log('characters loaded');

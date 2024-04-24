@@ -7,3 +7,4 @@ node_modules/
 # *.txt
 save_1/
 __pycache__/
+*.log

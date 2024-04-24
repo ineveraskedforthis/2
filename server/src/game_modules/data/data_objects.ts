@@ -80,8 +80,8 @@ export namespace Data {
         Factions.load(save_path.FACTIONS, save_path.SPAWN_POINTS)
         World.load()
         Locations.load(save_path.BUILDINGS)
-        Characters.load(save_path.CHARACTERS)
         Items.load()
+        Characters.load(save_path.CHARACTERS)
         MarketOrders.load()
         // ItemOrders.load()
         Reputation.load(save_path.REPUTATION)
@@ -478,6 +478,17 @@ export namespace Data {
                 if (line == '') {continue}
                 const character = string_to_character(line)
                 character_id_object[character.id] = character
+
+                // validation:
+                const to_remove = []
+                var index = 0
+                for (const item of character.equip.data.backpack.items) {
+                    if (Data.Items.from_id(item) == undefined) {
+                        console.log("DETECTED INVALID ITEM")
+                        to_remove.push(index)
+                    }
+                    index++
+                }
             }
             loaded_flag.Characters = true
             console.log('characters loaded')
