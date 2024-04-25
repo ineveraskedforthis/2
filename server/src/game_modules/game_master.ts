@@ -285,25 +285,25 @@ export namespace GameMaster {
         })
 
         // migration to the city
-        const speed = (1 / (1 + num_humans) / (1 + num_humans))
+        const speed = (0.1 / (1 + num_humans) / (1 + num_humans) / (1 + num_humans))
         if (Math.random() < speed * dt) {
             const occupation_dice = Math.random()
 
             if (occupation_dice < 0.01) {
                 Template.Character.HumanLocalTrader(generate_human_name(false, "merchant"), "city")
-            } else if (occupation_dice < 0.7) {
+            } else if (occupation_dice < 0.5) {
                 const character = Template.Character.HumanCity(generate_human_name(false, "peasant"))
                 character.savings.inc(50 as money);
             } else if (occupation_dice < 0.9) {
                 const master = Template.Character.HumanCity(generate_human_name(true, "artisan"))
                 for (const skill of SkillConfiguration.SKILL) {
                     if (SkillStorage.get(skill).crafting) {
-                        if (Math.random() < 0.05) {
+                        if (Math.random() < 0.1) {
                             master._skills[skill] = 90
-                        } else if (Math.random() < 0.1) {
+                        } else if (Math.random() < 0.3) {
                             master._skills[skill] = 50
-                        } else if (Math.random() < 0.2) {
-                            master._skills[skill] = 10
+                        } else if (Math.random() < 0.8) {
+                            master._skills[skill] = 25
                         }
                     }
                 }

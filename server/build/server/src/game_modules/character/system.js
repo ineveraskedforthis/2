@@ -57,7 +57,7 @@ var CharacterSystem;
     }
     CharacterSystem.rgo_check = rgo_check;
     function update(dt) {
-        data_id_1.DataID.Character.update(dt, 5000, (id) => {
+        data_id_1.DataID.Character.update(dt, 10000, (id) => {
             const character = data_objects_1.Data.Characters.from_id(id);
             if (character.dead())
                 return;
@@ -74,18 +74,16 @@ var CharacterSystem;
                 if (material.category == 8 /* MATERIAL_CATEGORY.FOOD */)
                     effects_1.Effect.spoilage(character, material_id, 0.001);
             }
-            {
-                if (character.hp_max < character.hp * 2) {
-                    effects_1.Effect.Change.hp(character, -1, "Hunger" /* CHANGE_REASON.HUNGER */);
-                }
-                else {
-                    effects_1.Effect.Change.fatigue(character, 1, "Hunger" /* CHANGE_REASON.HUNGER */);
-                }
-            }
-        });
-        data_id_1.DataID.Character.update2(dt, 10000, (id) => {
-            const character = data_objects_1.Data.Characters.from_id(id);
             (0, decide_1.decide)(character);
+        });
+        data_id_1.DataID.Character.update2(dt, 60000, (id) => {
+            const character = data_objects_1.Data.Characters.from_id(id);
+            if (character.hp_max < character.hp * 2) {
+                effects_1.Effect.Change.hp(character, -1, "Hunger" /* CHANGE_REASON.HUNGER */);
+            }
+            else {
+                effects_1.Effect.Change.fatigue(character, 1, "Hunger" /* CHANGE_REASON.HUNGER */);
+            }
         });
     }
     CharacterSystem.update = update;

@@ -34,7 +34,7 @@ storage_1.AIActionsStorage.register_action_self({
         common_1.AIfunctions.update_price_beliefs(actor);
         actor.ai_desired_stash.clear();
         // investments for rich characters:
-        if (actor.savings.get() > 1000) {
+        if (actor.savings.get() > 10000) {
             for (const item of content_1.MaterialConfiguration.MATERIAL) {
                 actor.ai_desired_stash.inc(item, 1);
             }
@@ -138,7 +138,12 @@ storage_1.AIActionsStorage.register_action_material({
         return content_1.MaterialConfiguration.MATERIAL.map(content_1.MaterialStorage.get);
     },
     action(actor, target) {
-        character_2.CharacterEffect.eat(actor, target);
+        if (target.unit_size < 0.1) {
+            character_2.CharacterEffect.eat_5(actor, target);
+        }
+        else {
+            character_2.CharacterEffect.eat(actor, target);
+        }
     }
 });
 storage_1.AIActionsStorage.register_action_material({
@@ -148,7 +153,11 @@ storage_1.AIActionsStorage.register_action_material({
             const order = data_objects_1.Data.MarketOrders.from_id(order_id);
             if (order.material != target.id)
                 continue;
-            if (order.typ == "buy")
+            if (order.typ != "sell")
+                continue;
+            if (order.owner_id != actor.id)
+                continue;
+            if (order.amount == 0)
                 continue;
             if (order.price != actor.ai_price_sell_expectation[target.id]) {
                 return 100;
@@ -202,7 +211,11 @@ storage_1.AIActionsStorage.register_action_material({
             const order = data_objects_1.Data.MarketOrders.from_id(order_id);
             if (order.material != target.id)
                 continue;
-            if (order.typ == "sell")
+            if (order.typ != "buy")
+                continue;
+            if (order.owner_id != actor.id)
+                continue;
+            if (order.amount == 0)
                 continue;
             if (order.price != actor.ai_price_buy_expectation[target.id]) {
                 return 100;
@@ -212,8 +225,10 @@ storage_1.AIActionsStorage.register_action_material({
             }
         }
         const desired = actor.ai_desired_stash.get(target.id);
-        const have = actor.ai_desired_stash.get(target.id);
         const can_buy = actor.savings.get() / actor.ai_price_buy_expectation[target.id];
+        const have = actor.stash.get(target.id);
+        // if (actor.is_player())
+        //     console.log(target.name, desired, can_buy, have)
         return (Math.min(desired, can_buy) - have - already_trying_to_buy) / 50;
     },
     potential_targets(actor) {
@@ -222,7 +237,12 @@ storage_1.AIActionsStorage.register_action_material({
     action(actor, target) {
         common_1.AIfunctions.update_price_beliefs(actor);
         system_1.MarketOrders.remove_by_condition(actor, target.id);
-        const amount_to_buy = actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id);
+        const desired = actor.ai_desired_stash.get(target.id);
+        const can_buy = actor.savings.get() / actor.ai_price_buy_expectation[target.id];
+        const have = actor.stash.get(target.id);
+        const amount_to_buy = Math.min(desired, can_buy) - have;
+        if (actor.is_player())
+            console.log(target.name, desired, can_buy, have, amount_to_buy, actor.ai_price_buy_expectation[target.id]);
         market_1.EventMarket.buy_smart_with_limits(actor, target.id, common_1.AIfunctions.buy_price(actor, target.id), amount_to_buy);
     }
 });

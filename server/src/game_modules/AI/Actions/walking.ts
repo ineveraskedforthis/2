@@ -24,16 +24,20 @@ AIActionsStorage.register_action_location({
         const fatigue = actor.fatigue / 100;
         const stress = actor.stress / 100;
 
-        const lack_of_hp = (actor.hp_max - actor.hp) / actor.hp_max;
+        // const lack_of_hp = (actor.hp_max - actor.hp) / actor.hp_max;
         const utility_fatigue = Math.max(0, fatigue - 0.2);
         const utility_stress = Math.max(0, stress - 0.5);
-        const weight = AIfunctions.loot_weight(actor) / 20;
-        const trade_stash_weight = AIfunctions.trade_stash_weight(actor) / 20
-        const backpack_size = actor.equip.data.backpack.items.length
+        const weight = AIfunctions.loot_weight(actor) / 100;
+        const trade_stash_weight = AIfunctions.trade_stash_weight(actor) / 100
+        const backpack_size = actor.equip.data.backpack.items.length / 20
 
         let home_owner = target.owner_id == actor.id ? 0.5 : 0
 
-        return 0.05 + utility_fatigue + utility_stress + lack_of_hp + weight + trade_stash_weight + backpack_size / 10 + home_owner;
+        if (actor.is_player()) {
+            console.log(utility_fatigue, utility_stress, weight, trade_stash_weight, backpack_size, home_owner)
+        }
+
+        return 0.05 + utility_fatigue + utility_stress + weight + trade_stash_weight + backpack_size + home_owner;
     },
     potential_targets(actor) {
         const pre_result: location_id[] = [];

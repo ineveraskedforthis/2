@@ -18,7 +18,7 @@ export namespace ScriptedValue {
         if (location.owner_id == character.id) return 0 as money;
         if (location.owner_id == undefined) return 0 as money;
         const location_owner = Data.Characters.from_id(location.owner_id)
-        if (location_owner.location_id != character.location_id) return 0 as money
+        if (location_owner.location_id != location.id) return 0 as money
         return location.has_house_level * 10 as money;
     }
 
@@ -101,7 +101,7 @@ export namespace ScriptedValue {
      * @return {number} The target fatigue.
      */
     export function target_stress(character: Character, location: LocationInterface): number {
-        const skill = CharacterValues.skill(character, SKILL.TRAVELLING)
+        const skill = CharacterValues.pure_skill(character, SKILL.TRAVELLING)
 
         return rest_target_stress(
             rest_tier(character, location),

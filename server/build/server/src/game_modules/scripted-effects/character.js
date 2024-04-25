@@ -13,6 +13,17 @@ var CharacterEffect;
         effects_1.Effect.Change.fatigue(character, -Math.round(material.unit_size * material.density * 20 + material.magic_power * 5 + 1), "Eating" /* CHANGE_REASON.EATING */);
     }
     CharacterEffect.eat = eat;
+    function eat_5(character, material) {
+        let eaten = 5;
+        if (character.stash.get(material.id) < 5)
+            eaten = character.stash.get(material.id);
+        character.stash.inc(material.id, -eaten);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.STASH */);
+        effects_1.Effect.Change.hp(character, Math.round(eaten * (material.unit_size * material.density * 20 + material.magic_power * 5 + 1)), "Eating" /* CHANGE_REASON.EATING */);
+        effects_1.Effect.Change.stress(character, -Math.round(eaten * (material.unit_size * material.density * 5 + material.magic_power * 10 + 1)), "Eating" /* CHANGE_REASON.EATING */);
+        effects_1.Effect.Change.fatigue(character, -Math.round(eaten * (material.unit_size * material.density * 20 + material.magic_power * 5 + 1)), "Eating" /* CHANGE_REASON.EATING */);
+    }
+    CharacterEffect.eat_5 = eat_5;
     function open_shop(character) {
         character.open_shop = true;
         character.equip.data.backpack.limit = 100;

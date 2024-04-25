@@ -64,7 +64,7 @@ export namespace CharacterSystem {
     }
 
     export function update(dt: ms) {
-        DataID.Character.update(dt, 5000, (id) => {
+        DataID.Character.update(dt, 10000, (id) => {
             const character = Data.Characters.from_id(id);
             if (character.dead()) return;
             if (!character.in_battle()) Effect.Change.rage(character, -2, CHANGE_REASON.REST);
@@ -75,19 +75,16 @@ export namespace CharacterSystem {
                 if (material.category == MATERIAL_CATEGORY.FRUIT) Effect.spoilage(character, material_id, 0.01)
                 if (material.category == MATERIAL_CATEGORY.FOOD) Effect.spoilage(character, material_id, 0.001)
             }
-
-            {
-                if (character.hp_max < character.hp * 2) {
-                    Effect.Change.hp(character, -1, CHANGE_REASON.HUNGER)
-                } else {
-                    Effect.Change.fatigue(character, 1, CHANGE_REASON.HUNGER)
-                }
-            }
+            decide(character)
         })
 
-        DataID.Character.update2(dt, 10000, (id) => {
+        DataID.Character.update2(dt, 60000, (id) => {
             const character = Data.Characters.from_id(id);
-            decide(character)
+            if (character.hp_max < character.hp * 2) {
+                Effect.Change.hp(character, -1, CHANGE_REASON.HUNGER)
+            } else {
+                Effect.Change.fatigue(character, 1, CHANGE_REASON.HUNGER)
+            }
         })
     }
     export function battle_update(character: Character) {

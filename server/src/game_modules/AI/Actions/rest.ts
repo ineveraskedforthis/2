@@ -17,11 +17,15 @@ AIActionsStorage.register_action_location({
         const fatigue = actor.fatigue / 100
         const stress = actor.stress / 100
 
-        const target_stress = ScriptedValue.target_stress(actor, target) / 100
         const target_fatigue = ScriptedValue.target_fatigue(actor, target) / 100
+        const target_stress = ScriptedValue.target_stress(actor, target) / 100
 
         const utility_fatigue = Math.max(0, fatigue - target_fatigue)
         const utility_stress = Math.max(0, stress - target_stress)
+
+        // if (actor.is_player()) {
+        //     console.log(fatigue, stress, target_fatigue, target_stress)
+        // }
 
         return utility_fatigue + utility_stress
     },

@@ -66,10 +66,10 @@ export namespace MarketOrders {
         const order = Data.MarketOrders.from_id(id)
         const character = Data.Characters.from_id(order.owner_id)
         if (order.typ == 'buy') {
-            character.trade_savings.transfer(character.savings, order.amount * order.price as money)
+            Effect.Transfer.to_trade_savings(character, -order.amount * order.price as money)
         }
         if (order.typ == 'sell') {
-            character.trade_stash.transfer(character.stash, order.material, order.amount)
+            Effect.Transfer.to_trade_stash(character, order.material, -order.amount)
         }
         order.amount = 0
     }

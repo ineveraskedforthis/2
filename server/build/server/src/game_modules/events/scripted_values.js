@@ -17,7 +17,7 @@ var ScriptedValue;
         if (location.owner_id == undefined)
             return 0;
         const location_owner = data_objects_1.Data.Characters.from_id(location.owner_id);
-        if (location_owner.location_id != character.location_id)
+        if (location_owner.location_id != location.id)
             return 0;
         return location.has_house_level * 10;
     }
@@ -98,7 +98,7 @@ var ScriptedValue;
      * @return {number} The target fatigue.
      */
     function target_stress(character, location) {
-        const skill = character_1.CharacterValues.skill(character, 17 /* SKILL.TRAVELLING */);
+        const skill = character_1.CharacterValues.pure_skill(character, 17 /* SKILL.TRAVELLING */);
         return rest_target_stress(rest_tier(character, location), ScriptedValue.rest_quality(location) + Math.floor(skill / 5), character.race);
     }
     ScriptedValue.target_stress = target_stress;
