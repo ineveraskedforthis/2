@@ -75,7 +75,7 @@
 .scroll-y {
     overflow-y: scroll;
     scrollbar-width: thin;
-    scrollbar-color: rgba(135, 19, 19, 0.8) rgba(255, 255, 255, 0);
+    scrollbar-color: rgba(255, 255, 255, 0.8) rgba(255, 255, 255, 0);
 }
 
   /* Works on Chrome, Edge, and Safari */
@@ -88,7 +88,7 @@
 }
 
 .scroll-y::-webkit-scrollbar-thumb {
-    background-color: rgba(135, 19, 19, 0.8);
+    background-color: rgba(255, 255, 255, 0.8);
 }
 
 .send_message_frame {
