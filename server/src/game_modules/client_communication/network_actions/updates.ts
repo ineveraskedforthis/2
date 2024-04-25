@@ -1,4 +1,4 @@
-import { CellDisplay, CharacterStatsResponse } from "@custom_types/responses";
+import { CellDisplay, CharacterStatsResponse, LocationView } from "@custom_types/responses";
 import { Attack } from "../../attack/system";
 import { Accuracy } from "../../battle/battle_calcs";
 import { CharactersHeap } from "../../battle/classes/heap";
@@ -19,6 +19,9 @@ import { User } from "../user";
 import { Alerts } from "./alerts";
 import { CraftValues } from "../../scripted-values/craft";
 import { SKILL, SkillConfiguration, SkillStorage } from "@content/content";
+import { character_id } from "@custom_types/ids";
+import { ScriptedValue } from "../../events/scripted_values";
+import { Character } from "../../data/entities/character";
 
 
 export namespace SendUpdate {
@@ -33,6 +36,56 @@ export namespace SendUpdate {
         stats(user)
         race_model(user)
 
+    }
+
+    export function locations_to_character(character: Character) {
+        const user = Convert.character_to_user(character)
+        if (user == undefined) return
+        locations(user);
+    }
+
+    export function locations(user: User) {
+        const character = Convert.user_to_character(user)
+        if (character == undefined) return
+
+        let ids = DataID.Cells.locations(character.cell_id)
+
+        if (ids == undefined) {
+            Alerts.generic_user_alert(user, 'locations-info', [])
+            return
+        }
+
+        let locations:LocationView[] = ids.map((id) => {
+            let location = Data.Locations.from_id(id)
+
+            let guests = DataID.Location.guest_list(id)
+
+            let owner = location.owner_id
+
+            let name = 'None'
+
+            if (owner != undefined) {
+                name = Data.Characters.from_id(owner).name
+            } else {
+                owner = -1 as character_id
+            }
+            return {
+                id: id,
+                room_cost: ScriptedValue.rest_price(character, location),
+                guests: guests.length,
+                durability: ScriptedValue.rest_quality(location),
+                owner_id: owner,
+                owner_name: name,
+                cell_id: location.cell_id,
+                house_level: location.has_house_level,
+                forest: location.forest,
+                terrain: location.terrain,
+                urbanisation: MapSystem.urbanisation(location.cell_id)
+            }
+        })
+
+        // console.log(locations)
+        Alerts.generic_user_alert(user, 'locations-info', locations)
     }
 
     export function race_model(user: User) {

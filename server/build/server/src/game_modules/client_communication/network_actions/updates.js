@@ -20,6 +20,7 @@ const helper_functions_1 = require("../helper_functions");
 const alerts_1 = require("./alerts");
 const craft_1 = require("../../scripted-values/craft");
 const content_1 = require("../../../.././../game_content/src/content");
+const scripted_values_1 = require("../../events/scripted_values");
 var SendUpdate;
 (function (SendUpdate) {
     function all(user) {
@@ -34,6 +35,51 @@ var SendUpdate;
         race_model(user);
     }
     SendUpdate.all = all;
+    function locations_to_character(character) {
+        const user = systems_communication_1.Convert.character_to_user(character);
+        if (user == undefined)
+            return;
+        locations(user);
+    }
+    SendUpdate.locations_to_character = locations_to_character;
+    function locations(user) {
+        const character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        let ids = data_id_1.DataID.Cells.locations(character.cell_id);
+        if (ids == undefined) {
+            alerts_1.Alerts.generic_user_alert(user, 'locations-info', []);
+            return;
+        }
+        let locations = ids.map((id) => {
+            let location = data_objects_1.Data.Locations.from_id(id);
+            let guests = data_id_1.DataID.Location.guest_list(id);
+            let owner = location.owner_id;
+            let name = 'None';
+            if (owner != undefined) {
+                name = data_objects_1.Data.Characters.from_id(owner).name;
+            }
+            else {
+                owner = -1;
+            }
+            return {
+                id: id,
+                room_cost: scripted_values_1.ScriptedValue.rest_price(character, location),
+                guests: guests.length,
+                durability: scripted_values_1.ScriptedValue.rest_quality(location),
+                owner_id: owner,
+                owner_name: name,
+                cell_id: location.cell_id,
+                house_level: location.has_house_level,
+                forest: location.forest,
+                terrain: location.terrain,
+                urbanisation: system_3.MapSystem.urbanisation(location.cell_id)
+            };
+        });
+        // console.log(locations)
+        alerts_1.Alerts.generic_user_alert(user, 'locations-info', locations);
+    }
+    SendUpdate.locations = locations;
     function race_model(user) {
         const character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)

@@ -122,27 +122,18 @@ export namespace SocketCommand {
     //     Request.local_locations(sw)
     // }
 
-    // export function develop_plot(sw: SocketWrapper, msg: undefined|{id: unknown, type: unknown}) {
-    //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)
-    //     if (character == undefined) return
+    export function build(sw: SocketWrapper, msg: unknown) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
 
-    //     if (msg == undefined) return
-    //     let location_id = msg.id
-    //     if (typeof location_id != 'number') return
-    //     let location = Data.Locations.from_id(location_id as location_id)
-    //     if (location == undefined) return
-    //     let type = msg.type
-    //     if (type == undefined) return
+        if (msg == undefined) return
+        let location_id = Number(msg)
+        let location = Data.Locations.from_id(location_id as location_id)
+        if (location == undefined) return
 
-    //     let true_type = LandPlotType.Shack
-    //     if (type == LandPlotType.HumanHouse) true_type = LandPlotType.HumanHouse
-    //     if (type == LandPlotType.Inn) true_type = LandPlotType.Inn
-    //     if (type == LandPlotType.CottonField) true_type = LandPlotType.CottonField
-
-
-    //     Event.develop_land_plot(character, location_id as location_id, true_type)
-    //     Request.local_locations(sw)
-    // }
+        Event.build_house(character, location_id as location_id)
+        Request.local_locations(sw)
+    }
 
     // export function change_rent_price(sw: SocketWrapper, msg: undefined|{id: unknown, price: unknown}) {
     //     console.log('change rent price', msg)

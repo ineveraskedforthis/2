@@ -156,7 +156,11 @@ function enter_location(id: number) {
         socket.emit('enter-location', id)
     }
 }
-
+function build_house(id: number) {
+    return function() {
+        socket.emit('build', id)
+    }
+}
 function repair_location(id: number) {
     return function() {
         socket.emit('repair-location', {id: id})
@@ -188,6 +192,7 @@ function display_location_data(b: LocationView) {
         image_container.style.backgroundImage = image_url(b.terrain, b.forest, b.house_level, b.urbanisation)
 
         elementById("enter-location-button").onclick = enter_location(b.id)
+        elementById("build-house-button").onclick = build_house(b.id)
 
 
         const owner_div = elementById('location-owner');

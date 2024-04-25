@@ -8,7 +8,7 @@ import { Accuracy } from "../battle/battle_calcs";
 import { trim } from "../calculations/basic_functions";
 import { perk_requirement } from "../character/perk_requirement";
 import { CharacterSystem } from "../character/system";
-import { UI_Part } from "../client_communication/causality_graph";
+import { UI_Part, Update } from "../client_communication/causality_graph";
 import { Alerts } from "../client_communication/network_actions/alerts";
 import { UserManagement } from "../client_communication/user_manager";
 import { on_craft_update } from "../craft/helpers";
@@ -27,6 +27,7 @@ import { CharacterTemplate, ModelVariant } from "../types";
 import { EventInventory } from "./inventory_events";
 import { EventMarket } from "./market";
 import { Trigger } from "./triggers";
+import { SendUpdate } from "../client_communication/network_actions/updates";
 
 const GRAVEYARD_CELL = 0 as cell_id
 
@@ -507,29 +508,10 @@ export namespace Event {
     }
 
     export function death(character: Character) {
-        // UserManagement.add_user_to_update_queue(character.user_id, "death");
-
         if (character.cleared) return
-
-        // console.log('death of ' + character.get_name())
-
         EventMarket.clear_orders(character)
-
         const user_data = Convert.character_to_user_data(character)
         Unlink.user_data_and_character(user_data, character);
-
-        // character.get_name() = `Corpse of ${character.race}`
-
-        // const battle = Convert.character_to_battle(character)
-        // if (battle != undefined) {
-        //     let unit = Convert.character_to_unit(character)
-        //     // BattleEvent.Leave(battle, unit)
-        // }
-        // Unlink.character_and_battle(character)
-
-        // const cell = Convert.character_to_cell(character)
-        // cell.changed_characters = true
-        // Link.character_and_cell(character.id, GRAVEYARD_CELL)
         character.cleared = true
     }
 
@@ -541,8 +523,8 @@ export namespace Event {
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH)
     }
 
-    export function repair_location(character: Character, builing_id: location_id) {
-        let location = Data.Locations.from_id(builing_id)
+    export function repair_location(character: Character, building_id: location_id) {
+        let location = Data.Locations.from_id(building_id)
         let repair = 1
         let cost = 1
         if (cost > character.stash.get(MATERIAL.WOOD_RED)) return;
@@ -553,6 +535,52 @@ export namespace Event {
         ]}])
         change_stash(character, MATERIAL.WOOD_RED, -cost)
         Effect.location_repair(location, repair)
+    }
+
+    export function can_build(character: Character, location_id: location_id) {
+        let location = Data.Locations.from_id(location_id)
+        const price = 50
+
+        if (DataID.Cells.main_location(location.cell_id) == location_id) {
+            return false
+        }
+        if (location.has_house_level > 0) {
+            return false
+        }
+        if (character.stash.get(MATERIAL.WOOD_RED) < price) {
+            return false
+        }
+
+        return true
+    }
+
+    export function build_house(character: Character, location_id: location_id) {
+        let location = Data.Locations.from_id(location_id)
+        const price = 150
+
+        if (DataID.Cells.main_location(location.cell_id) == location_id) {
+            Alerts.alert(character, "Can't build in the main location")
+            return
+        }
+        if (location.cell_id !== character.cell_id) {
+            Alerts.alert(character, "Can't build in other cell")
+            return
+        }
+        if (location.has_house_level > 0) {
+            Alerts.alert(character, "This location already has a building placed there.")
+            return
+        }
+        if (character.stash.get(MATERIAL.WOOD_RED) < price) {
+            Alerts.alert(character, "Not enough wood to build a house: 50 units are required")
+            return
+        }
+
+        character.stash.inc(MATERIAL.WOOD_RED, -price)
+        Alerts.Log.stash_change(character, MATERIAL.WOOD_RED, -price, CHANGE_REASON.BUILDING)
+
+        DataID.Connection.set_location_owner(character.id, location_id)
+        location.has_house_level = 1
+        SendUpdate.locations_to_character(character)
     }
 
     export function remove_tree(location: location_id) {

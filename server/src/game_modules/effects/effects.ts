@@ -42,7 +42,8 @@ export const enum CHANGE_REASON {
     TRADE = "Trade",
     HUNGER = "Hunger",
     SPOILAGE = "Spoilage",
-    PRACTICE = "Practice"
+    PRACTICE = "Practice",
+    BUILDING = "Building"
 }
 
 export namespace Effect {

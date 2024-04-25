@@ -5,14 +5,11 @@ const constants_1 = require("../../static_data/constants");
 const systems_communication_1 = require("../../systems_communication");
 const alerts_1 = require("./alerts");
 const updates_1 = require("./updates");
-const scripted_values_1 = require("../../events/scripted_values");
 const VALUES_1 = require("../../battle/VALUES");
 const actions_1 = require("../../battle/actions");
 const common_validations_1 = require("./common_validations");
-const data_id_1 = require("../../data/data_id");
 const data_objects_1 = require("../../data/data_objects");
 const heap_1 = require("../../battle/classes/heap");
-const system_1 = require("../../map/system");
 var Request;
 (function (Request) {
     function map(sw) {
@@ -30,38 +27,7 @@ var Request;
             sw.socket.emit('alert', 'your character does not exist (local_locations)');
             return;
         }
-        let ids = data_id_1.DataID.Cells.locations(character.cell_id);
-        if (ids == undefined) {
-            alerts_1.Alerts.generic_user_alert(user, 'locations-info', []);
-            return;
-        }
-        let locations = ids.map((id) => {
-            let location = data_objects_1.Data.Locations.from_id(id);
-            let guests = data_id_1.DataID.Location.guest_list(id);
-            let owner = location.owner_id;
-            let name = 'None';
-            if (owner != undefined) {
-                name = data_objects_1.Data.Characters.from_id(owner).name;
-            }
-            else {
-                owner = -1;
-            }
-            return {
-                id: id,
-                room_cost: scripted_values_1.ScriptedValue.rest_price(character, location),
-                guests: guests.length,
-                durability: scripted_values_1.ScriptedValue.rest_quality(location),
-                owner_id: owner,
-                owner_name: name,
-                cell_id: location.cell_id,
-                house_level: location.has_house_level,
-                forest: location.forest,
-                terrain: location.terrain,
-                urbanisation: system_1.MapSystem.urbanisation(location.cell_id)
-            };
-        });
-        // console.log(locations)
-        alerts_1.Alerts.generic_user_alert(user, 'locations-info', locations);
+        updates_1.SendUpdate.locations(user);
         updates_1.SendUpdate.map_related(user);
         return;
     }

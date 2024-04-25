@@ -133,6 +133,11 @@ function enter_location(id) {
         socket.emit('enter-location', id);
     };
 }
+function build_house(id) {
+    return function () {
+        socket.emit('build', id);
+    };
+}
 function repair_location(id) {
     return function () {
         socket.emit('repair-location', { id: id });
@@ -157,6 +162,7 @@ function display_location_data(b) {
         let image_container = elementById("selected-location-image");
         image_container.style.backgroundImage = image_url(b.terrain, b.forest, b.house_level, b.urbanisation);
         elementById("enter-location-button").onclick = enter_location(b.id);
+        elementById("build-house-button").onclick = build_house(b.id);
         const owner_div = elementById('location-owner');
         owner_div.innerHTML = 'Owner: ' + b.owner_name + `(${b.owner_id})`;
         elementById('location-guests').innerHTML = 'Local population: ' + b.guests;

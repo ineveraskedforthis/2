@@ -34,6 +34,7 @@ var battle_id_object            : Battle[]                  = []
 
 
 var faction_id_object           : Record<string, Faction> = {}
+var faction_leader              : Partial<Record<string, character_id>> = {}
 
 export const save_path = {
     REPUTATION: path.join(SAVE_GAME_PATH, 'reputation.txt'),
@@ -254,6 +255,11 @@ export namespace Data {
 
         export function set_faction_leader(faction: string, character: character_id) {
             DataID.Reputation.set(character, faction, 'leader')
+            faction_leader[faction] = character
+        }
+
+        export function get_faction_leader(faction: string) {
+            return faction_leader[faction]
         }
 
         export function get_faction(tag: string) {

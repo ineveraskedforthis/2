@@ -26,6 +26,7 @@ var cell_id_object = [];
 var location_id_object = [];
 var battle_id_object = [];
 var faction_id_object = {};
+var faction_leader = {};
 exports.save_path = {
     REPUTATION: path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'reputation.txt'),
     BUILDINGS: path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'housing.txt'),
@@ -216,8 +217,13 @@ var Data;
         Factions.load = load;
         function set_faction_leader(faction, character) {
             data_id_1.DataID.Reputation.set(character, faction, 'leader');
+            faction_leader[faction] = character;
         }
         Factions.set_faction_leader = set_faction_leader;
+        function get_faction_leader(faction) {
+            return faction_leader[faction];
+        }
+        Factions.get_faction_leader = get_faction_leader;
         function get_faction(tag) {
             return faction_id_object[tag];
         }

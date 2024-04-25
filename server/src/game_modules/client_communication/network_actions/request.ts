@@ -35,44 +35,7 @@ export namespace Request {
             return
         }
 
-        let ids = DataID.Cells.locations(character.cell_id)
-
-        if (ids == undefined) {
-            Alerts.generic_user_alert(user, 'locations-info', [])
-            return
-        }
-
-        let locations:LocationView[] = ids.map((id) => {
-            let location = Data.Locations.from_id(id)
-
-            let guests = DataID.Location.guest_list(id)
-
-            let owner = location.owner_id
-
-            let name = 'None'
-
-            if (owner != undefined) {
-                name = Data.Characters.from_id(owner).name
-            } else {
-                owner = -1 as character_id
-            }
-            return {
-                id: id,
-                room_cost: ScriptedValue.rest_price(character, location),
-                guests: guests.length,
-                durability: ScriptedValue.rest_quality(location),
-                owner_id: owner,
-                owner_name: name,
-                cell_id: location.cell_id,
-                house_level: location.has_house_level,
-                forest: location.forest,
-                terrain: location.terrain,
-                urbanisation: MapSystem.urbanisation(location.cell_id)
-            }
-        })
-
-        // console.log(locations)
-        Alerts.generic_user_alert(user, 'locations-info', locations)
+        SendUpdate.locations(user)
         SendUpdate.map_related(user)
         return
     }

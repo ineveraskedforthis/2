@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unlink = exports.Link = exports.Convert = void 0;
-const item_system_1 = require("./systems/items/item_system");
-const user_manager_1 = require("./client_communication/user_manager");
-const VALUES_1 = require("./battle/VALUES");
 const data_id_1 = require("./data/data_id");
 const data_objects_1 = require("./data/data_objects");
-const system_1 = require("./character/system");
 const content_1 = require("../.././../game_content/src/content");
+const VALUES_1 = require("./battle/VALUES");
+const system_1 = require("./character/system");
+const user_manager_1 = require("./client_communication/user_manager");
 const character_1 = require("./scripted-values/character");
+const item_system_1 = require("./systems/items/item_system");
 var Convert;
 (function (Convert) {
     function reputation_to_socket(reputation) {

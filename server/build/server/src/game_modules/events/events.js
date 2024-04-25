@@ -24,6 +24,7 @@ const systems_communication_1 = require("../systems_communication");
 const inventory_events_1 = require("./inventory_events");
 const market_1 = require("./market");
 const triggers_1 = require("./triggers");
+const updates_1 = require("../client_communication/network_actions/updates");
 const GRAVEYARD_CELL = 0;
 var Event;
 (function (Event) {
@@ -459,23 +460,11 @@ var Event;
     }
     Event.kill = kill;
     function death(character) {
-        // UserManagement.add_user_to_update_queue(character.user_id, "death");
         if (character.cleared)
             return;
-        // console.log('death of ' + character.get_name())
         market_1.EventMarket.clear_orders(character);
         const user_data = systems_communication_1.Convert.character_to_user_data(character);
         systems_communication_1.Unlink.user_data_and_character(user_data, character);
-        // character.get_name() = `Corpse of ${character.race}`
-        // const battle = Convert.character_to_battle(character)
-        // if (battle != undefined) {
-        //     let unit = Convert.character_to_unit(character)
-        //     // BattleEvent.Leave(battle, unit)
-        // }
-        // Unlink.character_and_battle(character)
-        // const cell = Convert.character_to_cell(character)
-        // cell.changed_characters = true
-        // Link.character_and_cell(character.id, GRAVEYARD_CELL)
         character.cleared = true;
     }
     Event.death = death;
@@ -488,8 +477,8 @@ var Event;
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.STASH */);
     }
     Event.change_stash = change_stash;
-    function repair_location(character, builing_id) {
-        let location = data_objects_1.Data.Locations.from_id(builing_id);
+    function repair_location(character, building_id) {
+        let location = data_objects_1.Data.Locations.from_id(building_id);
         let repair = 1;
         let cost = 1;
         if (cost > character.stash.get(31 /* MATERIAL.WOOD_RED */))
@@ -503,6 +492,47 @@ var Event;
         effects_1.Effect.location_repair(location, repair);
     }
     Event.repair_location = repair_location;
+    function can_build(character, location_id) {
+        let location = data_objects_1.Data.Locations.from_id(location_id);
+        const price = 50;
+        if (data_id_1.DataID.Cells.main_location(location.cell_id) == location_id) {
+            return false;
+        }
+        if (location.has_house_level > 0) {
+            return false;
+        }
+        if (character.stash.get(31 /* MATERIAL.WOOD_RED */) < price) {
+            return false;
+        }
+        return true;
+    }
+    Event.can_build = can_build;
+    function build_house(character, location_id) {
+        let location = data_objects_1.Data.Locations.from_id(location_id);
+        const price = 150;
+        if (data_id_1.DataID.Cells.main_location(location.cell_id) == location_id) {
+            alerts_1.Alerts.alert(character, "Can't build in the main location");
+            return;
+        }
+        if (location.cell_id !== character.cell_id) {
+            alerts_1.Alerts.alert(character, "Can't build in other cell");
+            return;
+        }
+        if (location.has_house_level > 0) {
+            alerts_1.Alerts.alert(character, "This location already has a building placed there.");
+            return;
+        }
+        if (character.stash.get(31 /* MATERIAL.WOOD_RED */) < price) {
+            alerts_1.Alerts.alert(character, "Not enough wood to build a house: 50 units are required");
+            return;
+        }
+        character.stash.inc(31 /* MATERIAL.WOOD_RED */, -price);
+        alerts_1.Alerts.Log.stash_change(character, 31 /* MATERIAL.WOOD_RED */, -price, "Building" /* CHANGE_REASON.BUILDING */);
+        data_id_1.DataID.Connection.set_location_owner(character.id, location_id);
+        location.has_house_level = 1;
+        updates_1.SendUpdate.locations_to_character(character);
+    }
+    Event.build_house = build_house;
     function remove_tree(location) {
         const data = data_objects_1.Data.Locations.from_id(location);
         data.forest -= 1;

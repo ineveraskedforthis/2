@@ -1,23 +1,23 @@
+import { DataID } from "./data/data_id";
+import { Data } from "./data/data_objects";
+
+import { EquipSlotConfiguration, EquipSlotStorage } from "@content/content";
+import { ReputationData, ReputationDataSocket } from "@custom_types/common";
+import { cell_id, character_id, location_id, user_online_id } from "@custom_types/ids";
+import { CharacterView } from "@custom_types/responses";
 import { UnitSocket } from "../../../shared/battle_data";
 import { ItemOrderData, equip } from "../../../shared/inventory";
+import { BattleValues } from "./battle/VALUES";
 import { Battle } from "./battle/classes/battle";
-import { Character } from "./data/entities/character";
-import { ItemSystem } from "./systems/items/item_system";
+import { CharacterSystem } from "./character/system";
 import { UI_Part } from "./client_communication/causality_graph";
 import { SocketWrapper, User, UserData } from "./client_communication/user";
 import { UserManagement } from "./client_communication/user_manager";
-import { ReputationData, ReputationDataSocket } from "@custom_types/common";
-import { character_id, location_id, user_online_id } from "@custom_types/ids";
-import { cell_id } from "@custom_types/ids";
-import { BattleValues } from "./battle/VALUES";
+import { Character } from "./data/entities/character";
 import { EquipmentPiece } from "./data/entities/item";
-import { DataID } from "./data/data_id";
-import { Data } from "./data/data_objects";
 import { CellData } from "./map/cell_interface";
-import { CharacterView } from "@custom_types/responses";
-import { CharacterSystem } from "./character/system";
-import { EquipSlotConfiguration, EquipSlotStorage } from "@content/content";
 import { CharacterValues } from "./scripted-values/character";
+import { ItemSystem } from "./systems/items/item_system";
 
 
 export namespace Convert {
