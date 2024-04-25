@@ -286,7 +286,7 @@ export class MaterialConfiguration {
 
     // Numbers: 
 
-    static MATERIAL_CUTTING_POWER : Record<MATERIAL, number> = [2.0, 4.0, 0.0, 0.0, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 6.0, 1.0, 1.0, 20.0, 5.0, ]
+    static MATERIAL_CUTTING_POWER : Record<MATERIAL, number> = [2.0, 4.0, 0.0, 0.0, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 6.0, 1.5, 1.0, 20.0, 5.0, ]
     static MATERIAL_DENSITY : Record<MATERIAL, number> = [0.2, 0.2, 0.2, 1.0, 0.5, 0.6, 0.2, 0.5, 0.6, 0.2, 1.5, 1.2, 1.1, 0.8, 3.0, 2.4, 2.2, 1.6, 0.4, 0.6, 0.1, 0.1, 0.5, 0.2, 0.7, 0.2, 0.3, 0.5, 0.2, 0.3, 10.0, 1.0, 2.0, 10.0, 8.0, ]
     static MATERIAL_CUTTING_PROTECTION : Record<MATERIAL, number> = [0.0, 0.0, 0.2, 0.1, 0.25, 0.5, 0.5, 0.5, 0.5, 5.0, 0.6, 0.5, 0.4, 0.3, 0.5, 0.4, 0.3, 0.2, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.8, 0.0, 0.0, 2.0, 1.0, 2.0, 10.0, 5.0, ]
     static MATERIAL_BLUNT_PROTECTION : Record<MATERIAL, number> = [0.0, 0.0, 0.05, 0.01, 0.025, 0.05, 0.05, 0.3, 0.4, 0.1, 0.01, 0.01, 0.01, 0.01, 0.05, 0.04, 0.03, 0.02, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.01, 0.0, 0.0, 2.0, 1.0, 2.0, 10.0, 5.0, ]
@@ -416,8 +416,8 @@ export class WeaponConfiguration {
     static WEAPON_WEAPON_STRING : Record<WEAPON, weapon_string_id> = ["bow-wood", "spear-wood-red", "spear-wood-red-bone-rat", "dagger-bone-rat", "sword-steel", "mace-wood-red", ]
     static WEAPON_MATERIAL : Record<WEAPON, MATERIAL> = [MATERIAL.WOOD_RED, MATERIAL.WOOD_RED, MATERIAL.SMALL_BONE_RAT, MATERIAL.BONE_RAT, MATERIAL.STEEL, MATERIAL.WOOD_RED, ]
     static WEAPON_MATERIAL_STRING : Record<WEAPON, material_string_id> = ["wood-red", "wood-red", "small-bone-rat", "bone-rat", "steel", "wood-red", ]
-    static WEAPON_SECONDARY_MATERIAL : Record<WEAPON, MATERIAL> = [MATERIAL.WOOD_RED, MATERIAL.WOOD_RED, MATERIAL.WOOD_RED, MATERIAL.BONE_RAT, MATERIAL.WOOD_RED, MATERIAL.WOOD_RED, ]
-    static WEAPON_SECONDARY_MATERIAL_STRING : Record<WEAPON, material_string_id> = ["wood-red", "wood-red", "wood-red", "bone-rat", "wood-red", "wood-red", ]
+    static WEAPON_SECONDARY_MATERIAL : Record<WEAPON, MATERIAL> = [MATERIAL.WOOD_RED, MATERIAL.WOOD_RED, MATERIAL.WOOD_RED, MATERIAL.BONE_RAT, MATERIAL.STEEL, MATERIAL.WOOD_RED, ]
+    static WEAPON_SECONDARY_MATERIAL_STRING : Record<WEAPON, material_string_id> = ["wood-red", "wood-red", "wood-red", "bone-rat", "steel", "wood-red", ]
     static WEAPON_IMPACT : Record<WEAPON, IMPACT_TYPE> = [IMPACT_TYPE.BLUNT, IMPACT_TYPE.POINT, IMPACT_TYPE.POINT, IMPACT_TYPE.BLADE, IMPACT_TYPE.BLADE, IMPACT_TYPE.BLUNT, ]
     static WEAPON_IMPACT_STRING : Record<WEAPON, impact_type_string_id> = ["blunt", "point", "point", "blade", "blade", "blunt", ]
 
