@@ -69,7 +69,7 @@ storage_1.AIActionsStorage.register_action_cell({
         if (actor.open_shop) {
             return 0;
         }
-        return 0.01;
+        return 0.01 + (actor.race == "rat" ? 0.2 : 0);
     },
     potential_targets(actor) {
         const cell = data_objects_1.Data.Cells.from_id(actor.cell_id);
@@ -135,7 +135,8 @@ storage_1.AIActionsStorage.register_action_location({
             return 0;
         if (actor.open_shop)
             return 0;
-        return for_sale_desire(actor, 28 /* MATERIAL.BERRY_FIE */) + Math.random() * 0.1 - actor.savings.get() / 1000;
+        const skill = character_1.CharacterValues.skill(actor, 14 /* SKILL.GATHERING */);
+        return for_sale_desire(actor, 28 /* MATERIAL.BERRY_FIE */) * skill / 100 + Math.random() * 0.1 - actor.savings.get() / 1000;
     },
     potential_targets(actor) {
         return locations_nearby(actor, (item) => item.berries > 0);
@@ -153,7 +154,8 @@ storage_1.AIActionsStorage.register_action_location({
             return 0;
         if (actor.open_shop)
             return 0;
-        return inner_desire(actor, 28 /* MATERIAL.BERRY_FIE */) + Math.random() * 0.1 - actor.savings.get() / 1000;
+        const skill = character_1.CharacterValues.skill(actor, 14 /* SKILL.GATHERING */);
+        return inner_desire(actor, 28 /* MATERIAL.BERRY_FIE */) * skill / 100 + Math.random() * 0.1 - actor.savings.get() / 1000;
     },
     potential_targets(actor) {
         return locations_nearby(actor, (item) => item.berries > 0);
@@ -169,7 +171,8 @@ storage_1.AIActionsStorage.register_action_location({
             return 0;
         if (actor.open_shop)
             return 0;
-        return for_sale_desire(actor, 29 /* MATERIAL.BERRY_ZAZ */) + Math.random() * 0.1 - actor.savings.get() / 1000;
+        const skill = character_1.CharacterValues.skill(actor, 14 /* SKILL.GATHERING */);
+        return for_sale_desire(actor, 29 /* MATERIAL.BERRY_ZAZ */) * skill / 100 + Math.random() * 0.1 - actor.savings.get() / 1000;
     },
     potential_targets(actor) {
         return locations_nearby(actor, (item) => item.berries > 0);
@@ -187,7 +190,8 @@ storage_1.AIActionsStorage.register_action_location({
             return 0;
         if (actor.open_shop)
             return 0;
-        return inner_desire(actor, 29 /* MATERIAL.BERRY_ZAZ */) + Math.random() * 0.1 - actor.savings.get() / 1000;
+        const skill = character_1.CharacterValues.skill(actor, 14 /* SKILL.GATHERING */);
+        return inner_desire(actor, 29 /* MATERIAL.BERRY_ZAZ */) * skill / 100 + Math.random() * 0.1 - actor.savings.get() / 1000;
     },
     potential_targets(actor) {
         return locations_nearby(actor, (item) => item.berries > 0);
@@ -203,7 +207,8 @@ storage_1.AIActionsStorage.register_action_location({
             return 0;
         if (actor.open_shop)
             return 0;
-        return for_sale_desire(actor, 31 /* MATERIAL.WOOD_RED */) + Math.random() * 0.1 - actor.savings.get() / 1000;
+        const skill = character_1.CharacterValues.skill(actor, 16 /* SKILL.WOODCUTTING */);
+        return for_sale_desire(actor, 31 /* MATERIAL.WOOD_RED */) * skill / 100 + Math.random() * 0.1 - actor.savings.get() / 1000;
     },
     // AIs are pretty shortsighted
     potential_targets(actor) {
@@ -236,7 +241,8 @@ storage_1.AIActionsStorage.register_action_location({
             return 0;
         let desired = actor.ai_desired_stash.get(31 /* MATERIAL.WOOD_RED */)
             - actor.stash.get(31 /* MATERIAL.WOOD_RED */);
-        return desired / 50 - actor.savings.get() / 1000;
+        const skill = character_1.CharacterValues.skill(actor, 16 /* SKILL.WOODCUTTING */);
+        return desired / 50 * skill / 100 - actor.savings.get() / 1000;
     },
     // AIs are pretty shortsighted
     potential_targets(actor) {
@@ -269,7 +275,8 @@ storage_1.AIActionsStorage.register_action_location({
             + common_1.AIfunctions.check_local_demand_for_material(actor, 2 /* MATERIAL.COTTON */)
             - common_1.AIfunctions.check_local_supply_for_material(actor, 2 /* MATERIAL.COTTON */)
             - actor.stash.get(2 /* MATERIAL.COTTON */);
-        return disbalance / 50 + Math.random() * 0.1 - actor.savings.get() / 1000;
+        const skill = character_1.CharacterValues.skill(actor, 14 /* SKILL.GATHERING */);
+        return disbalance / 50 * skill / 100 + Math.random() * 0.1 - actor.savings.get() / 1000;
     },
     // AIs are pretty shortsighted
     potential_targets(actor) {
@@ -304,7 +311,8 @@ storage_1.AIActionsStorage.register_action_location({
             return 0;
         let desired = actor.ai_desired_stash.get(2 /* MATERIAL.COTTON */)
             - actor.stash.get(2 /* MATERIAL.COTTON */);
-        return desired / 50 + Math.random() * 0.1 - actor.savings.get() / 1000;
+        const skill = character_1.CharacterValues.skill(actor, 14 /* SKILL.GATHERING */);
+        return desired / 50 * skill / 100 + Math.random() * 0.1 - actor.savings.get() / 1000;
     },
     // AIs are pretty shortsighted
     potential_targets(actor) {
@@ -339,8 +347,8 @@ storage_1.AIActionsStorage.register_action_location({
             - common_1.AIfunctions.check_local_supply_for_material(actor, 26 /* MATERIAL.FISH_OKU */)
             + actor.ai_gathering_target.get(26 /* MATERIAL.FISH_OKU */)
             - actor.stash.get(26 /* MATERIAL.FISH_OKU */);
-        const skill = character_1.CharacterValues.skill(actor, "fishing");
-        return (desired / 50 + Math.random() * 0.1) * skill / 100 - actor.savings.get() / 2000;
+        const skill = character_1.CharacterValues.skill(actor, 15 /* SKILL.FISHING */);
+        return (desired / 50) * skill / 100 + Math.random() * 0.1 - actor.savings.get() / 2000;
     },
     // AIs are pretty shortsighted
     potential_targets(actor) {
@@ -375,8 +383,8 @@ storage_1.AIActionsStorage.register_action_location({
             return 0;
         let desired = actor.ai_desired_stash.get(26 /* MATERIAL.FISH_OKU */)
             - actor.stash.get(26 /* MATERIAL.FISH_OKU */);
-        const skill = character_1.CharacterValues.skill(actor, "fishing");
-        return (desired / 50 + Math.random() * 0.1) * skill / 100 - actor.savings.get() / 2000;
+        const skill = character_1.CharacterValues.skill(actor, 15 /* SKILL.FISHING */);
+        return (desired / 50) * skill / 100 + Math.random() * 0.1 - actor.savings.get() / 2000;
     },
     // AIs are pretty shortsighted
     potential_targets(actor) {

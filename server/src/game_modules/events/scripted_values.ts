@@ -5,6 +5,7 @@ import { Character } from "../data/entities/character";
 import { LocationInterface } from "../location/location_interface";
 import { CharacterValues } from "../scripted-values/character";
 import { tagRACE } from "../types";
+import { SKILL } from "@content/content";
 
 export namespace ScriptedValue {
     export const max_devastation = 100
@@ -67,7 +68,7 @@ export namespace ScriptedValue {
      * @return {number} The target fatigue.
      */
     export function target_fatigue(character: Character, location: LocationInterface): number {
-        const skill = CharacterValues.skill(character, 'travelling')
+        const skill = CharacterValues.skill(character, SKILL.TRAVELLING)
 
         return rest_target_fatigue(
             rest_tier(character, location),
@@ -100,7 +101,7 @@ export namespace ScriptedValue {
      * @return {number} The target fatigue.
      */
     export function target_stress(character: Character, location: LocationInterface): number {
-        const skill = CharacterValues.skill(character, 'travelling')
+        const skill = CharacterValues.skill(character, SKILL.TRAVELLING)
 
         return rest_target_stress(
             rest_tier(character, location),

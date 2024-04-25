@@ -1,10 +1,10 @@
 import { Character } from "../data/entities/character";
 import { money } from "@custom_types/common";
-import { skill } from "@custom_types/inventory";
 import { DataID } from "../data/data_id";
+import { SKILL } from "@content/content";
 
 
-export function skill_price(tag: skill, student: Character, teacher: Character): money {
+export function skill_price(tag: SKILL, student: Character, teacher: Character): money {
     let price = 10;
 
     if (DataID.Reputation.a_X_b(teacher.id, 'enemy', student.id))

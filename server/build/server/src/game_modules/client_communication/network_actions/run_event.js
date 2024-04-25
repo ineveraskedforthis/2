@@ -4,11 +4,12 @@ exports.SocketCommand = void 0;
 const events_1 = require("../../events/events");
 const systems_communication_1 = require("../../systems_communication");
 const common_validations_1 = require("./common_validations");
+const content_1 = require("../../../.././../game_content/src/content");
 const system_1 = require("../../battle/system");
-const request_1 = require("./request");
 const data_objects_1 = require("../../data/data_objects");
 const effects_1 = require("../../effects/effects");
 const character_1 = require("../../scripted-values/character");
+const request_1 = require("./request");
 var SocketCommand;
 (function (SocketCommand) {
     // data is a raw id of character
@@ -48,7 +49,9 @@ var SocketCommand;
             return;
         let character_id = msg.id;
         let perk_tag = msg.tag;
-        if (typeof perk_tag != 'string')
+        if (typeof perk_tag != 'number')
+            return;
+        if (!content_1.PerkConfiguration.is_valid_id(perk_tag))
             return;
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         const [valid_user, valid_character, target_character] = common_validations_1.Validator.valid_action_to_character(user, character, character_id);
@@ -74,7 +77,9 @@ var SocketCommand;
             return;
         let character_id = msg.id;
         let skill_tag = msg.tag;
-        if (typeof skill_tag != 'string')
+        if (typeof skill_tag != 'number')
+            return;
+        if (!content_1.SkillConfiguration.is_valid_id(skill_tag))
             return;
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         const [valid_user, valid_character, target_character] = common_validations_1.Validator.valid_action_to_character(user, character, character_id);
@@ -166,3 +171,4 @@ var SocketCommand;
     }
     SocketCommand.repair_location = repair_location;
 })(SocketCommand || (exports.SocketCommand = SocketCommand = {}));
+

@@ -34,11 +34,22 @@ var Event;
             alerts_1.Alerts.not_enough_to_character(student, 'money', savings, price, undefined);
             return;
         }
-        let response = (0, perk_requirement_1.perk_requirement)(perk, student);
-        if (response != 'ok') {
-            alerts_1.Alerts.generic_character_alert(student, 'alert', response);
-            return;
+        let response = (0, perk_requirement_1.perk_requirement)(perk);
+        let flag_allowed = true;
+        for (const perk_check of response.perks) {
+            if (character_1.CharacterValues.perk(student, perk_check) == 0) {
+                alerts_1.Alerts.alert(student, `You need perk ${content_1.PerkStorage.get(perk_check).name} to learn ${content_1.PerkStorage.get(perk).name}`);
+                flag_allowed = false;
+            }
         }
+        for (const skill_check of response.skills) {
+            if (character_1.CharacterValues.skill(student, skill_check.skill) < skill_check.difficulty) {
+                alerts_1.Alerts.alert(student, `You need perk ${content_1.SkillStorage.get(skill_check.skill).name} to learn ${content_1.PerkStorage.get(perk).name}`);
+                flag_allowed = false;
+            }
+        }
+        if (!flag_allowed)
+            return;
         effects_1.Effect.Transfer.savings(student, teacher, price, "Education" /* CHANGE_REASON.EDUCATION */);
         effects_1.Effect.learn_perk(student, perk);
     }
@@ -101,8 +112,8 @@ var Event;
         if (dice < probability) {
             effects_1.Effect.change_durability(character, 8 /* EQUIP_SLOT.BOOTS */, -1);
             let skill_dice = Math.random();
-            if (skill_dice * skill_dice * skill_dice > character_1.CharacterValues.skill(character, 'travelling') / 100) {
-                effects_1.Effect.Change.skill(character, 'travelling', 1, "Travel" /* CHANGE_REASON.TRAVEL */);
+            if (skill_dice * skill_dice * skill_dice > character_1.CharacterValues.skill(character, 17 /* SKILL.TRAVELLING */) / 100) {
+                effects_1.Effect.Change.skill(character, 17 /* SKILL.TRAVELLING */, 1, "Travel" /* CHANGE_REASON.TRAVEL */);
             }
         }
     }
@@ -125,7 +136,7 @@ var Event;
         // it gives base 10% of arrows missing
         // and you rise your evasion if you are attacked
         const attack_skill = 2 * attack.attack_skill;
-        const evasion = character_1.CharacterValues.skill(defender, 'evasion');
+        const evasion = character_1.CharacterValues.skill(defender, 19 /* SKILL.EVASION */);
         let evasion_chance = evasion / (100 + attack_skill);
         if (flag_dodge)
             evasion_chance = evasion_chance + 0.1;
@@ -135,10 +146,7 @@ var Event;
             return 'miss';
         }
         if (flag_dodge) {
-            const dice_evasion_skill_up = Math.random();
-            if (dice_evasion_skill_up > evasion_chance) {
-                effects_1.Effect.Change.skill(defender, 'evasion', 1, "Dodging attempt" /* CHANGE_REASON.DODGE */);
-            }
+            effects_1.Effect.roll_skill_improvement(defender, 19 /* SKILL.EVASION */, 100 - evasion_chance * 100, "Dodging attempt" /* CHANGE_REASON.DODGE */);
         }
     }
     function shoot(attacker, defender, distance, flag_dodge) {
@@ -156,18 +164,12 @@ var Event;
         //check missed attack because of lack of skill
         const acc = battle_calcs_1.Accuracy.ranged(attacker, distance);
         const dice_accuracy = Math.random();
-        const attacker_ranged_skill = character_1.CharacterValues.skill(attacker, 'ranged');
+        const attacker_ranged_skill = character_1.CharacterValues.skill(attacker, 18 /* SKILL.RANGED */);
         if (dice_accuracy > acc) {
-            const dice_skill_up = Math.random();
-            if (dice_skill_up * 100 > attacker_ranged_skill) {
-                effects_1.Effect.Change.skill(attacker, 'ranged', 1, "Shooting" /* CHANGE_REASON.SHOOTING */);
-            }
+            effects_1.Effect.roll_skill_improvement(attacker, 18 /* SKILL.RANGED */, 100 - 50 * acc, "Shooting" /* CHANGE_REASON.SHOOTING */);
             return 'miss';
         }
-        const dice_skill_up = Math.random();
-        if (dice_skill_up * 50 > attacker_ranged_skill) {
-            effects_1.Effect.Change.skill(attacker, 'ranged', 1, "Shooting" /* CHANGE_REASON.SHOOTING */);
-        }
+        effects_1.Effect.roll_skill_improvement(attacker, 18 /* SKILL.RANGED */, 100, "Shooting" /* CHANGE_REASON.SHOOTING */);
         // create attack
         const attack = system_1.Attack.generate_ranged(attacker);
         // durability changes weapon
@@ -186,7 +188,7 @@ var Event;
         attack.attacker_status_change.fatigue += 5;
         attack.defender_status_change.fatigue += 5;
         attack.defender_status_change.stress += 3;
-        attack.defence_skill += character_1.CharacterValues.skill(defender, 'evasion');
+        attack.defence_skill += character_1.CharacterValues.skill(defender, 19 /* SKILL.EVASION */);
         deal_damage(defender, attack, attacker, false, "Ranged attack" /* CHANGE_REASON.RANGED_ATTACK */);
         //if target is dead, loot it all
         if (defender.dead()) {
@@ -196,10 +198,8 @@ var Event;
     }
     Event.shoot = shoot;
     function unconditional_magic_bolt(attacker, defender, dist, flag_dodge, flag_charged) {
-        const dice = Math.random();
-        if (dice > character_1.CharacterValues.skill(attacker, 'magic_mastery') / 50) {
-            effects_1.Effect.Change.skill(attacker, 'magic_mastery', 1, "Application of magic" /* CHANGE_REASON.MAGIC_APPLICATION */);
-        }
+        effects_1.Effect.roll_skill_improvement(attacker, 26 /* SKILL.MAGIC */, 30, "Application of magic" /* CHANGE_REASON.MAGIC_APPLICATION */);
+        effects_1.Effect.roll_skill_improvement(attacker, 29 /* SKILL.BATTLE_MAGIC */, 70, "Application of magic" /* CHANGE_REASON.MAGIC_APPLICATION */);
         const attack = system_1.Attack.generate_magic_bolt(attacker, dist, flag_charged);
         attack.defender_status_change.stress += 5;
         deal_damage(defender, attack, attacker, false, "Magic bolt" /* CHANGE_REASON.MAGIC_BOLT */);
@@ -312,33 +312,37 @@ var Event;
     }
     function attack_skill_improvement(attacker, defender, attack) {
         // if attacker skill is lower than total defence skill of attack, then attacker can improve
-        if (attack.attack_skill < attack.defence_skill) {
-            const improvement_rate = (100 + attack.defence_skill) / (100 + attack.attack_skill);
-            if (improvement_rate > 1) {
-                effects_1.Effect.Change.skill(attacker, attack.weapon_type, Math.floor(improvement_rate), "Attack" /* CHANGE_REASON.ATTACK */);
-            }
-            else {
-                const dice = Math.random();
-                if (dice < improvement_rate)
-                    effects_1.Effect.Change.skill(attacker, attack.weapon_type, 1, "Attack" /* CHANGE_REASON.ATTACK */);
+        for (const attack_skill of attack.related_skills) {
+            if (attack.attack_skill < attack.defence_skill) {
+                const improvement_rate = (100 + attack.defence_skill) / (100 + attack.attack_skill);
+                if (improvement_rate > 1) {
+                    effects_1.Effect.Change.skill(attacker, attack_skill, Math.floor(improvement_rate), "Attack" /* CHANGE_REASON.ATTACK */);
+                }
+                else {
+                    const dice = Math.random();
+                    if (dice < improvement_rate)
+                        effects_1.Effect.Change.skill(attacker, attack_skill, 1, "Attack" /* CHANGE_REASON.ATTACK */);
+                }
             }
         }
         //fighting provides constant growth of this skill up to some level
         //for defender
-        const dice = Math.random();
-        if ((dice < 0.5) && (attack.attack_skill <= 30)) {
-            effects_1.Effect.Change.skill(defender, character_1.CharacterValues.equiped_weapon_required_skill(defender), 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
+        for (const fighting_skill of character_1.CharacterValues.equiped_weapon_required_skill(defender)) {
+            effects_1.Effect.roll_skill_improvement(defender, fighting_skill, 30, "Fighting" /* CHANGE_REASON.FIGHTING */);
         }
         //for attacker
-        const dice2 = Math.random();
-        if ((dice2 < 0.5) && (attack.attack_skill <= 30)) {
-            effects_1.Effect.Change.skill(attacker, attack.weapon_type, 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
+        for (const fighting_skill of character_1.CharacterValues.equiped_weapon_required_skill(attacker)) {
+            effects_1.Effect.roll_skill_improvement(attacker, fighting_skill, 30, "Fighting" /* CHANGE_REASON.FIGHTING */);
         }
+        effects_1.Effect.roll_skill_improvement(defender, 25 /* SKILL.FIGHTING */, attack.attack_skill, "Fighting" /* CHANGE_REASON.FIGHTING */);
+        effects_1.Effect.roll_skill_improvement(attacker, 25 /* SKILL.FIGHTING */, attack.defence_skill, "Fighting" /* CHANGE_REASON.FIGHTING */);
     }
     function parry(defender, attack) {
         const weapon = character_1.CharacterValues.equiped_weapon_required_skill(defender);
         const skill = character_1.CharacterValues.attack_skill(defender) + Math.round(Math.random() * 5);
         attack.defence_skill += skill;
+        attack.defence_skill += character_1.CharacterValues.skill(defender, 25 /* SKILL.FIGHTING */);
+        effects_1.Effect.roll_skill_improvement(defender, 25 /* SKILL.FIGHTING */, attack.attack_skill, "Fighting" /* CHANGE_REASON.FIGHTING */);
         // roll parry
         const parry_dice = Math.random();
         if ((parry_dice * skill > attack.attack_skill)) {
@@ -346,16 +350,18 @@ var Event;
             attack.flags.blocked = true;
         }
         //fighting provides constant growth of this skill up to some level
-        if (skill < attack.attack_skill) {
-            effects_1.Effect.Change.skill(defender, weapon, 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
-        }
-        const dice = Math.random();
-        if ((dice < 0.1) && (skill <= 10)) {
-            effects_1.Effect.Change.skill(defender, weapon, 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
+        for (const weapon_skill of weapon) {
+            if (skill < attack.attack_skill) {
+                effects_1.Effect.Change.skill(defender, weapon_skill, 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
+            }
+            const dice = Math.random();
+            if ((dice < 0.1) && (skill <= 10)) {
+                effects_1.Effect.Change.skill(defender, weapon_skill, 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
+            }
         }
     }
     function block(defender, attack) {
-        const skill = character_1.CharacterValues.skill(defender, 'blocking') + Math.round(Math.random() * 10);
+        const skill = character_1.CharacterValues.skill(defender, 20 /* SKILL.BLOCKING */) + Math.round(Math.random() * 10);
         attack.defence_skill += skill;
         // roll block
         const block_dice = Math.random();
@@ -364,16 +370,16 @@ var Event;
         }
         //fighting provides constant growth of this skill
         if (skill < attack.attack_skill) {
-            effects_1.Effect.Change.skill(defender, 'blocking', 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
+            effects_1.Effect.Change.skill(defender, 20 /* SKILL.BLOCKING */, 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
         }
         const dice = Math.random();
         if ((dice < 0.1) && (skill <= 20)) {
-            effects_1.Effect.Change.skill(defender, 'blocking', 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
+            effects_1.Effect.Change.skill(defender, 20 /* SKILL.BLOCKING */, 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
         }
     }
     function evade(defender, attack, dodge_flag) {
         //this skill has quite wide deviation
-        const skill = (0, basic_functions_1.trim)(character_1.CharacterValues.skill(defender, 'evasion') + Math.round((Math.random() - 0.5) * 40), 0, 200);
+        const skill = (0, basic_functions_1.trim)(character_1.CharacterValues.skill(defender, 19 /* SKILL.EVASION */) + Math.round((Math.random() - 0.5) * 40), 0, 200);
         //passive evasion
         attack.defence_skill += skill;
         //active dodge
@@ -388,11 +394,11 @@ var Event;
         }
         //fighting provides constant growth of this skill
         if (skill < attack.attack_skill) {
-            effects_1.Effect.Change.skill(defender, 'evasion', 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
+            effects_1.Effect.Change.skill(defender, 19 /* SKILL.EVASION */, 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
         }
         const dice = Math.random();
         if ((dice < 0.1) && (skill <= 10)) {
-            effects_1.Effect.Change.skill(defender, 'evasion', 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
+            effects_1.Effect.Change.skill(defender, 19 /* SKILL.EVASION */, 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
         }
     }
     function rob_the_dead(robber, target) {
@@ -430,11 +436,11 @@ var Event;
         for (const item of loot) {
             if (content_1.MaterialStorage.get(item.material).category == 4 /* MATERIAL_CATEGORY.SKIN */) {
                 const dice = Math.random();
-                const skinning_skill = character_1.CharacterValues.skill(killer, 'skinning');
+                const skinning_skill = character_1.CharacterValues.skill(killer, 3 /* SKILL.SKINNING */);
                 const amount = Math.round(item.amount * dice * skinning_skill / 100 * skinning_skill / 100);
                 Event.change_stash(killer, item.material, amount);
                 if (dice > skinning_skill / 100) {
-                    effects_1.Effect.Change.skill(killer, 'skinning', 1, "Skinning enemies" /* CHANGE_REASON.SKINNING */);
+                    effects_1.Effect.Change.skill(killer, 3 /* SKILL.SKINNING */, 1, "Skinning enemies" /* CHANGE_REASON.SKINNING */);
                 }
             }
             else {
@@ -489,7 +495,10 @@ var Event;
         if (cost > character.stash.get(31 /* MATERIAL.WOOD_RED */))
             return;
         let difficulty = Math.floor((location.devastation) / 3 + 10);
-        (0, helpers_1.on_craft_update)(character, [{ skill: 'woodwork', difficulty: difficulty }]);
+        (0, helpers_1.on_craft_update)(character, [{ skill_checks: [
+                    { skill: 4 /* SKILL.WOODWORKING */, difficulty: difficulty / 2 },
+                    { skill: 6 /* SKILL.CARPENTER */, difficulty: difficulty }
+                ] }]);
         change_stash(character, 31 /* MATERIAL.WOOD_RED */, -cost);
         effects_1.Effect.location_repair(location, repair);
     }

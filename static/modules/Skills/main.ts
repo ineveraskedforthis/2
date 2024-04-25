@@ -1,15 +1,13 @@
+import { SkillConfiguration, SkillStorage, skill_string_id } from "@content/content.js";
 import { Socket } from "../../../shared/battle_data.js";
-import { SKILL_NAMES } from "../../SKILL_NAMES.js";
 import { set_up_header_with_strings } from "../../headers.js";
 import { elementById, resetInnerHTMLById } from "../HTMLwrappers/common.js";
 import { BarValue, value_bar_class_name, value_class_name } from "../Values/collection.js";
 
-
-var SKILL_TAGS: string[] = []
 var STATE: Record<string, BarValue> = {}
 
 export function init_skills(socket:Socket){
-    socket.on('skill-tags', data => load_skill_tags(socket, data));
+    load_skill_tags(socket)
 
     set_up_header_with_strings([
         {element: 'skills_header', connected_element: 'skills_tab'},
@@ -18,25 +16,23 @@ export function init_skills(socket:Socket){
     ])
 }
 
-function load_skill_tags(socket:Socket, data: Record<string, number>){
+function load_skill_tags(socket:Socket){
     console.log('load skills')
-    console.log(data)
 
     resetInnerHTMLById("skills_tab");
 
     let box = elementById("skills_tab");
 
-    for (let tag in data) {
-        SKILL_TAGS.push(tag);
-        let div = build_skill_div(tag)
+    for (let tag of SkillConfiguration.SKILL) {
+        let div = build_skill_div(SkillStorage.get(tag).id_string)
         box.appendChild(div)
 
-        STATE[tag] = new BarValue(socket, tag, [])
+        STATE[tag] = new BarValue(socket, SkillStorage.get(tag).id_string, [])
         STATE[tag].max_value = 100
     }
 }
 
-function build_skill_div(tag: string): HTMLElement {
+function build_skill_div(tag: skill_string_id): HTMLElement {
     console.log("adding skill: " + tag)
 
     let skill_div = document.createElement('div')
@@ -52,7 +48,7 @@ function build_skill_div(tag: string): HTMLElement {
 
         let name_label = document.createElement('div')
         name_label.classList.add('label')
-        name_label.innerHTML = SKILL_NAMES[tag] != undefined ? SKILL_NAMES[tag] : tag
+        name_label.innerHTML = SkillStorage.from_string(tag).name
         practice_bar_container.appendChild(name_label)
     }
 

@@ -1,4 +1,4 @@
-import { EQUIP_SLOT, MATERIAL } from "@content/content";
+import { EQUIP_SLOT, MATERIAL, SKILL } from "@content/content";
 import { item_id } from "@custom_types/ids";
 import { is_weapon } from "../../content_wrappers/item";
 import { roll_affix_armour, roll_affix_weapon } from "../base_game_classes/affix";
@@ -63,8 +63,8 @@ export namespace EventInventory {
         }
 
         Event.change_stash(character, MATERIAL.ZAZ, -1)
-        const pure_skill = CharacterValues.pure_skill(character, 'magic_mastery')
-        if (pure_skill < 10) Effect.Change.skill(character, 'magic_mastery', 1, CHANGE_REASON.ENCHANTING)
+        const pure_skill = CharacterValues.pure_skill(character, SKILL.ENCHANTING)
+        if (pure_skill < 10) Effect.Change.skill(character, SKILL.ENCHANTING, 1, CHANGE_REASON.ENCHANTING)
         if (is_weapon(item)) roll_affix_weapon(enchant_rating, item)
         else roll_affix_armour(enchant_rating, item)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
@@ -84,8 +84,8 @@ export namespace EventInventory {
 
         let rolls = item.affixes.length
         Event.change_stash(character, MATERIAL.ZAZ, -1)
-        const pure_skill = CharacterValues.pure_skill(character, 'magic_mastery')
-        if (pure_skill < 10 * rolls) Effect.Change.skill(character, 'magic_mastery', 1, CHANGE_REASON.ENCHANTING)
+        const pure_skill = CharacterValues.pure_skill(character, SKILL.ENCHANTING)
+        if (pure_skill < 10 * rolls) Effect.Change.skill(character, SKILL.ENCHANTING, 1, CHANGE_REASON.ENCHANTING)
 
 
         item.affixes = []

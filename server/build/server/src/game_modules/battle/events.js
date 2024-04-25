@@ -53,7 +53,7 @@ var BattleEvent;
         alerts_1.Alerts.remove_unit(battle, unit);
         alerts_1.Alerts.battle_event_simple(battle, 'flee', unit);
         // console.log(character.get_name())
-        user_manager_1.UserManagement.add_user_to_update_queue(unit.user_id, 22 /* UI_Part.BATTLE */);
+        user_manager_1.UserManagement.add_user_to_update_queue(unit.user_id, 21 /* UI_Part.BATTLE */);
         alerts_1.Alerts.battle_event_simple(battle, 'unit_left', unit);
         alerts_1.Alerts.battle_progress(systems_communication_1.Convert.character_to_user(unit), false);
         console.log(`${unit.id} left battle`);

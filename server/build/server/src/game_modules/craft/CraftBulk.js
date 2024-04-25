@@ -11,7 +11,7 @@ const craft_1 = require("../scripted-values/craft");
 function event_craft_bulk(character, craft) {
     (0, helpers_1.use_input)(craft.input, character);
     produce_output(craft_1.CraftValues.output_bulk(character, craft), character);
-    (0, helpers_1.on_craft_update)(character, craft.difficulty);
+    (0, helpers_1.on_craft_update)(character, craft.output);
     user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.STASH */);
 }
 exports.event_craft_bulk = event_craft_bulk;
@@ -21,12 +21,11 @@ function produce_output(output, character) {
     }
 }
 exports.produce_output = produce_output;
-function new_craft_bulk(id, input, output, difficulty) {
+function new_craft_bulk(id, input, output) {
     crafts_storage_1.crafts_bulk[id] = {
         id: id,
         input: input,
         output: output,
-        difficulty: difficulty,
     };
     crafts_storage_1.craft_actions[id] = generate_bulk_craft_action(crafts_storage_1.crafts_bulk[id]);
     return crafts_storage_1.crafts_bulk[id];

@@ -4,6 +4,7 @@ import { Character } from "../data/entities/character";
 import { EquipmentEffects } from "../scripted-effects/equipment-effects";
 import { CharacterValues } from "../scripted-values/character";
 import { AttackObj } from "./class";
+import { PERK, SKILL } from "@content/content";
 
 export namespace Attack {
     export function generate_melee(character: Character, type: melee_attack_type): AttackObj {
@@ -13,6 +14,9 @@ export namespace Attack {
         //account for strength
         const physical_modifier = 1 + CharacterValues.phys_power(character) / 30
         DmgOps.mult_ip(result.damage, physical_modifier)
+
+        // general fighting skill
+        result.attack_skill += CharacterValues.skill(character, SKILL.FIGHTING)
 
         //account for character own skill
         result.attack_skill += CharacterValues.attack_skill(character)
@@ -43,7 +47,7 @@ export namespace Attack {
     }
 
     export function generate_ranged(character: Character): AttackObj {
-        const result = new AttackObj('ranged')
+        const result = new AttackObj([SKILL.RANGED])
         //raw items damage
         DmgOps.add_ip(result.damage, CharacterValues.ranged_damage_raw(character))
         //account for strength
@@ -53,7 +57,7 @@ export namespace Attack {
         EquipmentEffects.modify_attack(character.equip, result)
 
         //account for own skill
-        const skill = CharacterValues.skill(character, 'ranged')
+        const skill = CharacterValues.skill(character, SKILL.RANGED)
 
         result.attack_skill += skill
 
@@ -67,15 +71,15 @@ export namespace Attack {
         if (charge_flag) {
             base_damage += 2
         }
-        if (character._perks.magic_bolt) (
+        if (CharacterValues.perk(character, PERK.MAGIC_BOLT)) (
             base_damage += 2
         )
-        const skill = CharacterValues.skill(character, 'magic_mastery')
+        const skill = CharacterValues.skill(character, SKILL.BATTLE_MAGIC)
         return Math.round(base_damage * CharacterValues.magic_power(character) / 10 * (1 + skill / 10))
     }
 
     export function generate_magic_bolt(character: Character, dist: number, charge_flag: boolean): AttackObj {
-        const result = new AttackObj('ranged')
+        const result = new AttackObj([SKILL.BATTLE_MAGIC])
         result.damage.fire = magic_bolt_base_damage(character, charge_flag)
 
         if (dist > 1) {

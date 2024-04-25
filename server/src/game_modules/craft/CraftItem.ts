@@ -32,7 +32,7 @@ export function event_craft_item(character: Character, craft: CraftItemTemplate)
 
     UserManagement.add_user_to_update_queue(character.user_id, UI_Part.INVENTORY);
     UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH);
-    on_craft_update(character, craft.difficulty);
+    on_craft_update(character, [{skill_checks: craft.difficulty}]);
 }
 
 export function new_craft_item(id: string, input: box[], output: EQUIPMENT_PIECE, output_affixes: affix[], difficulty: skill_check[]) {

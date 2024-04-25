@@ -1,8 +1,7 @@
 import { globals } from './modules/globals.js';
 import { socket } from "./modules/Socket/socket.js";
-import { SKILL_NAMES } from './SKILL_NAMES.js';
 import { elementById } from './modules/HTMLwrappers/common.js';
-import { EquipSlotStorage, MaterialConfiguration, MaterialStorage } from './content.js';
+import { EquipSlotStorage, MaterialConfiguration, MaterialStorage, PerkConfiguration, PerkStorage, SkillConfiguration, SkillStorage } from './content.js';
 import { EQUIPMENT_TAGS } from "./modules/CharacterImage/equip_strings.js";
 // export const slots_front_end = ['weapon', 'secondary', 'amulet', 'mail', 'greaves', 'left_pauldron', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'belt', 'robe', 'shirt', 'pants'] as const
 // tmp.typ = this.typ;
@@ -82,12 +81,12 @@ function generate_greeting(data) {
         greeting_line += ('I have no particular skills. ');
     }
     else {
-        for (let skill of Object.keys(data.skills)) {
+        for (let skill of SkillConfiguration.SKILL) {
             let temp = data.skills[skill];
             if (temp == undefined)
                 continue;
             let [level, price] = temp;
-            greeting_line += `I am ${epitet(level)} at ${SKILL_NAMES[skill]}. `;
+            greeting_line += `I am ${epitet(level)} at ${SkillStorage.get(skill).name}. `;
         }
         greeting_line += `I can teach you for a price. `;
     }
@@ -145,15 +144,17 @@ function build_dialog(data) {
     add_dialog_option('What do you think about current prices?', request_prices());
     if (is_leader(data))
         add_dialog_option('I want to buy a land plot for 500.', buy_land_plot_request());
-    for (let [i, value] of Object.entries(data.perks)) {
-        add_dialog_option(`Teach me ${i} for ${value}`, send_perk_learning_request(i));
+    for (const perk of PerkConfiguration.PERK) {
+        if (data.perks[perk] == undefined)
+            continue;
+        add_dialog_option(`Teach me ${PerkStorage.get(perk).name} for ${data.perks[perk]}`, send_perk_learning_request(perk));
     }
-    for (let skill of Object.keys(data.skills)) {
+    for (let skill of SkillConfiguration.SKILL) {
         let tmp = data.skills[skill];
         if (tmp == undefined)
             continue;
         let [level, price] = tmp;
-        add_dialog_option(`Teach me ${SKILL_NAMES[skill]} for ${price}`, send_skill_learning_request(skill));
+        add_dialog_option(`Teach me ${SkillStorage.get(skill).name} for ${price}`, send_skill_learning_request(skill));
     }
     big_div.classList.remove('hidden');
     document.getElementById('dialog-scene')?.classList.remove('hidden');

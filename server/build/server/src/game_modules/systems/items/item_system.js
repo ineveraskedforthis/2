@@ -14,6 +14,21 @@ var ItemSystem;
         return item.prototype.length;
     }
     ItemSystem.range = range;
+    function related_skils(item, strength) {
+        const response = [];
+        const data = item.prototype;
+        if ((data.length > 1) && ((data.impact == 0 /* IMPACT_TYPE.POINT */) || data.impact == 2 /* IMPACT_TYPE.BLUNT */)) {
+            response.push(23 /* SKILL.POLEARMS */);
+        }
+        if ((data.length > 1.5) || weight(item) > strength) {
+            response.push(22 /* SKILL.TWOHANDED */);
+        }
+        if ((data.length < 1.5) || weight(item) < strength) {
+            response.push(21 /* SKILL.ONEHANDED */);
+        }
+        return response;
+    }
+    ItemSystem.related_skils = related_skils;
     function slot(item) {
         if ((0, item_1.is_weapon)(item)) {
             return 0 /* EQUIP_SLOT.WEAPON */;

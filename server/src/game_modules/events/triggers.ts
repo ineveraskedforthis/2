@@ -1,10 +1,10 @@
 import { money } from "@custom_types/common";
 import { character_id, location_id } from "@custom_types/ids";
-import { skill } from "@custom_types/inventory";
 import { Data } from "../data/data_objects";
 import { Character } from "../data/entities/character";
 import { skill_price } from "../prices/skill_price";
 import { CharacterValues } from "../scripted-values/character";
+import { SKILL } from "@content/content";
 
 
 export enum ResponseNegative {
@@ -53,7 +53,7 @@ export namespace Trigger {
         return { response: "ok", owner_id: owner_id, price: 0 as money }
     }
 
-    export function can_learn_from(student: Character, teacher: Character, skill: skill): LearningAvailableResponse {
+    export function can_learn_from(student: Character, teacher: Character, skill: SKILL): LearningAvailableResponse {
         let savings = student.savings.get()
         const teacher_skill = CharacterValues.pure_skill(teacher, skill)
         const student_skill = CharacterValues.pure_skill(student, skill)

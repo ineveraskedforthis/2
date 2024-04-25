@@ -1,4 +1,3 @@
-import { skill } from "@custom_types/inventory";
 import { CellDisplay, CharacterStatsResponse } from "@custom_types/responses";
 import { Attack } from "../../attack/system";
 import { Accuracy } from "../../battle/battle_calcs";
@@ -19,6 +18,7 @@ import { prepare_market_orders } from "../helper_functions";
 import { User } from "../user";
 import { Alerts } from "./alerts";
 import { CraftValues } from "../../scripted-values/craft";
+import { SKILL, SkillConfiguration, SkillStorage } from "@content/content";
 
 
 export namespace SendUpdate {
@@ -112,7 +112,7 @@ export namespace SendUpdate {
         attack_damage(user)
     }
 
-    export function skill(user: User, skill: skill) {
+    export function skill(user: User, skill: SKILL) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
@@ -122,7 +122,7 @@ export namespace SendUpdate {
         Alerts.skill(user, skill, pure_skill, current_skill)
     }
 
-    export function skills(user: User, skills: skill[]) {
+    export function skills(user: User, skills: SKILL[]) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
@@ -134,33 +134,29 @@ export namespace SendUpdate {
     }
 
     export function skill_clothier(user: User) {
-        skill(user, 'clothier')
+        skill(user, SKILL.CLOTHIER)
     }
 
     export function skill_cooking(user: User) {
-        skill(user, 'cooking')
+        skill(user, SKILL.COOKING)
     }
 
     export function skill_woodwork(user: User) {
-        skill(user, 'woodwork')
+        skill(user, SKILL.WOODWORKING)
     }
 
     export function skill_skinning(user: User) {
-        skill(user, 'skinning')
-    }
-
-    export function skill_weapon(user: User) {
-        skills(user, weapon_attack_tags)
+        skill(user, SKILL.SKINNING)
     }
 
     export function skill_defence(user: User) {
-        skills(user, ['evasion', 'blocking'])
+        skills(user, [SKILL.EVASION, SKILL.BLOCKING])
     }
 
     export function all_skills(user: User) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
-        skills(user, Object.keys(character._skills) as skill[])
+        skills(user, SkillConfiguration.SKILL)
         cell_probability(user)
         Alerts.perks(user, character)
     }
@@ -374,13 +370,6 @@ export namespace SendUpdate {
     // }
     }
 }
-
-export type weapon_skill_tag = 'polearms'|'noweapon'|'onehand'|'ranged'|'twohanded'
-export const weapon_attack_tags: weapon_skill_tag[] = ['polearms', 'noweapon', 'onehand', 'ranged', 'twohanded']
-
-
-
-
 
 
     // update_market_info(market: Cell) {

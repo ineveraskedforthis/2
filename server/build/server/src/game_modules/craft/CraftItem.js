@@ -28,7 +28,7 @@ function event_craft_item(character, craft) {
         (0, helpers_1.use_input)(craft.input, character);
     user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 10 /* UI_Part.INVENTORY */);
     user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.STASH */);
-    (0, helpers_1.on_craft_update)(character, craft.difficulty);
+    (0, helpers_1.on_craft_update)(character, [{ skill_checks: craft.difficulty }]);
 }
 exports.event_craft_item = event_craft_item;
 function new_craft_item(id, input, output, output_affixes, difficulty) {

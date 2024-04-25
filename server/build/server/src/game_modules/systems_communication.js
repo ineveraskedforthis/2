@@ -163,7 +163,7 @@ var Link;
         for (let item of characters) {
             const local_character = data_objects_1.Data.Characters.from_id(item);
             user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 13 /* UI_Part.LOCAL_CHARACTERS */);
-            user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 23 /* UI_Part.MARKET */);
+            user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 22 /* UI_Part.MARKET */);
         }
     }
     Link.send_local_characters_info = send_local_characters_info;

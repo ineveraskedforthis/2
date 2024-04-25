@@ -97,10 +97,21 @@ var AIfunctions;
         return total;
     }
     AIfunctions.stash_overflow = stash_overflow;
+    function desired_stash_weight(actor) {
+        let total_weight = 0;
+        for (const material of content_1.MaterialConfiguration.MATERIAL) {
+            const data = content_1.MaterialStorage.get(material);
+            console;
+            total_weight += actor.ai_desired_stash.get(material) * data.unit_size * data.density;
+        }
+        return total_weight;
+    }
+    AIfunctions.desired_stash_weight = desired_stash_weight;
     function trade_stash_weight(actor) {
         let total_weight = 0;
         for (const material of content_1.MaterialConfiguration.MATERIAL) {
             const data = content_1.MaterialStorage.get(material);
+            console;
             total_weight += actor.trade_stash.get(material) * data.unit_size * data.density;
         }
         return total_weight;
@@ -220,7 +231,7 @@ var AIfunctions;
                 if (system_1.ItemOrders.count_weapon_orders_of_type(character.cell_id, item.output.value) >= 3)
                     continue;
             }
-            if (craft_1.CraftValues.durability(character, item) > 100) {
+            if (craft_1.CraftValues.durability(character, item) > 80) {
                 result.push(item);
             }
         }

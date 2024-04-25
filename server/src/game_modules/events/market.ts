@@ -1,4 +1,4 @@
-import { MATERIAL } from "@content/content"
+import { MATERIAL, MaterialStorage } from "@content/content"
 import { money } from "@custom_types/common"
 import { market_order_id } from "@custom_types/ids"
 import { AIfunctions } from "../AI/HelperFunctions/common"

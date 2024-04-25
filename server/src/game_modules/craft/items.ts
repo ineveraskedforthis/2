@@ -1,4 +1,4 @@
-import { ArmourConfiguration, ArmourStorage, EquipSlotStorage, IMPACT_TYPE, ImpactStorage, MATERIAL, MATERIAL_CATEGORY, MaterialStorage, WeaponConfiguration, WeaponStorage } from "@content/content"
+import { ArmourConfiguration, ArmourStorage, EQUIP_SLOT, EquipSlotStorage, IMPACT_TYPE, ImpactStorage, MATERIAL, MATERIAL_CATEGORY, MaterialStorage, SKILL, WeaponConfiguration, WeaponStorage } from "@content/content"
 import { new_craft_item } from "./CraftItem"
 import { box, skill_check } from "@custom_types/inventory"
 
@@ -7,17 +7,18 @@ function generate_skill_check(skill_check: skill_check[], difficulty: number, ma
         case MATERIAL_CATEGORY.BOW_AMMO:break;
         case MATERIAL_CATEGORY.PLANT:break;
         case MATERIAL_CATEGORY.MATERIAL:break;
-        case MATERIAL_CATEGORY.BONE:skill_check.push({skill: 'bone_carving', difficulty: difficulty}); break;
-        case MATERIAL_CATEGORY.SKIN:skill_check.push({skill: "clothier", difficulty: difficulty});break;
-        case MATERIAL_CATEGORY.LEATHER:skill_check.push({skill: "clothier", difficulty: difficulty});break;
-        case MATERIAL_CATEGORY.MEAT:skill_check.push({skill: "clothier", difficulty: difficulty});break;
+        case MATERIAL_CATEGORY.BONE:skill_check.push({skill: SKILL.BONE_CARVING, difficulty: difficulty}); break;
+        case MATERIAL_CATEGORY.SKIN:skill_check.push({skill: SKILL.LEATHERWORKING, difficulty: difficulty});break;
+        case MATERIAL_CATEGORY.LEATHER:skill_check.push({skill: SKILL.LEATHERWORKING, difficulty: difficulty});break;
+        case MATERIAL_CATEGORY.MEAT:skill_check.push({skill: SKILL.CLOTHIER, difficulty: difficulty});break;
         case MATERIAL_CATEGORY.FISH:break;
         case MATERIAL_CATEGORY.FOOD:break;
         case MATERIAL_CATEGORY.FRUIT:break;
-        case MATERIAL_CATEGORY.WOOD:skill_check.push({skill: "woodwork", difficulty: difficulty});break;
-        case MATERIAL_CATEGORY.METAL:skill_check.push({skill: "smith", difficulty: difficulty});break;
-        case MATERIAL_CATEGORY.TEXTILE:skill_check.push({skill: "clothier", difficulty: difficulty});break;
+        case MATERIAL_CATEGORY.WOOD:skill_check.push({skill: SKILL.WOODWORKING, difficulty: difficulty});break;
+        case MATERIAL_CATEGORY.METAL:skill_check.push({skill: SKILL.SMITH, difficulty: difficulty});break;
+        case MATERIAL_CATEGORY.TEXTILE:skill_check.push({skill: SKILL.CLOTHIER, difficulty: difficulty});break;
     }
+
 
     return skill_check
 }
@@ -74,9 +75,15 @@ export function generate_item_crafts() {
 
         const slot = EquipSlotStorage.get(armour.slot)
 
+
         let difficulty = 50
 
         let skills: skill_check[] = []
+
+        if (slot.id == EQUIP_SLOT.BOOTS) {
+            skills.push({skill: SKILL.CORDWAINING, difficulty: 30})
+        }
+
         skills = generate_skill_check(skills, difficulty, material_data.category)
 
         const main_box: box = {

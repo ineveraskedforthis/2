@@ -1,8 +1,6 @@
-import { EQUIP_SLOT, MATERIAL, MaterialConfiguration } from "@content/content";
-import { Perks } from "@custom_types/character";
+import { EQUIP_SLOT, MATERIAL, MaterialConfiguration, PERK, SKILL } from "@content/content";
 import { money } from "@custom_types/common";
 import { cell_id, character_id, location_id } from "@custom_types/ids";
-import { skill } from "@custom_types/inventory";
 import { trim } from "../calculations/basic_functions";
 import { UI_Part } from "../client_communication/causality_graph";
 import { Alerts } from "../client_communication/network_actions/alerts";
@@ -16,6 +14,7 @@ import { Trigger } from "../events/triggers";
 import { LocationInterface } from "../location/location_interface";
 import { EquipmentValues } from "../scripted-values/equipment-values";
 import { Status } from "../types";
+import { CharacterValues } from "../scripted-values/character";
 
 
 export const enum CHANGE_REASON {
@@ -42,7 +41,8 @@ export const enum CHANGE_REASON {
     MOVED_TO_TRADE_STASH = "Moving to trade stash",
     TRADE = "Trade",
     HUNGER = "Hunger",
-    SPOILAGE = "Spoilage"
+    SPOILAGE = "Spoilage",
+    PRACTICE = "Practice"
 }
 
 export namespace Effect {
@@ -238,7 +238,7 @@ export namespace Effect {
             if (Math.abs(dx) > 0) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BLOOD)
         }
 
-        export function skill(character: Character, skill: skill, dx: number, reason: CHANGE_REASON) {
+        export function skill(character: Character, skill: SKILL, dx: number, reason: CHANGE_REASON) {
             character._skills[skill] += dx
             if (character._skills[skill] > 100)
                 character._skills[skill] = 100
@@ -249,8 +249,8 @@ export namespace Effect {
         }
     }
 
-    export function learn_perk(student: Character, perk: Perks){
-        student._perks[perk] = true
+    export function learn_perk(student: Character, perk: PERK){
+        student._perks[perk] = 1
         UserManagement.add_user_to_update_queue(student.user_id, UI_Part.SKILLS)
     }
 
@@ -276,6 +276,14 @@ export namespace Effect {
         if (location.has_house_level == 0) return;
         if (Math.random() > 0.9) {
             location.devastation = trim(location.devastation + 1, 0, ScriptedValue.max_devastation)
+        }
+    }
+
+    export function roll_skill_improvement(character: Character, skill: SKILL, challenge_level: number, reason: CHANGE_REASON) {
+        const skill_level = CharacterValues.pure_skill(character, skill)
+        const dice = Math.random()
+        if (dice * dice * challenge_level / 100 > skill_level) {
+            Effect.Change.skill(character, skill, 1, reason)
         }
     }
 

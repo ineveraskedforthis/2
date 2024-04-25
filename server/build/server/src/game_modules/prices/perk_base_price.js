@@ -2,26 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.perk_price = void 0;
 const data_id_1 = require("../data/data_id");
-// import { Perks } from "../character/Perks";
-function perk_base_price(tag) {
-    switch (tag) {
-        case 'meat_master': return 100;
-        case 'advanced_unarmed': return 200;
-        case 'advanced_polearm': return 200;
-        case 'mage_initiation': return 1000;
-        case 'blood_mage': return 1000;
-        case 'magic_bolt': return 100;
-        case 'fletcher': return 200;
-        case 'skin_armour_master': return 1000;
-        case 'alchemist': return 1000;
-        case "dodge": return 1000;
-        case "charge": return 1000;
-        case "shoemaker": return 1000;
-        case "weapon_maker": return 1000;
-    }
-}
+const content_1 = require("../../.././../game_content/src/content");
 function perk_price(tag, student, teacher) {
-    let price = perk_base_price(tag);
+    let price = content_1.PerkStorage.get(tag).base_price;
     if (data_id_1.DataID.Reputation.a_X_b(teacher.id, 'enemy', student.id))
         price = price * 10;
     if (!data_id_1.DataID.Reputation.a_X_b(teacher.id, 'friend', student.id))
@@ -31,3 +14,4 @@ function perk_price(tag, student, teacher) {
     return Math.round(price);
 }
 exports.perk_price = perk_price;
+

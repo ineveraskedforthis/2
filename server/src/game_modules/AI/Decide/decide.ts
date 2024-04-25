@@ -20,7 +20,6 @@ export function decide() {
         if (character.in_battle()) return;
         if (character.action != undefined) return;
 
-        // console.log("decide", character.name)
 
         let best : undefined | ActionCalculation<any>
 
@@ -28,6 +27,7 @@ export function decide() {
             const targets = item.potential_targets(character)
             for (const target of targets) {
                 const utility = item.utility(character, target)
+
 
                 if ((best == undefined) || best.utility < utility) {
                     best = {

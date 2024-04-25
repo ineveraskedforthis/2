@@ -67,7 +67,7 @@ var ScriptedValue;
      * @return {number} The target fatigue.
      */
     function target_fatigue(character, location) {
-        const skill = character_1.CharacterValues.skill(character, 'travelling');
+        const skill = character_1.CharacterValues.skill(character, 17 /* SKILL.TRAVELLING */);
         return rest_target_fatigue(rest_tier(character, location), ScriptedValue.rest_quality(location) + skill, character.race);
     }
     ScriptedValue.target_fatigue = target_fatigue;
@@ -98,7 +98,7 @@ var ScriptedValue;
      * @return {number} The target fatigue.
      */
     function target_stress(character, location) {
-        const skill = character_1.CharacterValues.skill(character, 'travelling');
+        const skill = character_1.CharacterValues.skill(character, 17 /* SKILL.TRAVELLING */);
         return rest_target_stress(rest_tier(character, location), ScriptedValue.rest_quality(location) + Math.floor(skill / 5), character.race);
     }
     ScriptedValue.target_stress = target_stress;

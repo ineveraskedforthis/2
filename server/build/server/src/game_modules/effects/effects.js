@@ -10,6 +10,7 @@ const data_objects_1 = require("../data/data_objects");
 const scripted_values_1 = require("../events/scripted_values");
 const triggers_1 = require("../events/triggers");
 const equipment_values_1 = require("../scripted-values/equipment-values");
+const character_1 = require("../scripted-values/character");
 var Effect;
 (function (Effect) {
     let Update;
@@ -18,7 +19,7 @@ var Effect;
             const locals = data_id_1.DataID.Cells.local_character_id_list(cell);
             for (let item of locals) {
                 const local_character = data_objects_1.Data.Characters.from_id(item);
-                user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 23 /* UI_Part.MARKET */);
+                user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 22 /* UI_Part.MARKET */);
             }
         }
         Update.cell_market = cell_market;
@@ -228,7 +229,7 @@ var Effect;
         Change.skill = skill;
     })(Change = Effect.Change || (Effect.Change = {}));
     function learn_perk(student, perk) {
-        student._perks[perk] = true;
+        student._perks[perk] = 1;
         user_manager_1.UserManagement.add_user_to_update_queue(student.user_id, 16 /* UI_Part.SKILLS */);
     }
     Effect.learn_perk = learn_perk;
@@ -255,6 +256,14 @@ var Effect;
         }
     }
     Effect.location_quality_reduction_roll = location_quality_reduction_roll;
+    function roll_skill_improvement(character, skill, challenge_level, reason) {
+        const skill_level = character_1.CharacterValues.pure_skill(character, skill);
+        const dice = Math.random();
+        if (dice * dice * challenge_level / 100 > skill_level) {
+            Effect.Change.skill(character, skill, 1, reason);
+        }
+    }
+    Effect.roll_skill_improvement = roll_skill_improvement;
     function location_repair(location, x) {
         location.devastation = (0, basic_functions_1.trim)(location.devastation - x, 0, scripted_values_1.ScriptedValue.max_devastation);
     }

@@ -60,7 +60,7 @@ var BattleSystem;
         events_1.BattleEvent.NewUnit(battle, character, character.next_turn_after);
         console.log(`${character.get_name()} joins battle ${battle.id}`);
         alerts_1.Alerts.battle_to_character(battle, character);
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 22 /* UI_Part.BATTLE */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 21 /* UI_Part.BATTLE */);
         return unit;
     }
     BattleSystem.add_figther = add_figther;
@@ -207,12 +207,12 @@ var BattleSystem;
             const character = data_objects_1.Data.Characters.from_id(unit);
             heap_1.CharactersHeap.delete_unit(battle, character);
             character.battle_id = undefined;
-            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 22 /* UI_Part.BATTLE */);
+            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 21 /* UI_Part.BATTLE */);
         }
         for (const unit of battle.queue) {
             const character = data_objects_1.Data.Characters.from_id(unit.character);
             character.battle_id = undefined;
-            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 22 /* UI_Part.BATTLE */);
+            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 21 /* UI_Part.BATTLE */);
         }
         battle.queue = [];
     }

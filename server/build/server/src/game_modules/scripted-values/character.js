@@ -3,9 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CharacterValues = void 0;
 const data_objects_1 = require("../data/data_objects");
 const basic_functions_1 = require("../calculations/basic_functions");
-const SkillList_1 = require("../character/SkillList");
 const equipment_values_1 = require("./equipment-values");
 const item_system_1 = require("../systems/items/item_system");
+const content_1 = require("../../.././../game_content/src/content");
 const resists_1 = require("../races/resists");
 const damage_types_1 = require("../damage_types");
 const stats_1 = require("../races/stats");
@@ -26,27 +26,19 @@ var CharacterValues;
             result = 0;
         }
         let location = data_objects_1.Data.Locations.from_id(character.location_id);
-        if (location.has_cooking_tools && skill == 'cooking') {
+        if (location.has_cooking_tools && skill == 2 /* SKILL.COOKING */) {
             result = (result + 5) * 1.2;
         }
-        if (location.has_bowmaking_tools && skill == 'woodwork') {
+        if (location.has_bowmaking_tools && skill == 4 /* SKILL.WOODWORKING */) {
             result = (result + 5) * 1.2;
         }
-        if (location.has_clothier_tools && skill == 'clothier') {
+        if (location.has_clothier_tools && skill == 0 /* SKILL.CLOTHIER */) {
             result = (result + 5) * 1.2;
         }
-        if (skill == 'ranged') {
-            const rage_mod = (100 - character.get_rage()) / 100;
-            const stress_mod = (100 - character.get_stress()) / 100;
-            const fatigue_mod = (100 - character.get_fatigue()) / 100;
-            result = result * rage_mod * stress_mod * fatigue_mod;
-        }
-        if ((0, SkillList_1.is_melee_skill)(skill)) {
-            const rage_mod = (100 - character.get_rage()) / 100;
-            const stress_mod = (100 - character.get_stress()) / 100;
-            const fatigue_mod = (100 - character.get_fatigue()) / 100;
-            result = result * rage_mod * stress_mod * fatigue_mod;
-        }
+        const rage_mod = (110 - character.get_rage()) / 100;
+        const stress_mod = (110 - character.get_stress()) / 100;
+        const fatigue_mod = (110 - character.get_fatigue()) / 100;
+        result = result * rage_mod * stress_mod * fatigue_mod;
         return (0, basic_functions_1.trim)(Math.round(result), 0, 100);
     }
     CharacterValues.skill = skill;
@@ -55,7 +47,7 @@ var CharacterValues;
         if (weapon != undefined) {
             let result = item_system_1.ItemSystem.range(weapon);
             if (weapon.prototype.impact == 0 /* IMPACT_TYPE.POINT */) {
-                if (character._perks.advanced_polearm) {
+                if (character._perks[8 /* PERK.PRO_FIGHTER_POLEARMS */]) {
                     result += 0.5;
                 }
             }
@@ -72,10 +64,14 @@ var CharacterValues;
     CharacterValues.range = range;
     function melee_damage_raw(character, type) {
         const weapon_damage = equipment_values_1.EquipmentValues.melee_damage(character.equip, type);
-        if (weapon_damage != undefined) {
-            if (character._perks.advanced_polearm) {
-                if (equiped_weapon_impact_type(character) == 0 /* IMPACT_TYPE.POINT */) {
-                    damage_types_1.DmgOps.mult_ip(weapon_damage, 1.2);
+        const weapon = character.equip.weapon_id;
+        const weapon_data = data_objects_1.Data.Items.from_id(weapon);
+        if ((weapon_damage !== undefined) && (weapon_data !== undefined)) {
+            for (const skill of item_system_1.ItemSystem.related_skils(weapon_data, phys_power(character))) {
+                if ((skill == 23 /* SKILL.POLEARMS */) && (character._perks[8 /* PERK.PRO_FIGHTER_POLEARMS */])) {
+                    if (equiped_weapon_impact_type(character) == 0 /* IMPACT_TYPE.POINT */) {
+                        damage_types_1.DmgOps.mult_ip(weapon_damage, 1.2);
+                    }
                 }
             }
             return weapon_damage;
@@ -83,7 +79,7 @@ var CharacterValues;
         //handle case of unarmed
         const damage = new Damage_1.Damage();
         if (type == 'blunt') {
-            if (character._perks.advanced_unarmed) {
+            if (character._perks[7 /* PERK.PRO_FIGHTER_UNARMED */]) {
                 damage.blunt = 40;
             }
             else {
@@ -117,12 +113,9 @@ var CharacterValues;
     CharacterValues.base_phys_power = base_phys_power;
     function phys_power(character) {
         let base = base_phys_power(character);
-        base += skill(character, 'travelling') / 30;
-        base += skill(character, 'noweapon') / 50;
-        base += skill(character, 'fishing') / 50;
-        base += skill(character, 'ranged') / 60;
-        base += skill(character, 'woodwork') / 40;
-        base += (skill(character, 'onehand') + skill(character, 'polearms') + skill(character, 'twohanded')) / 50;
+        for (const skill_id of content_1.SkillConfiguration.SKILL) {
+            base += skill(character, skill_id) * content_1.SkillStorage.get(skill_id).strength_bonus / 100;
+        }
         return Math.floor(base * equipment_values_1.EquipmentValues.phys_power_modifier(character.equip));
     }
     CharacterValues.phys_power = phys_power;
@@ -132,11 +125,13 @@ var CharacterValues;
     CharacterValues.base_magic_power = base_magic_power;
     function magic_power(character) {
         let result = base_magic_power(character) + equipment_values_1.EquipmentValues.magic_power(character.equip);
-        if (character._perks.mage_initiation)
-            result += 5;
-        if (character._perks.magic_bolt)
-            result += 3;
-        if (character._perks.blood_mage) {
+        for (const skill_id of content_1.SkillConfiguration.SKILL) {
+            result += skill(character, skill_id) * content_1.SkillStorage.get(skill_id).magic_bonus / 100;
+        }
+        for (const perk_id of content_1.PerkConfiguration.PERK) {
+            result += perk(character, perk_id) * content_1.PerkStorage.get(perk_id).magic_bonus;
+        }
+        if (perk(character, 13 /* PERK.MAGIC_BLOOD */)) {
             const blood_mod = character.status.blood / 50;
             result = Math.round(result * (1 + blood_mod));
         }
@@ -144,14 +139,16 @@ var CharacterValues;
     }
     CharacterValues.magic_power = magic_power;
     function perk(character, tag) {
-        return character._perks[tag] == true;
+        return character._perks[tag];
     }
     CharacterValues.perk = perk;
     function enchant_rating(character) {
-        let enchant_rating = magic_power(character) * (1 + skill(character, 'magic_mastery') / 100);
+        let enchant_rating = magic_power(character)
+            * (1 + skill(character, 26 /* SKILL.MAGIC */) / 100)
+            * (1 + skill(character, 28 /* SKILL.ENCHANTING */) / 50);
         // so it's ~15 at 50 magic mastery
         // and 1 at 20 magic mastery
-        if (character._perks.mage_initiation) {
+        if (perk(character, 11 /* PERK.MAGIC_INITIATION */)) {
             enchant_rating = enchant_rating * 2;
         }
         return enchant_rating;
@@ -183,12 +180,17 @@ var CharacterValues;
         let duration = 1;
         duration += character.get_fatigue() / 100;
         duration = duration / boots_speed_multiplier(character);
-        duration = duration * (1 - skill(character, 'travelling') / 200);
+        duration = duration * (1 - skill(character, 17 /* SKILL.TRAVELLING */) / 200);
         return duration;
     }
     CharacterValues.movement_duration_map = movement_duration_map;
     function attack_skill(character) {
-        return skill(character, equiped_weapon_required_skill(character));
+        let max = 0;
+        const skills = equiped_weapon_required_skill(character);
+        for (const skill_id of skills) {
+            max = Math.max(max, skill(character, skill_id));
+        }
+        return max * (1 + 1 / skills.length);
     }
     CharacterValues.attack_skill = attack_skill;
     function resistance(character) {
@@ -208,32 +210,32 @@ var CharacterValues;
     function equiped_weapon_required_skill_melee(character) {
         const weapon = equipment_values_1.EquipmentValues.weapon(character.equip);
         if (weapon == undefined) {
-            return "noweapon";
+            return [24 /* SKILL.UNARMED */];
         }
-        if (weapon.prototype.impact == 0 /* IMPACT_TYPE.POINT */) {
-            return "polearms";
-        }
-        if (item_system_1.ItemSystem.weight(weapon) > phys_power(character)) {
-            return "twohanded";
-        }
-        return "onehand";
+        return item_system_1.ItemSystem.related_skils(weapon, phys_power(character));
     }
     CharacterValues.equiped_weapon_required_skill_melee = equiped_weapon_required_skill_melee;
+    function equiped_weapon_is_ranged(character) {
+        const weapon = equipment_values_1.EquipmentValues.weapon(character.equip);
+        if (weapon == undefined) {
+            return false;
+        }
+        if (weapon.prototype.bow_power > 0) {
+            return true;
+        }
+        return false;
+    }
+    CharacterValues.equiped_weapon_is_ranged = equiped_weapon_is_ranged;
     function equiped_weapon_required_skill(character) {
         const weapon = equipment_values_1.EquipmentValues.weapon(character.equip);
         if (weapon == undefined) {
-            return "noweapon";
+            return [24 /* SKILL.UNARMED */];
         }
         if (weapon.prototype.bow_power > 0) {
-            return "ranged";
+            return [18 /* SKILL.RANGED */];
         }
-        if (weapon.prototype.impact == 0 /* IMPACT_TYPE.POINT */) {
-            return "polearms";
-        }
-        if (item_system_1.ItemSystem.weight(weapon) > phys_power(character)) {
-            return "twohanded";
-        }
-        return "onehand";
+        return equiped_weapon_required_skill_melee(character);
     }
     CharacterValues.equiped_weapon_required_skill = equiped_weapon_required_skill;
 })(CharacterValues || (exports.CharacterValues = CharacterValues = {}));
+

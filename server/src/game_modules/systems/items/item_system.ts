@@ -5,7 +5,7 @@ import { Damage } from "../../Damage";
 import { Armour, EquipmentPiece, Item, Weapon } from "../../data/entities/item";
 import { Status } from "../../types";
 import { AttackObj } from "../../attack/class";
-import { EQUIP_SLOT, ImpactStorage, MATERIAL, MaterialStorage } from "@content/content";
+import { EQUIP_SLOT, IMPACT_TYPE, ImpactStorage, MATERIAL, MaterialStorage, SKILL } from "@content/content";
 import { is_armour, is_weapon } from "../../../content_wrappers/item";
 import { ItemData } from "@custom_types/inventory";
 import { item_id } from "@custom_types/ids";
@@ -16,6 +16,21 @@ const empty_resists = new Damage()
 export namespace ItemSystem {
     export function range(item: Weapon): number {
         return item.prototype.length
+    }
+
+    export function related_skils(item:Weapon, strength: number): SKILL[] {
+        const response = []
+        const data = item.prototype
+        if ((data.length > 1) && ((data.impact == IMPACT_TYPE.POINT) || data.impact == IMPACT_TYPE.BLUNT)) {
+            response.push(SKILL.POLEARMS)
+        }
+        if ((data.length > 1.5) || weight(item) > strength) {
+            response.push(SKILL.TWOHANDED)
+        }
+        if ((data.length < 1.5) || weight(item) < strength) {
+            response.push(SKILL.ONEHANDED)
+        }
+        return response
     }
 
     export function slot(item: EquipmentPiece): EQUIP_SLOT {

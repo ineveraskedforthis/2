@@ -14,7 +14,7 @@ var Accuracy;
         if (distance < EASY_DIST)
             return 1;
         let skill_difficulty_multiplier = 60;
-        const ranged_skill = character_1.CharacterValues.skill(character, 'ranged');
+        const ranged_skill = character_1.CharacterValues.skill(character, 18 /* SKILL.RANGED */);
         if (ranged_skill > 0) {
             skill_difficulty_multiplier = AVERAGE_SKILL / ranged_skill;
         }

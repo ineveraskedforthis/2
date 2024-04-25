@@ -1,21 +1,18 @@
-import { skill } from "@custom_types/inventory"
 import { Data } from "../data/data_objects"
 import { Character } from "../data/entities/character"
 import { trim } from "../calculations/basic_functions"
-import { is_melee_skill } from "../character/SkillList"
 import { EquipmentValues } from "./equipment-values"
 import { ItemSystem } from "../systems/items/item_system"
-import { EQUIP_SLOT, IMPACT_TYPE } from "@content/content"
+import { EQUIP_SLOT, IMPACT_TYPE, PERK, PerkConfiguration, PerkStorage, SKILL, SkillConfiguration, SkillStorage } from "@content/content"
 import { BaseResists } from "../races/resists"
 import { DmgOps } from "../damage_types"
-import { weapon_skill_tag } from "../client_communication/network_actions/updates"
 import { BaseStats } from "../races/stats"
-import { Perks } from "@custom_types/character"
 import { Damage } from "../Damage"
 import { melee_attack_type } from "@custom_types/common"
+import { Weapon } from "../data/entities/item"
 
 export namespace CharacterValues {
-export function pure_skill(character: Character, skill: skill) {
+export function pure_skill(character: Character, skill: SKILL) {
         let result = character._skills[skill]
         if (result == undefined) {
             result = 0
@@ -23,7 +20,7 @@ export function pure_skill(character: Character, skill: skill) {
         return result
     }
 
-    export function skill(character: Character, skill: skill) {
+    export function skill(character: Character, skill: SKILL) {
         let result = character._skills[skill]
         if (result == undefined) {
             result = 0
@@ -31,31 +28,22 @@ export function pure_skill(character: Character, skill: skill) {
 
         let location = Data.Locations.from_id(character.location_id)
 
-        if (location.has_cooking_tools && skill == 'cooking') {
+        if (location.has_cooking_tools && skill == SKILL.COOKING) {
             result = (result + 5) * 1.2
         }
 
-        if (location.has_bowmaking_tools && skill == 'woodwork') {
+        if (location.has_bowmaking_tools && skill == SKILL.WOODWORKING) {
             result = (result + 5) * 1.2
         }
 
-        if (location.has_clothier_tools && skill == 'clothier') {
+        if (location.has_clothier_tools && skill == SKILL.CLOTHIER) {
             result = (result + 5) * 1.2
         }
 
-        if (skill == 'ranged') {
-            const rage_mod = (100 - character.get_rage()) / 100
-            const stress_mod = (100 - character.get_stress()) / 100
-            const fatigue_mod = (100 - character.get_fatigue()) / 100
-            result = result * rage_mod * stress_mod * fatigue_mod
-        }
-
-        if (is_melee_skill(skill)) {
-            const rage_mod = (100 - character.get_rage()) / 100
-            const stress_mod = (100 - character.get_stress()) / 100
-            const fatigue_mod = (100 - character.get_fatigue()) / 100
-            result = result * rage_mod * stress_mod * fatigue_mod
-        }
+        const rage_mod = (110 - character.get_rage()) / 100
+        const stress_mod = (110 - character.get_stress()) / 100
+        const fatigue_mod = (110 - character.get_fatigue()) / 100
+        result = result * rage_mod * stress_mod * fatigue_mod
 
         return trim(Math.round(result), 0, 100)
     }
@@ -66,7 +54,7 @@ export function pure_skill(character: Character, skill: skill) {
         if (weapon != undefined) {
             let result = ItemSystem.range(weapon)
             if (weapon.prototype.impact == IMPACT_TYPE.POINT) {
-                if (character._perks.advanced_polearm) {
+                if (character._perks[PERK.PRO_FIGHTER_POLEARMS]) {
                     result += 0.5
                 }
             }
@@ -82,10 +70,14 @@ export function pure_skill(character: Character, skill: skill) {
 
     export function melee_damage_raw(character: Character, type: melee_attack_type) {
         const weapon_damage = EquipmentValues.melee_damage(character.equip, type)
-        if (weapon_damage != undefined) {
-            if (character._perks.advanced_polearm) {
-                if (equiped_weapon_impact_type(character) == IMPACT_TYPE.POINT) {
-                    DmgOps.mult_ip(weapon_damage, 1.2)
+        const weapon = character.equip.weapon_id
+        const weapon_data = Data.Items.from_id(weapon)
+        if ((weapon_damage !== undefined) && (weapon_data !== undefined)) {
+            for (const skill of ItemSystem.related_skils(weapon_data as Weapon, phys_power(character))) {
+                if ((skill == SKILL.POLEARMS) && (character._perks[PERK.PRO_FIGHTER_POLEARMS])) {
+                    if (equiped_weapon_impact_type(character) == IMPACT_TYPE.POINT) {
+                        DmgOps.mult_ip(weapon_damage, 1.2)
+                    }
                 }
             }
             return weapon_damage
@@ -94,7 +86,7 @@ export function pure_skill(character: Character, skill: skill) {
         //handle case of unarmed
         const damage = new Damage()
         if (type == 'blunt')    {
-            if (character._perks.advanced_unarmed) {damage.blunt = 40} else {damage.blunt = 15}
+            if (character._perks[PERK.PRO_FIGHTER_UNARMED]) {damage.blunt = 40} else {damage.blunt = 15}
         }
         if (type == 'slice')    {
             if (character._traits.claws) {damage.slice = 20} else {damage.slice = 2}
@@ -115,12 +107,9 @@ export function pure_skill(character: Character, skill: skill) {
 
     export function phys_power(character: Character) {
         let base = base_phys_power(character)
-        base += skill(character, 'travelling') / 30
-        base += skill(character, 'noweapon') / 50
-        base += skill(character, 'fishing') / 50
-        base += skill(character, 'ranged') / 60
-        base += skill(character, 'woodwork') / 40
-        base += (skill(character, 'onehand') + skill(character, 'polearms') + skill(character, 'twohanded')) / 50
+        for (const skill_id of SkillConfiguration.SKILL) {
+            base += skill(character, skill_id) * SkillStorage.get(skill_id).strength_bonus / 100
+        }
         return Math.floor(base * EquipmentValues.phys_power_modifier(character.equip))
     }
 
@@ -130,24 +119,34 @@ export function pure_skill(character: Character, skill: skill) {
 
     export function magic_power(character: Character) {
         let result = base_magic_power(character) + EquipmentValues.magic_power(character.equip)
-        if (character._perks.mage_initiation) result += 5
-        if (character._perks.magic_bolt) result += 3
-        if (character._perks.blood_mage) {
+
+        for (const skill_id of SkillConfiguration.SKILL) {
+            result += skill(character, skill_id) * SkillStorage.get(skill_id).magic_bonus / 100
+        }
+
+        for (const perk_id of PerkConfiguration.PERK) {
+            result += perk(character, perk_id) * PerkStorage.get(perk_id).magic_bonus
+        }
+
+        if (perk(character, PERK.MAGIC_BLOOD)) {
             const blood_mod = character.status.blood / 50
             result = Math.round(result * (1 + blood_mod))
         }
         return result
     }
 
-    export function perk(character: Character, tag: Perks) {
-        return character._perks[tag] == true
+    export function perk(character: Character, tag: PERK): number {
+        return character._perks[tag]
     }
 
     export function enchant_rating(character: Character): number {
-        let enchant_rating = magic_power(character) * (1 + skill(character, 'magic_mastery') / 100)
+        let enchant_rating =
+            magic_power(character)
+            * (1 + skill(character, SKILL.MAGIC) / 100)
+            * (1 + skill(character, SKILL.ENCHANTING) / 50)
         // so it's ~15 at 50 magic mastery
         // and 1 at 20 magic mastery
-        if (character._perks.mage_initiation) {
+        if (perk(character, PERK.MAGIC_INITIATION)) {
             enchant_rating = enchant_rating * 2
         }
 
@@ -186,13 +185,18 @@ export function pure_skill(character: Character, skill: skill) {
         let duration = 1
         duration += character.get_fatigue() / 100
         duration = duration / boots_speed_multiplier(character)
-        duration = duration * (1 - skill(character, 'travelling') / 200)
+        duration = duration * (1 - skill(character, SKILL.TRAVELLING) / 200)
 
         return duration
     }
 
     export function attack_skill(character: Character) {
-        return skill(character, equiped_weapon_required_skill(character))
+        let max = 0
+        const skills = equiped_weapon_required_skill(character)
+        for (const skill_id of skills) {
+            max = Math.max(max, skill(character, skill_id))
+        }
+        return max * (1 + 1 / skills.length)
     }
 
     export function resistance(character: Character) {
@@ -209,43 +213,39 @@ export function pure_skill(character: Character, skill: skill) {
         return weapon.prototype.impact;
     }
 
-    export function equiped_weapon_required_skill_melee(character: Character):weapon_skill_tag {
+    export function equiped_weapon_required_skill_melee(character: Character):SKILL[] {
         const weapon = EquipmentValues.weapon(character.equip)
-
         if (weapon == undefined) {
-            return "noweapon"
+            return [SKILL.UNARMED]
         }
-
-        if (weapon.prototype.impact == IMPACT_TYPE.POINT) {
-            return "polearms"
-        }
-
-        if (ItemSystem.weight(weapon) > phys_power(character)) {
-            return "twohanded"
-        }
-
-        return "onehand"
+        return ItemSystem.related_skils(weapon, phys_power(character))
     }
 
-    export function equiped_weapon_required_skill(character: Character):skill {
+    export function equiped_weapon_is_ranged(character: Character) : boolean {
         const weapon = EquipmentValues.weapon(character.equip)
 
         if (weapon == undefined) {
-            return "noweapon"
+            return false
         }
 
         if (weapon.prototype.bow_power > 0) {
-            return "ranged"
+            return true
         }
 
-        if (weapon.prototype.impact == IMPACT_TYPE.POINT) {
-            return "polearms"
+        return false
+    }
+
+    export function equiped_weapon_required_skill(character: Character):SKILL[] {
+        const weapon = EquipmentValues.weapon(character.equip)
+
+        if (weapon == undefined) {
+            return [SKILL.UNARMED]
         }
 
-        if (ItemSystem.weight(weapon) > phys_power(character)) {
-            return "twohanded"
+        if (weapon.prototype.bow_power > 0) {
+            return [SKILL.RANGED]
         }
 
-        return "onehand"
+        return equiped_weapon_required_skill_melee(character)
     }
 }

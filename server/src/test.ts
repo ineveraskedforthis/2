@@ -7,7 +7,7 @@ import { Inventory } from "./game_modules/data/entities/inventory";
 import { character_to_string, inventory_from_string, inventory_to_string, string_to_character } from "./game_modules/data/strings_management";
 import { money } from "@custom_types/common";
 import { cell_id, location_id } from "@custom_types/ids";
-import { ARMOUR, MATERIAL, WEAPON } from "@content/content";
+import { ARMOUR, MATERIAL, PERK, SKILL, WEAPON } from "@content/content";
 import { EquipmentEffects } from "./game_modules/scripted-effects/equipment-effects";
 
 Data.World.load_world_dimensions(save_path.WORLD_DIMENSIONS)
@@ -65,8 +65,8 @@ function character_serialisation_test_advanced() {
 
     add_testing_items_to_equip(character.equip)
 
-    character._skills.cooking = 40
-    character._perks.meat_master = true
+    character._skills[SKILL.COOKING] = 40
+    character._perks[PERK.PRO_BUTCHER] = 1
     character._traits.bipolar_disorder_high = true
 
     character.explored[2 as cell_id] = true

@@ -1,6 +1,5 @@
-import { EQUIP_SLOT, MATERIAL } from "@content/content";
-import { Perks, reputation_level } from "./character";
-import { ReputationData, ReputationDataSocket, Terrain, money } from "./common";
+import { EQUIP_SLOT, MATERIAL, PERK, SKILL } from "@content/content";
+import { ReputationDataSocket, Terrain, money } from "./common";
 import { cell_id, character_id, location_id, market_order_id } from "./ids";
 import { equip } from "./inventory";
 
@@ -8,8 +7,8 @@ export type PerksResponse = {
     name: string,
     race: string,
     factions: ReputationDataSocket[]
-    perks: {[_ in Perks]?: number}
-    skills: {[_ in string]?: [number, number]},
+    perks: Partial<Record<PERK, money>>
+    skills: Partial<Record<SKILL, [number, number]>>,
     current_goal: string,
     model: string,
     equip: {[_ in EQUIP_SLOT]?: string}

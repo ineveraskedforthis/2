@@ -1,11 +1,9 @@
 import { io_type, Socket } from "../../server";
 import { SocketWrapper } from "./user";
 import { UserManagement } from "./user_manager";
-// import { SECTIONS } from "../static_data/map_definitions";
 import { MaterialConfiguration } from "@content/content";
 import { CharacterAction } from "../actions/actions_00";
 import { craft_actions } from "../craft/crafts_storage";
-import { SKILLS } from "../static_data/skills";
 import { Convert } from "../systems_communication";
 import { ModelVariant } from "../types";
 import { HandleAction } from "./network_actions/actions";
@@ -162,8 +160,6 @@ export class SocketManager {
 
     connection(socket: Socket) {
         console.log('a user connected');
-        socket.emit('skill-tags', SKILLS);
-        // socket.emit('sections', SECTIONS);
 
         var messages = this.MESSAGES
         for (let message of messages) {

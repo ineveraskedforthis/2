@@ -1,27 +1,4 @@
-import { ARMOUR, EQUIP_SLOT, MATERIAL, WEAPON, armour_string_id, equip_slot_string_id, weapon_string_id } from "../game_content/src/content.js"
-
-export interface SkillListInterface {
-    clothier: number;
-    cooking: number;
-    onehand: number;
-    polearms: number;
-    noweapon: number;
-    twohanded: number
-    skinning: number;
-    magic_mastery: number;
-    blocking: number;
-    evasion: number;
-    woodwork: number;
-    hunt: number;
-    ranged: number;
-    bone_carving: number;
-    travelling: number;
-    fishing: number;
-    smith: number;
-    tanning: number,
-}
-
-export type skill = keyof SkillListInterface
+import { ARMOUR, EQUIP_SLOT, MATERIAL, SKILL, WEAPON, armour_string_id, equip_slot_string_id, weapon_string_id } from "../game_content/src/content.js"
 
 export interface damageSocket {
     fire: number
@@ -125,15 +102,24 @@ export interface box {
     material: MATERIAL;
     amount: number;
 }
+
 export interface skill_check {
-    skill: skill;
+    skill: SKILL;
     difficulty: number;
 }
+
+export interface skill_checks_container {
+    skill_checks: skill_check[]
+}
+
+export interface skilled_box extends box, skill_checks_container {
+
+}
+
 export interface CraftBulkTemplate {
     id: string;
     input: box[];
-    output: box[];
-    difficulty: skill_check[];
+    output: skilled_box[];
 }
 export interface CraftItemTemplate {
     id: string;

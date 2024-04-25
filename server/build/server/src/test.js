@@ -50,8 +50,8 @@ function character_serialisation_test_advanced() {
     character._change('hp', -40);
     character._change('rage', 11);
     add_testing_items_to_equip(character.equip);
-    character._skills.cooking = 40;
-    character._perks.meat_master = true;
+    character._skills[2 /* SKILL.COOKING */] = 40;
+    character._perks[0 /* PERK.PRO_BUTCHER */] = 1;
     character._traits.bipolar_disorder_high = true;
     character.explored[2] = true;
     character.explored[10] = true;

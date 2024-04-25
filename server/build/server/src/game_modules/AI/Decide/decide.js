@@ -14,7 +14,6 @@ function decide() {
             return;
         if (character.action != undefined)
             return;
-        // console.log("decide", character.name)
         let best;
         for (const item of storage_1.AIActionsStorage.actions) {
             const targets = item.potential_targets(character);

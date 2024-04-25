@@ -171,6 +171,59 @@ ArmourConfiguration.ARMOUR_SECONDARY_SIZE = [0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 
 ArmourConfiguration.ARMOUR_CRAFTABLE = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,];
 // Strings: 
 ArmourConfiguration.ARMOUR_NAME = ["Rat skull", "Hat", "Hat", "Wig", "Mail", "Mail", "Mail", "Mail", "Mail", "Dress", "Pants", "Pants", "Boots", "Right Glove", "Right Glove", "Left Glove", "Left Glove", "Socks", "Left Bone Pauldron", "Left Pauldron", "Right Bone Pauldron", "Robe", "Belt", "Shirt",];
+export class SkillConfiguration {
+    static get zero_record() {
+        return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,];
+    }
+    static get ones_record() {
+        return [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,];
+    }
+    static is_valid_id(id) {
+        return id in this.SKILL;
+    }
+    static is_valid_string_id(id) {
+        return id in this.SKILL_FROM_STRING;
+    }
+}
+SkillConfiguration.SKILL = [0 /* SKILL.CLOTHIER */, 1 /* SKILL.WEAVING */, 2 /* SKILL.COOKING */, 3 /* SKILL.SKINNING */, 4 /* SKILL.WOODWORKING */, 5 /* SKILL.LEATHERWORKING */, 6 /* SKILL.CARPENTER */, 7 /* SKILL.BOWMAKING */, 8 /* SKILL.FLETCHING */, 9 /* SKILL.BONE_CARVING */, 10 /* SKILL.CORDWAINING */, 11 /* SKILL.SMITH */, 12 /* SKILL.TANNING */, 13 /* SKILL.HUNTING */, 14 /* SKILL.GATHERING */, 15 /* SKILL.FISHING */, 16 /* SKILL.WOODCUTTING */, 17 /* SKILL.TRAVELLING */, 18 /* SKILL.RANGED */, 19 /* SKILL.EVASION */, 20 /* SKILL.BLOCKING */, 21 /* SKILL.ONEHANDED */, 22 /* SKILL.TWOHANDED */, 23 /* SKILL.POLEARMS */, 24 /* SKILL.UNARMED */, 25 /* SKILL.FIGHTING */, 26 /* SKILL.MAGIC */, 27 /* SKILL.ALCHEMY */, 28 /* SKILL.ENCHANTING */, 29 /* SKILL.BATTLE_MAGIC */,];
+SkillConfiguration.SKILL_FROM_STRING = { "clothier": 0 /* SKILL.CLOTHIER */, "weaving": 1 /* SKILL.WEAVING */, "cooking": 2 /* SKILL.COOKING */, "skinning": 3 /* SKILL.SKINNING */, "woodworking": 4 /* SKILL.WOODWORKING */, "leatherworking": 5 /* SKILL.LEATHERWORKING */, "carpenter": 6 /* SKILL.CARPENTER */, "bowmaking": 7 /* SKILL.BOWMAKING */, "fletching": 8 /* SKILL.FLETCHING */, "bone_carving": 9 /* SKILL.BONE_CARVING */, "cordwaining": 10 /* SKILL.CORDWAINING */, "smith": 11 /* SKILL.SMITH */, "tanning": 12 /* SKILL.TANNING */, "hunting": 13 /* SKILL.HUNTING */, "gathering": 14 /* SKILL.GATHERING */, "fishing": 15 /* SKILL.FISHING */, "woodcutting": 16 /* SKILL.WOODCUTTING */, "travelling": 17 /* SKILL.TRAVELLING */, "ranged": 18 /* SKILL.RANGED */, "evasion": 19 /* SKILL.EVASION */, "blocking": 20 /* SKILL.BLOCKING */, "onehanded": 21 /* SKILL.ONEHANDED */, "twohanded": 22 /* SKILL.TWOHANDED */, "polearms": 23 /* SKILL.POLEARMS */, "unarmed": 24 /* SKILL.UNARMED */, "fighting": 25 /* SKILL.FIGHTING */, "magic": 26 /* SKILL.MAGIC */, "alchemy": 27 /* SKILL.ALCHEMY */, "enchanting": 28 /* SKILL.ENCHANTING */, "battle_magic": 29 /* SKILL.BATTLE_MAGIC */ };
+SkillConfiguration.SKILL_TO_STRING = ["clothier", "weaving", "cooking", "skinning", "woodworking", "leatherworking", "carpenter", "bowmaking", "fletching", "bone_carving", "cordwaining", "smith", "tanning", "hunting", "gathering", "fishing", "woodcutting", "travelling", "ranged", "evasion", "blocking", "onehanded", "twohanded", "polearms", "unarmed", "fighting", "magic", "alchemy", "enchanting", "battle_magic",];
+// ENUMS: 
+SkillConfiguration.SKILL_SKILL = [0 /* SKILL.CLOTHIER */, 1 /* SKILL.WEAVING */, 2 /* SKILL.COOKING */, 3 /* SKILL.SKINNING */, 4 /* SKILL.WOODWORKING */, 5 /* SKILL.LEATHERWORKING */, 6 /* SKILL.CARPENTER */, 7 /* SKILL.BOWMAKING */, 8 /* SKILL.FLETCHING */, 9 /* SKILL.BONE_CARVING */, 10 /* SKILL.CORDWAINING */, 11 /* SKILL.SMITH */, 12 /* SKILL.TANNING */, 13 /* SKILL.HUNTING */, 14 /* SKILL.GATHERING */, 15 /* SKILL.FISHING */, 16 /* SKILL.WOODCUTTING */, 17 /* SKILL.TRAVELLING */, 18 /* SKILL.RANGED */, 19 /* SKILL.EVASION */, 20 /* SKILL.BLOCKING */, 21 /* SKILL.ONEHANDED */, 22 /* SKILL.TWOHANDED */, 23 /* SKILL.POLEARMS */, 24 /* SKILL.UNARMED */, 25 /* SKILL.FIGHTING */, 26 /* SKILL.MAGIC */, 27 /* SKILL.ALCHEMY */, 28 /* SKILL.ENCHANTING */, 29 /* SKILL.BATTLE_MAGIC */,];
+SkillConfiguration.SKILL_SKILL_STRING = ["clothier", "weaving", "cooking", "skinning", "woodworking", "leatherworking", "carpenter", "bowmaking", "fletching", "bone_carving", "cordwaining", "smith", "tanning", "hunting", "gathering", "fishing", "woodcutting", "travelling", "ranged", "evasion", "blocking", "onehanded", "twohanded", "polearms", "unarmed", "fighting", "magic", "alchemy", "enchanting", "battle_magic",];
+// Numbers: 
+SkillConfiguration.SKILL_FIGHTING = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1,];
+SkillConfiguration.SKILL_CRAFTING = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,];
+SkillConfiguration.SKILL_STRENGTH_BONUS = [1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 3.0, 1.0, 3.0, 2.0, 2.0, 5.0, 5.0, 1.0, 2.0, 3.0, 5.0, 5.0, 5.0, 5.0, 8.0, 0.0, 0.0, 0.0, 1.0,];
+SkillConfiguration.SKILL_MAGIC_BONUS = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 2, 4, 10,];
+// Strings: 
+SkillConfiguration.SKILL_NAME = ["Clothier", "Weaving", "Cooking", "Skinning", "Woodworking", "Leatherworking", "Carpentry", "Bowmaking", "Fletching", "Bone carving", "Cordwaining", "Smithing", "Tanning", "Hunting", "Gathering", "Fishing", "Woodcutting", "Travelling", "Sniping", "Evading", "Blocking", "One handed weapons", "Two handed weapons", "Polearms", "Unarmed", "Fighting", "Magic", "Alchemy", "Enchanting", "Battle magic",];
+export class PerkConfiguration {
+    static get zero_record() {
+        return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,];
+    }
+    static get ones_record() {
+        return [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,];
+    }
+    static is_valid_id(id) {
+        return id in this.PERK;
+    }
+    static is_valid_string_id(id) {
+        return id in this.PERK_FROM_STRING;
+    }
+}
+PerkConfiguration.PERK = [0 /* PERK.PRO_BUTCHER */, 1 /* PERK.PRO_COOK */, 2 /* PERK.PRO_BONEWORK */, 3 /* PERK.PRO_FLETCHER */, 4 /* PERK.PRO_LEATHERWORK */, 5 /* PERK.PRO_TANNING */, 6 /* PERK.PRO_CORDWAINER */, 7 /* PERK.PRO_FIGHTER_UNARMED */, 8 /* PERK.PRO_FIGHTER_POLEARMS */, 9 /* PERK.PRO_FIGHTER_ONEHAND */, 10 /* PERK.PRO_FIGHTER_TWOHAND */, 11 /* PERK.MAGIC_INITIATION */, 12 /* PERK.PRO_ALCHEMIST */, 13 /* PERK.MAGIC_BLOOD */, 14 /* PERK.MAGIC_BOLT */, 15 /* PERK.MAGIC_BLINK */, 16 /* PERK.BATTLE_DODGE */, 17 /* PERK.BATTLE_CHARGE */,];
+PerkConfiguration.PERK_FROM_STRING = { "pro_butcher": 0 /* PERK.PRO_BUTCHER */, "pro_cook": 1 /* PERK.PRO_COOK */, "pro_bonework": 2 /* PERK.PRO_BONEWORK */, "pro_fletcher": 3 /* PERK.PRO_FLETCHER */, "pro_leatherwork": 4 /* PERK.PRO_LEATHERWORK */, "pro_tanning": 5 /* PERK.PRO_TANNING */, "pro_cordwainer": 6 /* PERK.PRO_CORDWAINER */, "pro_fighter_unarmed": 7 /* PERK.PRO_FIGHTER_UNARMED */, "pro_fighter_polearms": 8 /* PERK.PRO_FIGHTER_POLEARMS */, "pro_fighter_onehand": 9 /* PERK.PRO_FIGHTER_ONEHAND */, "pro_fighter_twohand": 10 /* PERK.PRO_FIGHTER_TWOHAND */, "magic_initiation": 11 /* PERK.MAGIC_INITIATION */, "pro_alchemist": 12 /* PERK.PRO_ALCHEMIST */, "magic_blood": 13 /* PERK.MAGIC_BLOOD */, "magic_bolt": 14 /* PERK.MAGIC_BOLT */, "magic_blink": 15 /* PERK.MAGIC_BLINK */, "battle_dodge": 16 /* PERK.BATTLE_DODGE */, "battle_charge": 17 /* PERK.BATTLE_CHARGE */ };
+PerkConfiguration.PERK_TO_STRING = ["pro_butcher", "pro_cook", "pro_bonework", "pro_fletcher", "pro_leatherwork", "pro_tanning", "pro_cordwainer", "pro_fighter_unarmed", "pro_fighter_polearms", "pro_fighter_onehand", "pro_fighter_twohand", "magic_initiation", "pro_alchemist", "magic_blood", "magic_bolt", "magic_blink", "battle_dodge", "battle_charge",];
+// ENUMS: 
+PerkConfiguration.PERK_PERK = [0 /* PERK.PRO_BUTCHER */, 1 /* PERK.PRO_COOK */, 2 /* PERK.PRO_BONEWORK */, 3 /* PERK.PRO_FLETCHER */, 4 /* PERK.PRO_LEATHERWORK */, 5 /* PERK.PRO_TANNING */, 6 /* PERK.PRO_CORDWAINER */, 7 /* PERK.PRO_FIGHTER_UNARMED */, 8 /* PERK.PRO_FIGHTER_POLEARMS */, 9 /* PERK.PRO_FIGHTER_ONEHAND */, 10 /* PERK.PRO_FIGHTER_TWOHAND */, 11 /* PERK.MAGIC_INITIATION */, 12 /* PERK.PRO_ALCHEMIST */, 13 /* PERK.MAGIC_BLOOD */, 14 /* PERK.MAGIC_BOLT */, 15 /* PERK.MAGIC_BLINK */, 16 /* PERK.BATTLE_DODGE */, 17 /* PERK.BATTLE_CHARGE */,];
+PerkConfiguration.PERK_PERK_STRING = ["pro_butcher", "pro_cook", "pro_bonework", "pro_fletcher", "pro_leatherwork", "pro_tanning", "pro_cordwainer", "pro_fighter_unarmed", "pro_fighter_polearms", "pro_fighter_onehand", "pro_fighter_twohand", "magic_initiation", "pro_alchemist", "magic_blood", "magic_bolt", "magic_blink", "battle_dodge", "battle_charge",];
+// Numbers: 
+PerkConfiguration.PERK_BASE_PRICE = [500, 500, 1000, 500, 1000, 500, 750, 300, 300, 300, 300, 1500, 2000, 500, 1000, 1500, 250, 250,];
+PerkConfiguration.PERK_STRENGTH_BONUS = [1.0, 0.0, 0.1, 0.1, 0.1, 0.1, 0.1, 5.0, 2.0, 2.0, 4.0, 0.0, 0.0, 0.5, 0.0, 0.0, 1.0, 1.0,];
+PerkConfiguration.PERK_MAGIC_BONUS = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 1, 2, 2, 2, 0, 0,];
+// Strings: 
+PerkConfiguration.PERK_NAME = ["Butcher", "Cook", "Bonecarver", "Fletcher", "Leatherworker", "Tanner", "Cordwainer", "Wrestler", "Spearman", "Fighter(onehand)", "Fighter(twohand)", "Initiated mage", "Alchemist", "Blood mage", "Magic bolt", "Magic blink", "Dodge", "Charge",];
 class MaterialInstance {
     constructor(id) {
         if (!(id in MaterialConfiguration.MATERIAL)) {
@@ -378,6 +431,61 @@ class ArmourInstance {
         return ArmourConfiguration.ARMOUR_NAME[this._id];
     }
 }
+class SkillInstance {
+    constructor(id) {
+        if (!(id in SkillConfiguration.SKILL)) {
+            throw new Error(`Invalid Skill id: ${id}`);
+        }
+        this._id = id;
+    }
+    get id() {
+        return this._id;
+    }
+    get id_string() {
+        return SkillConfiguration.SKILL_SKILL_STRING[this._id];
+    }
+    get fighting() {
+        return SkillConfiguration.SKILL_FIGHTING[this._id];
+    }
+    get crafting() {
+        return SkillConfiguration.SKILL_CRAFTING[this._id];
+    }
+    get strength_bonus() {
+        return SkillConfiguration.SKILL_STRENGTH_BONUS[this._id];
+    }
+    get magic_bonus() {
+        return SkillConfiguration.SKILL_MAGIC_BONUS[this._id];
+    }
+    get name() {
+        return SkillConfiguration.SKILL_NAME[this._id];
+    }
+}
+class PerkInstance {
+    constructor(id) {
+        if (!(id in PerkConfiguration.PERK)) {
+            throw new Error(`Invalid Perk id: ${id}`);
+        }
+        this._id = id;
+    }
+    get id() {
+        return this._id;
+    }
+    get id_string() {
+        return PerkConfiguration.PERK_PERK_STRING[this._id];
+    }
+    get base_price() {
+        return PerkConfiguration.PERK_BASE_PRICE[this._id];
+    }
+    get strength_bonus() {
+        return PerkConfiguration.PERK_STRENGTH_BONUS[this._id];
+    }
+    get magic_bonus() {
+        return PerkConfiguration.PERK_MAGIC_BONUS[this._id];
+    }
+    get name() {
+        return PerkConfiguration.PERK_NAME[this._id];
+    }
+}
 export class MaterialStorage {
     // Retrieve instance of MaterialInstance 
     static get(id) {
@@ -474,3 +582,35 @@ export class ArmourStorage {
     }
 }
 ArmourStorage.instances = [new ArmourInstance(0 /* ARMOUR.HELMET_SKULL_RAT */), new ArmourInstance(1 /* ARMOUR.HELMET_TEXTILE */), new ArmourInstance(2 /* ARMOUR.HELMET_LEATHER_RAT */), new ArmourInstance(3 /* ARMOUR.HELMET_HAIR_GRACI */), new ArmourInstance(4 /* ARMOUR.MAIL_BONE_RAT */), new ArmourInstance(5 /* ARMOUR.MAIL_LEATHER_RAT */), new ArmourInstance(6 /* ARMOUR.MAIL_TEXTILE */), new ArmourInstance(7 /* ARMOUR.MAIL_LEATHER_BALL */), new ArmourInstance(8 /* ARMOUR.MAIL_LEATHER_GRACI */), new ArmourInstance(9 /* ARMOUR.DRESS_MEAT_ELODINO */), new ArmourInstance(10 /* ARMOUR.PANTS_LEATHER_RAT */), new ArmourInstance(11 /* ARMOUR.PANTS_TEXTILE */), new ArmourInstance(12 /* ARMOUR.BOOTS_LEATHER_RAT */), new ArmourInstance(13 /* ARMOUR.GAUNTLET_RIGHT_LEATHER_RAT */), new ArmourInstance(14 /* ARMOUR.GAUNTLET_RIGHT_TEXTILE */), new ArmourInstance(15 /* ARMOUR.GAUNTLET_LEFT_LEATHER_RAT */), new ArmourInstance(16 /* ARMOUR.GAUNTLET_LEFT_TEXTILE */), new ArmourInstance(17 /* ARMOUR.SOCKS_TEXTILE */), new ArmourInstance(18 /* ARMOUR.PAULDRON_LEFT_BONE_RAT */), new ArmourInstance(19 /* ARMOUR.PAULDRON_LEFT_LEATHER_RAT */), new ArmourInstance(20 /* ARMOUR.PAULDRON_RIGHT_BONE_RAT */), new ArmourInstance(21 /* ARMOUR.ROBE_LEATHER_RAT */), new ArmourInstance(22 /* ARMOUR.BELT_TEXTILE */), new ArmourInstance(23 /* ARMOUR.SHIRT_TEXTILE */)];
+export class SkillStorage {
+    // Retrieve instance of SkillInstance 
+    static get(id) {
+        if (!(id in SkillStorage.instances)) {
+            throw new Error(`Invalid Skill id: ${id}`);
+        }
+        return SkillStorage.instances[id];
+    }
+    static from_string(id) {
+        if (!(id in SkillConfiguration.SKILL_FROM_STRING)) {
+            throw new Error(`Invalid Skill id: ${id}`);
+        }
+        return SkillStorage.instances[SkillConfiguration.SKILL_FROM_STRING[id]];
+    }
+}
+SkillStorage.instances = [new SkillInstance(0 /* SKILL.CLOTHIER */), new SkillInstance(1 /* SKILL.WEAVING */), new SkillInstance(2 /* SKILL.COOKING */), new SkillInstance(3 /* SKILL.SKINNING */), new SkillInstance(4 /* SKILL.WOODWORKING */), new SkillInstance(5 /* SKILL.LEATHERWORKING */), new SkillInstance(6 /* SKILL.CARPENTER */), new SkillInstance(7 /* SKILL.BOWMAKING */), new SkillInstance(8 /* SKILL.FLETCHING */), new SkillInstance(9 /* SKILL.BONE_CARVING */), new SkillInstance(10 /* SKILL.CORDWAINING */), new SkillInstance(11 /* SKILL.SMITH */), new SkillInstance(12 /* SKILL.TANNING */), new SkillInstance(13 /* SKILL.HUNTING */), new SkillInstance(14 /* SKILL.GATHERING */), new SkillInstance(15 /* SKILL.FISHING */), new SkillInstance(16 /* SKILL.WOODCUTTING */), new SkillInstance(17 /* SKILL.TRAVELLING */), new SkillInstance(18 /* SKILL.RANGED */), new SkillInstance(19 /* SKILL.EVASION */), new SkillInstance(20 /* SKILL.BLOCKING */), new SkillInstance(21 /* SKILL.ONEHANDED */), new SkillInstance(22 /* SKILL.TWOHANDED */), new SkillInstance(23 /* SKILL.POLEARMS */), new SkillInstance(24 /* SKILL.UNARMED */), new SkillInstance(25 /* SKILL.FIGHTING */), new SkillInstance(26 /* SKILL.MAGIC */), new SkillInstance(27 /* SKILL.ALCHEMY */), new SkillInstance(28 /* SKILL.ENCHANTING */), new SkillInstance(29 /* SKILL.BATTLE_MAGIC */)];
+export class PerkStorage {
+    // Retrieve instance of PerkInstance 
+    static get(id) {
+        if (!(id in PerkStorage.instances)) {
+            throw new Error(`Invalid Perk id: ${id}`);
+        }
+        return PerkStorage.instances[id];
+    }
+    static from_string(id) {
+        if (!(id in PerkConfiguration.PERK_FROM_STRING)) {
+            throw new Error(`Invalid Perk id: ${id}`);
+        }
+        return PerkStorage.instances[PerkConfiguration.PERK_FROM_STRING[id]];
+    }
+}
+PerkStorage.instances = [new PerkInstance(0 /* PERK.PRO_BUTCHER */), new PerkInstance(1 /* PERK.PRO_COOK */), new PerkInstance(2 /* PERK.PRO_BONEWORK */), new PerkInstance(3 /* PERK.PRO_FLETCHER */), new PerkInstance(4 /* PERK.PRO_LEATHERWORK */), new PerkInstance(5 /* PERK.PRO_TANNING */), new PerkInstance(6 /* PERK.PRO_CORDWAINER */), new PerkInstance(7 /* PERK.PRO_FIGHTER_UNARMED */), new PerkInstance(8 /* PERK.PRO_FIGHTER_POLEARMS */), new PerkInstance(9 /* PERK.PRO_FIGHTER_ONEHAND */), new PerkInstance(10 /* PERK.PRO_FIGHTER_TWOHAND */), new PerkInstance(11 /* PERK.MAGIC_INITIATION */), new PerkInstance(12 /* PERK.PRO_ALCHEMIST */), new PerkInstance(13 /* PERK.MAGIC_BLOOD */), new PerkInstance(14 /* PERK.MAGIC_BOLT */), new PerkInstance(15 /* PERK.MAGIC_BLINK */), new PerkInstance(16 /* PERK.BATTLE_DODGE */), new PerkInstance(17 /* PERK.BATTLE_CHARGE */)];

@@ -1,18 +1,15 @@
+import { location_id } from "@custom_types/ids";
 import { Event } from "../../events/events";
 import { Convert } from "../../systems_communication";
-import { location_id } from "@custom_types/ids";
 import { SocketWrapper } from "../user";
 import { Validator } from "./common_validations";
 
+import { PerkConfiguration, SkillConfiguration } from "@content/content";
 import { BattleSystem } from "../../battle/system";
-import { CharacterSystem } from "../../character/system";
-import { Perks } from "@custom_types/character";
-import { Request } from "./request";
-import { skill } from "@custom_types/inventory";
 import { Data } from "../../data/data_objects";
 import { Effect } from "../../effects/effects";
-import { DataID } from "../../data/data_id";
 import { CharacterValues } from "../../scripted-values/character";
+import { Request } from "./request";
 
 export namespace SocketCommand {
 
@@ -50,7 +47,8 @@ export namespace SocketCommand {
         let character_id = msg.id
         let perk_tag = msg.tag
 
-        if (typeof perk_tag != 'string') return
+        if (typeof perk_tag != 'number') return
+        if (!PerkConfiguration.is_valid_id(perk_tag)) return
 
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         const [valid_user, valid_character, target_character] = Validator.valid_action_to_character(user, character, character_id)
@@ -60,16 +58,16 @@ export namespace SocketCommand {
             valid_user.socket.emit('alert', 'not in the same cell')
             return
         }
-        if (!CharacterValues.perk(target_character, perk_tag as Perks)) {
+        if (!CharacterValues.perk(target_character, perk_tag)) {
             valid_user.socket.emit('alert', "target doesn't know this perk")
             return
         }
-        if (CharacterValues.perk(valid_character, perk_tag as Perks)) {
+        if (CharacterValues.perk(valid_character, perk_tag)) {
             valid_user.socket.emit('alert', "you already know it")
             return
         }
 
-        Event.buy_perk(valid_character, perk_tag as Perks, target_character)
+        Event.buy_perk(valid_character, perk_tag, target_character)
     }
 
     export function learn_skill(sw: SocketWrapper, msg: undefined|{id: unknown, tag: unknown}) {
@@ -77,7 +75,8 @@ export namespace SocketCommand {
         let character_id = msg.id
         let skill_tag = msg.tag
 
-        if (typeof skill_tag != 'string') return
+        if (typeof skill_tag != 'number') return
+        if (!SkillConfiguration.is_valid_id(skill_tag)) return;
 
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         const [valid_user, valid_character, target_character] = Validator.valid_action_to_character(user, character, character_id)
@@ -88,12 +87,12 @@ export namespace SocketCommand {
             return
         }
 
-        if (valid_character._skills[skill_tag as skill] == undefined) {
+        if (valid_character._skills[skill_tag] == undefined) {
             return
         }
 
         // console.log('validation passed')
-        Event.buy_skill(valid_character, skill_tag as skill, target_character)
+        Event.buy_skill(valid_character, skill_tag, target_character)
     }
 
     export function enter_location(sw: SocketWrapper, msg: unknown) {

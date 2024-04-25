@@ -10,6 +10,7 @@ const data_objects_1 = require("../../data/data_objects");
 const data_id_1 = require("../../data/data_id");
 const extract_data_1 = require("../../data-extraction/extract-data");
 const character_1 = require("../../scripted-values/character");
+const content_1 = require("../../../.././../game_content/src/content");
 var Dialog;
 (function (Dialog) {
     function talking_check(sw, character_id) {
@@ -70,17 +71,17 @@ var Dialog;
             race: target_character.race,
             factions: data_id_1.DataID.Reputation.character(target_character.id).map(systems_communication_1.Convert.reputation_to_socket),
             current_goal: target_character.current_ai_action,
-            perks: {},
-            skills: {},
+            perks: [],
+            skills: [],
             model: target_character.model,
             equip: extract_data_1.Extract.CharacterEquipModel(target_character)
         };
-        for (let perk of Object.keys(data)) {
-            if (data[perk] == true) {
+        for (let perk of content_1.PerkConfiguration.PERK) {
+            if (data[perk]) {
                 response.perks[perk] = (0, perk_base_price_1.perk_price)(perk, character, target_character);
             }
         }
-        for (let skill of Object.keys(target_character._skills)) {
+        for (let skill of content_1.SkillConfiguration.SKILL) {
             let teaching_response = triggers_1.Trigger.can_learn_from(character, target_character, skill);
             if (teaching_response.response == 'ok' || teaching_response.response == triggers_1.ResponseNegativeQuantified.Money) {
                 const teacher_skill = character_1.CharacterValues.skill(target_character, skill);
@@ -94,3 +95,4 @@ var Dialog;
     }
     Dialog.request_greeting = request_greeting;
 })(Dialog || (exports.Dialog = Dialog = {}));
+

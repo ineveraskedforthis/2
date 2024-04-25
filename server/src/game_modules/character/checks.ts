@@ -1,47 +1,24 @@
-import { MATERIAL } from "@content/content";
+import { MATERIAL, PERK } from "@content/content";
 import { Character } from "../data/entities/character";
 import { CharacterValues } from "../scripted-values/character";
 
 
 export function can_dodge(character: Character): boolean {
-    if (CharacterValues.perk(character, 'advanced_unarmed')) {
-        if (CharacterValues.equiped_weapon_required_skill(character) == "noweapon") {
-            return true;
-        }
-    }
-    if (CharacterValues.perk(character, 'dodge')) {
+    if (CharacterValues.perk(character, PERK.BATTLE_DODGE)) {
         return true;
     }
     return false;
 }
 
-export function can_fast_attack(character: Character): boolean {
-    if (CharacterValues.perk(character, 'advanced_unarmed')) {
-        if (CharacterValues.equiped_weapon_required_skill(character) == "noweapon") {
-            return true;
-        }
-    }
-    return false;
-}
-
-export function can_push_back(character: Character): boolean {
-    if (CharacterValues.perk(character, 'advanced_polearm')) {
-        if (CharacterValues.equiped_weapon_required_skill(character) == "polearms") {
-            return true;
-        }
-    }
-    return false;
-}
-
 export function can_cast_magic_bolt(character: Character): boolean {
-    return CharacterValues.perk(character, 'magic_bolt')
+    return CharacterValues.perk(character, PERK.MAGIC_BOLT) == 1
 }
 
 export function can_cast_magic_bolt_blood(character:Character): boolean {
     if (character.get_hp() + character.get_blood() + 1 < 10) {
         return false;
     }
-    return CharacterValues.perk(character, 'magic_bolt') && CharacterValues.perk(character, 'blood_mage')
+    return (CharacterValues.perk(character, PERK.MAGIC_BOLT) && CharacterValues.perk(character, PERK.MAGIC_BLOOD)) == 1
 }
 
 export function has_zaz(character: Character): boolean {
@@ -49,7 +26,7 @@ export function has_zaz(character: Character): boolean {
 }
 
 export function can_shoot(character: Character): boolean {
-    if (CharacterValues.equiped_weapon_required_skill(character) != 'ranged') {
+    if (!CharacterValues.equiped_weapon_is_ranged(character)) {
         return false;
     }
     if (character.stash.get(character.equip.data.selected_ammo) >= 1) {

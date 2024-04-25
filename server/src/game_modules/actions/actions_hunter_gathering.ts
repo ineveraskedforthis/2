@@ -1,4 +1,4 @@
-import { MATERIAL } from "@content/content";
+import { MATERIAL, SKILL } from "@content/content";
 import { cell_id } from "@custom_types/ids";
 import { Data } from "../data/data_objects";
 import { Character, TriggerResponse } from "../data/entities/character";
@@ -15,22 +15,23 @@ const FATIGUE_COST_BERRIES = 10
 
 function gather_wood_duration_modifier(character: Character) {
     const slice_damage = CharacterValues.melee_damage_raw(character, 'slice')
+    const skill = CharacterValues.skill(character, SKILL.WOODCUTTING)
     const damage_mod = (1 + slice_damage.slice / 50)
-    return 10 / CharacterValues.phys_power(character) / damage_mod
+    return 10 / CharacterValues.phys_power(character) / damage_mod * (150 - skill) / 100
 }
 
 function hunt_duration_modifier(character: Character) {
-    const skill = CharacterValues.skill(character, 'hunt')
+    const skill = CharacterValues.skill(character, SKILL.HUNTING)
     return (150 - skill) / 100;
 }
 
 function fishing_duration_modifier(char: Character) {
-    const skill = CharacterValues.skill(char, 'fishing')
+    const skill = CharacterValues.skill(char, SKILL.FISHING)
     return (150 - skill) / 100;
 }
 
 function berry_duration_modifier(char: Character) {
-    const skill = CharacterValues.skill(char, 'travelling')
+    const skill = CharacterValues.skill(char, SKILL.GATHERING)
     return (150 - skill) / 100;
 }
 
@@ -75,18 +76,34 @@ function berry_trigger(character: Character) : TriggerResponse {
     }
 }
 
+function roll_gathering_skill_increase(character : Character, skill_id: SKILL) {
+    const skill = CharacterValues.skill(character, skill_id)
+    if (Math.random() * Math.random() > skill / 100) {
+        Effect.Change.skill(character, skill_id, 1, CHANGE_REASON.PRACTICE)
+        Effect.Change.stress(character, 1, CHANGE_REASON.PRACTICE)
+    }
+}
+
 function gather_wood_effect(character: Character) {
+    const skill = CharacterValues.pure_skill(character, SKILL.WOODCUTTING)
+
     Event.remove_tree(character.location_id)
-    Event.change_stash(character, MATERIAL.WOOD_RED, 1)
+    Event.change_stash(character, MATERIAL.WOOD_RED, Math.floor(skill / 20))
+
+    roll_gathering_skill_increase(character, SKILL.WOODCUTTING)
 }
 
 function gather_cotton_effect(character: Character) {
+    const skill = CharacterValues.pure_skill(character, SKILL.GATHERING)
+
     Data.Locations.from_id(character.location_id).cotton -= 1
-    Event.change_stash(character, MATERIAL.COTTON, 1)
+    Event.change_stash(character, MATERIAL.COTTON, Math.floor(Math.sqrt(skill / 5)))
+
+    roll_gathering_skill_increase(character, SKILL.GATHERING)
 }
 
 function gather_berries_effect(character: Character) {
-    const skill = CharacterValues.pure_skill(character, "travelling")
+    const skill = CharacterValues.pure_skill(character, SKILL.GATHERING)
 
     const amount = Math.floor(skill / 10 + Math.random() * 5)
 
@@ -96,28 +113,24 @@ function gather_berries_effect(character: Character) {
         Event.change_stash(character, MATERIAL.BERRY_ZAZ, amount)
     }
 
-    if (Math.random() * Math.random() > skill / 100) {
-        Effect.Change.skill(character, 'travelling', 1, CHANGE_REASON.GATHERING)
-        Effect.Change.stress(character, 1, CHANGE_REASON.GATHERING)
-    }
-
+    roll_gathering_skill_increase(character, SKILL.GATHERING)
     Event.change_stash(character, MATERIAL.BERRY_FIE, amount)
 }
 
 function hunt_skill_upgrade_roll(character: Character) {
-    const skill = CharacterValues.pure_skill(character, 'hunt')
-    const skinning_skill = CharacterValues.pure_skill(character, 'skinning')
+    const skill = CharacterValues.pure_skill(character, SKILL.HUNTING)
+    const skinning_skill = CharacterValues.pure_skill(character, SKILL.SKINNING)
     if (Math.random() * Math.random() > skill / 100) {
-        Effect.Change.skill(character, 'hunt', 1, CHANGE_REASON.HUNTING)
+        Effect.Change.skill(character, SKILL.HUNTING, 1, CHANGE_REASON.HUNTING)
         Effect.Change.stress(character, 1, CHANGE_REASON.HUNTING)
     }
     if (Math.random() > skinning_skill / 20) {
-        Effect.Change.skill(character, 'skinning', 1, CHANGE_REASON.HUNTING)
+        Effect.Change.skill(character, SKILL.SKINNING, 1, CHANGE_REASON.HUNTING)
     }
 }
 function hunt_effect(character: Character) {
-    const skill = CharacterValues.skill(character, 'hunt')
-    const skinning_skill = CharacterValues.skill(character, 'skinning')
+    const skill = CharacterValues.skill(character, SKILL.HUNTING)
+    const skinning_skill = CharacterValues.skill(character, SKILL.SKINNING)
 
     let amount_meat = Math.floor(skill / 10) + 1
     let amount_skin = Math.floor(Math.max(amount_meat * skinning_skill / 100))
@@ -133,7 +146,7 @@ function hunt_effect(character: Character) {
 }
 
 function fishing_effect(character: Character, cell: cell_id) {
-    const skill = CharacterValues.skill(character, 'fishing')
+    const skill = CharacterValues.skill(character, SKILL.FISHING)
 
     let amount = Math.floor(skill / 20) + 1
     if (Math.random() < 0.01) {
@@ -144,7 +157,7 @@ function fishing_effect(character: Character, cell: cell_id) {
     }
 
     if (Math.random() * Math.random() > skill / 100) {
-        Effect.Change.skill(character, 'fishing', 1, CHANGE_REASON.FISHING)
+        Effect.Change.skill(character, SKILL.FISHING, 1, CHANGE_REASON.FISHING)
         Effect.Change.stress(character, 1, CHANGE_REASON.FISHING)
     }
 

@@ -1,4 +1,4 @@
-import { EQUIP_SLOT, MATERIAL, MaterialConfiguration, MaterialStorage } from "@content/content";
+import { EQUIP_SLOT, MATERIAL, MaterialConfiguration, MaterialStorage, SKILL } from "@content/content";
 import { AIfunctions } from "../HelperFunctions/common";
 import { AIActionsStorage } from "../Storage/storage";
 import { MarketOrders } from "../../market/system";
@@ -18,6 +18,9 @@ import { DataID } from "../../data/data_id";
 AIActionsStorage.register_action_self({
     tag: "update-desired-stash",
     utility(actor, target) {
+        if (AIfunctions.desired_stash_weight(actor) == 0) {
+            return 1000
+        }
         if (Math.random() < 0.01) {
             return 1
         }
@@ -40,7 +43,7 @@ AIActionsStorage.register_action_self({
         // food: replace with distribution later
         for (const item of MaterialConfiguration.MATERIAL) {
             if (CharacterCondition.can_eat(actor, MaterialStorage.get(item))) {
-                actor.ai_desired_stash.inc(item, 10)
+                actor.ai_desired_stash.inc(item, 5)
             }
         }
 
@@ -48,7 +51,7 @@ AIActionsStorage.register_action_self({
         const good_crafts = AIfunctions.profitable_bulk_craft(actor)
         for (const item of good_crafts) {
             for (const input of item.craft.input) {
-                actor.ai_desired_stash.inc(input.material, input.amount) * 10
+                actor.ai_desired_stash.inc(input.material, input.amount) * 2
             }
         }
 
@@ -56,17 +59,17 @@ AIActionsStorage.register_action_self({
         const good_item_craft = AIfunctions.profitable_item_craft(actor)
         for (const item of good_item_craft) {
             for (const input of item.input) {
-                actor.ai_desired_stash.inc(input.material, input.amount) * 10
+                actor.ai_desired_stash.inc(input.material, input.amount) * 2
             }
         }
 
         //arrows:
-        if (CharacterValues.skill(actor, "ranged") > 20) {
+        if (CharacterValues.skill(actor, SKILL.RANGED) > 20) {
             actor.ai_desired_stash.inc(MATERIAL.ARROW_BONE, 40)
         }
 
         //zaz for mages
-        if (CharacterValues.skill(actor, "magic_mastery") > 10) {
+        if (CharacterValues.skill(actor, SKILL.MAGIC) > 10) {
             actor.ai_desired_stash.inc(MATERIAL.ZAZ, 40)
         }
     }
@@ -80,7 +83,7 @@ AIActionsStorage.register_action_self({
             if (item.profit <= 0) continue;
 
             if (CharacterCondition.can_potentially_bulk_craft(actor, item.craft)) {
-                return 0.8
+                return 2
             }
         }
 
@@ -111,7 +114,7 @@ AIActionsStorage.register_action_self({
         const bulk_crafts = AIfunctions.profitable_item_craft(actor)
         for (let item of bulk_crafts) {
             if (CharacterCondition.can_item_craft(actor, item)) {
-                return 0.8
+                return 10
             }
         }
         return 0
@@ -148,7 +151,6 @@ AIActionsStorage.register_action_material({
 AIActionsStorage.register_action_material({
     tag: "sell",
     utility(actor, target) {
-        let desire_to_update_prices = 0
         for (const order_id of DataID.Character.market_orders_list(actor.id)) {
             const order = Data.MarketOrders.from_id(order_id)
             if (order.material != target.id) continue;
@@ -157,7 +159,7 @@ AIActionsStorage.register_action_material({
                 return 100
             }
         }
-        return (actor.stash.get(target.id) - actor.ai_desired_stash.get(target.id)) / 50 + desire_to_update_prices
+        return (actor.stash.get(target.id) - actor.ai_desired_stash.get(target.id)) / 50
     },
     potential_targets(actor) {
         return MaterialConfiguration.MATERIAL.map(MaterialStorage.get)
@@ -203,16 +205,19 @@ AIActionsStorage.register_action_self({
 AIActionsStorage.register_action_material({
     tag: "buy",
     utility(actor, target) {
-        let desire_to_update_prices = 0
+        let already_trying_to_buy = 0
+
         for (const order_id of DataID.Character.market_orders_list(actor.id)) {
             const order = Data.MarketOrders.from_id(order_id)
             if (order.material != target.id) continue;
             if (order.typ == "sell") continue;
             if (order.price != actor.ai_price_buy_expectation[target.id]) {
                 return 100
+            } else {
+                already_trying_to_buy += order.amount
             }
         }
-        return (actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id)) / 50
+        return (actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id) - already_trying_to_buy) / 50
     },
     potential_targets(actor) {
         return MaterialConfiguration.MATERIAL.map(MaterialStorage.get)

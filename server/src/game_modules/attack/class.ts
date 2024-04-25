@@ -1,5 +1,5 @@
+import { SKILL } from "@content/content";
 import { Damage } from "../Damage";
-import { weapon_skill_tag } from "../client_communication/network_actions/updates";
 import { Status } from "../types";
 
 
@@ -13,7 +13,7 @@ export class AttackObj {
     }
     defender_status_change:Status;
     attacker_status_change:Status;
-    weapon_type:weapon_skill_tag;
+    related_skills:SKILL[];
     damage: Damage;
     chance_to_hit: number;
     new_pos: {x: number, y:number}|undefined;
@@ -22,7 +22,7 @@ export class AttackObj {
     defence_skill:number
 
 
-    constructor(weapon_type: weapon_skill_tag) {
+    constructor(related_skills: SKILL[]) {
         this.flags = {
             crit: false,
             miss: false,
@@ -50,7 +50,7 @@ export class AttackObj {
         this.new_pos = undefined
 
         this.damage = new Damage();
-        this.weapon_type = weapon_type
+        this.related_skills = related_skills
         this.chance_to_hit = 0;
         this.attack_skill = 0
         this.defence_skill = 0

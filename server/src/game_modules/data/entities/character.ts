@@ -1,10 +1,9 @@
-import { MATERIAL, MaterialConfiguration } from "@content/content";
+import { MATERIAL, MaterialConfiguration, PERK, PerkConfiguration, SKILL, SkillConfiguration } from "@content/content";
 import { action_points, battle_id, battle_position } from "@custom_types/battle_data";
-import { PerksTable, TraitsTable } from "@custom_types/character";
-import { money, status_type } from "@custom_types/common";
+import { TraitsTable } from "@custom_types/character";
+import { status_type } from "@custom_types/common";
 import { cell_id, character_id, location_id, user_id } from "@custom_types/ids";
 import { trim } from "../../calculations/basic_functions";
-import { SkillList } from "../../character/SkillList";
 import { MaxHP, MaxHPTag } from "../../races/max_hp";
 import { BaseResistTag } from "../../races/resists";
 import { StatsTag } from "../../races/stats";
@@ -86,8 +85,8 @@ export class Character {
 
     open_shop: boolean;
 
-    _skills: SkillList;
-    _perks: PerksTable;
+    _skills: Record<SKILL, number>;
+    _perks: Record<PERK, number>;
     _traits: TraitsTable;
     // stats: InnateStats;
 
@@ -187,8 +186,8 @@ export class Character {
         this.ai_desired_stash = new Stash()
         this.ai_gathering_target = new Stash()
 
-        this._skills = new SkillList()
-        this._perks = {}
+        this._skills = SkillConfiguration.zero_record
+        this._perks = PerkConfiguration.zero_record
         this._traits = {}
 
         this.action_points_left = 0 as action_points

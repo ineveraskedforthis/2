@@ -1,11 +1,9 @@
 import { globals } from './modules/globals.js';
 import { socket } from "./modules/Socket/socket.js";
-import { SKILL_NAMES } from './SKILL_NAMES.js';
 import { CharacterStatsResponse, PerksResponse } from '../shared/responses.js'
-import { Perks } from '../shared/character.js'
 import { money } from '../shared/common.js';
 import { elementById } from './modules/HTMLwrappers/common.js';
-import { EQUIP_SLOT, EquipSlotStorage, MATERIAL, MaterialConfiguration, MaterialStorage, equip_slot_string_id } from '@content/content.js';
+import { EQUIP_SLOT, EquipSlotStorage, MATERIAL, MaterialConfiguration, MaterialStorage, PERK, PerkConfiguration, PerkStorage, SKILL, SkillConfiguration, SkillStorage, equip_slot_string_id } from '@content/content.js';
 import { EQUIPMENT_TAGS } from "./modules/CharacterImage/equip_strings.js";
 
 
@@ -32,13 +30,13 @@ function close_perks() {
     big_div.classList.add('hidden');
     document.getElementById('dialog-scene')?.classList.add('hidden');
 }
-function send_perk_learning_request(i: string) {
+function send_perk_learning_request(i: PERK) {
     return () => socket.emit('learn-perk', { tag: i, id: globals.selected_character });
 }
 function request_prices() {
     return () => socket.emit('request-prices-character', globals.selected_character);
 }
-function send_skill_learning_request(i: string) {
+function send_skill_learning_request(i: SKILL) {
     return () => socket.emit('learn-skill', { tag: i, id: globals.selected_character });
 }
 function buy_land_plot_request() {
@@ -100,12 +98,12 @@ function generate_greeting(data: PerksResponse) {
     if (Object.keys(data.skills).length == 0) {
         greeting_line += ('I have no particular skills. ')
     } else {
-        for (let skill of Object.keys(data.skills)) {
+        for (let skill of SkillConfiguration.SKILL) {
             let temp = data.skills[skill]
             if (temp == undefined) continue
-            let [level, price] = temp
 
-            greeting_line += `I am ${epitet(level)} at ${SKILL_NAMES[skill]}. `
+            let [level, price] = temp
+            greeting_line += `I am ${epitet(level)} at ${SkillStorage.get(skill).name}. `
         }
         greeting_line += `I can teach you for a price. `
     }
@@ -169,14 +167,15 @@ function build_dialog(data: PerksResponse) {
 
     if (is_leader(data)) add_dialog_option('I want to buy a land plot for 500.', buy_land_plot_request())
 
-    for (let [i, value] of Object.entries(data.perks)) {
-        add_dialog_option(`Teach me ${i} for ${value}`, send_perk_learning_request(i))
+    for (const perk of PerkConfiguration.PERK) {
+        if (data.perks[perk] == undefined) continue
+        add_dialog_option(`Teach me ${PerkStorage.get(perk).name} for ${data.perks[perk]}`, send_perk_learning_request(perk))
     }
-    for (let skill of Object.keys(data.skills)) {
+    for (let skill of SkillConfiguration.SKILL) {
         let tmp = data.skills[skill]
         if (tmp == undefined) continue
         let [level, price] = tmp
-        add_dialog_option(`Teach me ${SKILL_NAMES[skill]} for ${price}`, send_skill_learning_request(skill))
+        add_dialog_option(`Teach me ${SkillStorage.get(skill).name} for ${price}`, send_skill_learning_request(skill))
     }
     big_div.classList.remove('hidden');
     document.getElementById('dialog-scene')?.classList.remove('hidden');
@@ -224,7 +223,7 @@ function build_prices(data: {
     add_dialog_option('Goodbye', close_perks)
 }
 
-function update_perks(data: Perks) {
+function update_perks(data: PERK) {
     // console.log('PERKS!!!!');
     // console.log(data);
     let div2 = document.getElementById('perks_tab')!;

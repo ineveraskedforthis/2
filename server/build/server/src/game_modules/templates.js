@@ -32,29 +32,29 @@ var Template;
         }
         function GenericHuman(name, faction) {
             let human = Base(TEMPLATE_HUMANS_1.HumanTemplate, name, undefined, undefined, faction);
-            human._skills.woodwork += 10;
-            human._skills.cooking += 15;
-            human._skills.hunt += 5;
-            human._skills.fishing += 5;
-            human._skills.travelling += 5;
-            human._skills.noweapon += 10;
+            human._skills[4 /* SKILL.WOODWORKING */] += 10;
+            human._skills[2 /* SKILL.COOKING */] += 15;
+            human._skills[13 /* SKILL.HUNTING */] += 5;
+            human._skills[15 /* SKILL.FISHING */] += 5;
+            human._skills[17 /* SKILL.TRAVELLING */] += 5;
+            human._skills[24 /* SKILL.UNARMED */] += 10;
             return human;
         }
         Character.GenericHuman = GenericHuman;
         function HumanSteppe(name) {
             let human = GenericHuman(name, 'steppe_humans');
-            human._skills.hunt += 20;
-            human._skills.skinning += 10;
-            human._skills.cooking += 10;
-            human._skills.travelling += 30;
-            human._skills.ranged += 20;
-            human._skills.noweapon += 10;
+            human._skills[13 /* SKILL.HUNTING */] += 20;
+            human._skills[3 /* SKILL.SKINNING */] += 10;
+            human._skills[2 /* SKILL.COOKING */] += 10;
+            human._skills[17 /* SKILL.TRAVELLING */] += 30;
+            human._skills[18 /* SKILL.RANGED */] += 20;
+            human._skills[24 /* SKILL.UNARMED */] += 10;
             return human;
         }
         Character.HumanSteppe = HumanSteppe;
         function Lumberjack(name) {
             let human = HumanSteppe(name);
-            human._skills.travelling += 20;
+            human._skills[17 /* SKILL.TRAVELLING */] += 20;
             human.ai_map = 'lumberjack';
             let cutting_tool = data_objects_1.Data.Items.create_weapon(100, [], 3 /* WEAPON.DAGGER_BONE_RAT */);
             cutting_tool.durability = 200;
@@ -64,8 +64,8 @@ var Template;
         Character.Lumberjack = Lumberjack;
         function Fisherman(name) {
             let human = HumanSteppe(name);
-            human._skills.travelling += 20;
-            human._skills.fishing += 40;
+            human._skills[17 /* SKILL.TRAVELLING */] += 20;
+            human._skills[15 /* SKILL.FISHING */] += 40;
             human.ai_map = 'fisherman';
             return human;
         }
@@ -77,8 +77,8 @@ var Template;
         Character.HumanStrong = HumanStrong;
         function HumanCity(name) {
             let human = GenericHuman(name, 'city');
-            human._skills.fishing += 20;
-            human._skills.noweapon += 5;
+            human._skills[15 /* SKILL.FISHING */] += 20;
+            human._skills[24 /* SKILL.UNARMED */] += 5;
             return human;
         }
         Character.HumanCity = HumanCity;
@@ -93,11 +93,11 @@ var Template;
                     break;
                 }
             }
-            human._skills.polearms = 60;
-            human._skills.evasion += 10;
-            human._skills.blocking += 10;
-            human._skills.ranged += 20;
-            human._perks.advanced_polearm = true;
+            human._skills[23 /* SKILL.POLEARMS */] += 60;
+            human._skills[19 /* SKILL.EVASION */] += 10;
+            human._skills[20 /* SKILL.BLOCKING */] += 10;
+            human._skills[18 /* SKILL.RANGED */] += 20;
+            human._perks[8 /* PERK.PRO_FIGHTER_POLEARMS */] = 1;
             let spear = data_objects_1.Data.Items.create_weapon(100, [], 2 /* WEAPON.SPEAR_WOOD_RED_BONE_RAT */);
             spear.durability = 200;
             let bow = data_objects_1.Data.Items.create_weapon(100, [], 0 /* WEAPON.BOW_WOOD */);
@@ -111,7 +111,6 @@ var Template;
             human.equip.data.slots[8 /* EQUIP_SLOT.BOOTS */] = boots.id;
             human.equip.data.slots[9 /* EQUIP_SLOT.HELMET */] = hat.id;
             human.equip.data.slots[1 /* EQUIP_SLOT.SECONDARY */] = bow.id;
-            human.stash.inc(0 /* MATERIAL.ARROW_BONE */, 60);
             return human;
         }
         Character.HumanSpearman = HumanSpearman;
@@ -135,8 +134,8 @@ var Template;
         function HumanRatHunter(name) {
             let human = HumanSpearman(name, 'steppe');
             human.ai_map = 'rat_hunter';
-            human._skills.skinning += 20;
-            human._skills.hunt += 20;
+            human._skills[3 /* SKILL.SKINNING */] += 20;
+            human._skills[13 /* SKILL.HUNTING */] += 20;
             return human;
         }
         Character.HumanRatHunter = HumanRatHunter;
@@ -151,11 +150,9 @@ var Template;
                     break;
                 }
             }
-            human.stash.inc(27 /* MATERIAL.FISH_OKU_FRIED */, 10);
-            human.stash.inc(19 /* MATERIAL.MEAT_RAT_FRIED */, 10);
             human.savings.inc(500);
-            human._skills.cooking = 70;
-            human._perks.meat_master = true;
+            human._skills[2 /* SKILL.COOKING */] = 70;
+            human._perks[0 /* PERK.PRO_BUTCHER */] = 1;
             return human;
         }
         Character.HumanCook = HumanCook;
@@ -170,13 +167,10 @@ var Template;
                     break;
                 }
             }
-            human._skills.woodwork = 80;
-            human._skills.bone_carving = 30;
-            human._perks.fletcher = true;
-            human._skills.ranged = 30;
-            human.stash.inc(0 /* MATERIAL.ARROW_BONE */, 50);
-            human.stash.inc(4 /* MATERIAL.SMALL_BONE_RAT */, 3);
-            human.stash.inc(31 /* MATERIAL.WOOD_RED */, 1);
+            human._skills[4 /* SKILL.WOODWORKING */] = 80;
+            human._skills[9 /* SKILL.BONE_CARVING */] = 30;
+            human._perks[3 /* PERK.PRO_FLETCHER */] = 1;
+            human._skills[8 /* SKILL.FLETCHING */] = 70;
             human.savings.inc(500);
             return human;
         }
@@ -184,14 +178,13 @@ var Template;
         function HumanCityGuard(name) {
             let human = HumanSpearman(name, 'city');
             human.ai_map = 'urban_guard';
-            human._skills.polearms += 10;
+            human._skills[23 /* SKILL.POLEARMS */] += 10;
             return human;
         }
         Character.HumanCityGuard = HumanCityGuard;
         function Tanner(name) {
             let human = HumanCity(name);
-            human.stash.inc(10 /* MATERIAL.SKIN_RAT */, 5);
-            human._skills.tanning += 50;
+            human._skills[12 /* SKILL.TANNING */] += 50;
             human.savings.inc(500);
             return human;
         }
@@ -221,8 +214,8 @@ var Template;
         function MageRat(name) {
             let rat = Base(TEMPLATE_RATS_1.MageRatTemplate, name, undefined, undefined, 'rats');
             rat._traits.claws = true;
-            rat._perks.magic_bolt = true;
-            rat._perks.mage_initiation = true;
+            rat._perks[14 /* PERK.MAGIC_BOLT */] = 1;
+            rat._perks[11 /* PERK.MAGIC_INITIATION */] = 1;
             rat.stash.inc(30 /* MATERIAL.ZAZ */, 5);
             return rat;
         }
@@ -230,25 +223,25 @@ var Template;
         function BerserkRat(name) {
             let rat = Base(TEMPLATE_RATS_1.BerserkRatTemplate, name, undefined, undefined, 'rats');
             rat._traits.claws = true;
-            rat._perks.charge = true;
-            rat._skills.noweapon = 40;
+            rat._perks[17 /* PERK.BATTLE_CHARGE */] = 1;
+            rat._skills[24 /* SKILL.UNARMED */] = 40;
             return rat;
         }
         Character.BerserkRat = BerserkRat;
         function BigRat(name) {
             let rat = Base(TEMPLATE_RATS_1.BigRatTemplate, name, undefined, undefined, 'rats');
             rat._traits.claws = true;
-            rat._skills.noweapon = 40;
+            rat._skills[24 /* SKILL.UNARMED */] = 40;
             return rat;
         }
         Character.BigRat = BigRat;
         function MageElo(name) {
             let elo = Base(TEMPLATE_ELO_1.ElodinoTemplate, name, undefined, undefined, 'elodino_free');
-            elo._perks.magic_bolt = true;
-            elo._perks.mage_initiation = true;
-            elo._skills.magic_mastery = 20;
-            elo._skills.cooking = 20;
-            elo.stash.inc(30 /* MATERIAL.ZAZ */, 30);
+            elo._perks[14 /* PERK.MAGIC_BOLT */] = 1;
+            elo._perks[11 /* PERK.MAGIC_INITIATION */] = 1;
+            elo._skills[26 /* SKILL.MAGIC */] = 30;
+            elo._skills[2 /* SKILL.COOKING */] = 20;
+            elo.stash.inc(30 /* MATERIAL.ZAZ */, 20);
             return elo;
         }
         Character.MageElo = MageElo;
@@ -261,15 +254,16 @@ var Template;
         Character.Elo = Elo;
         function Graci(name) {
             let graci = Base(TEMPLATE_GRACI_1.GraciTemplate, name, undefined, undefined, 'graci');
-            graci._skills.travelling = 70;
+            graci._skills[17 /* SKILL.TRAVELLING */] = 70;
             return graci;
         }
         Character.Graci = Graci;
         function Mage(faction) {
             let mage = GenericHuman('Mage', faction);
-            mage._skills.magic_mastery = 100;
-            mage._perks.mage_initiation = true;
-            mage._perks.magic_bolt = true;
+            mage._skills[26 /* SKILL.MAGIC */] = 100;
+            mage._perks[11 /* PERK.MAGIC_INITIATION */] = 1;
+            mage._skills[29 /* SKILL.BATTLE_MAGIC */] = 60;
+            mage._perks[14 /* PERK.MAGIC_BOLT */] = 1;
             let item = data_objects_1.Data.Items.create_weapon_simple(2 /* WEAPON.SPEAR_WOOD_RED_BONE_RAT */);
             item.affixes.push({ tag: 'of_power' });
             item.affixes.push({ tag: 'of_power' });
@@ -279,15 +273,15 @@ var Template;
         Character.Mage = Mage;
         function BloodMage(faction) {
             const mage = Mage(faction);
-            mage._perks.blood_mage = true;
+            mage._perks[13 /* PERK.MAGIC_BLOOD */] = 1;
             return mage;
         }
         Character.BloodMage = BloodMage;
         function Alchemist(faction) {
             let alchemist = GenericHuman('Alchemist', faction);
-            alchemist._skills.magic_mastery = 60;
-            alchemist._perks.mage_initiation = true;
-            alchemist._perks.alchemist = true;
+            alchemist._skills[26 /* SKILL.MAGIC */] = 60;
+            alchemist._perks[11 /* PERK.MAGIC_INITIATION */] = 1;
+            alchemist._perks[12 /* PERK.PRO_ALCHEMIST */] = 1;
             alchemist.stash.inc(30 /* MATERIAL.ZAZ */, 5);
             alchemist.savings.inc(5000);
             return alchemist;
@@ -295,45 +289,42 @@ var Template;
         Character.Alchemist = Alchemist;
         function ArmourMaster() {
             let master = HumanCity('Armourer');
-            master._skills.clothier = 100;
-            master._perks.skin_armour_master = true;
-            master.stash.inc(14 /* MATERIAL.LEATHER_RAT */, 50);
+            master._skills[0 /* SKILL.CLOTHIER */] = 100;
+            master._skills[5 /* SKILL.LEATHERWORKING */] = 100;
+            master._perks[4 /* PERK.PRO_LEATHERWORK */] = 1;
             master.savings.inc(TONS_OF_MONEY);
             return master;
         }
         Character.ArmourMaster = ArmourMaster;
         function Shoemaker() {
             let master = HumanCity('Shoemaker');
-            master._skills.clothier = 100;
-            master._perks.shoemaker = true;
-            master.stash.inc(14 /* MATERIAL.LEATHER_RAT */, 50);
+            master._skills[5 /* SKILL.LEATHERWORKING */] = 50;
+            master._skills[10 /* SKILL.CORDWAINING */] = 100;
+            master._perks[6 /* PERK.PRO_CORDWAINER */] = 1;
             master.savings.inc(TONS_OF_MONEY);
             return master;
         }
         Character.Shoemaker = Shoemaker;
         function WeaponMasterWood(faction) {
             let master = GenericHuman('Weapons maker', faction);
-            master._skills.woodwork = 100;
-            master._perks.weapon_maker = true;
-            master.stash.inc(31 /* MATERIAL.WOOD_RED */, 15);
+            master._skills[4 /* SKILL.WOODWORKING */] = 100;
             master.savings.inc(TONS_OF_MONEY);
             return master;
         }
         Character.WeaponMasterWood = WeaponMasterWood;
         function WeaponMasterBone(faction) {
             let master = GenericHuman('Weapons maker', faction);
-            master._skills.bone_carving = 100;
-            master._perks.weapon_maker = true;
-            master.stash.inc(7 /* MATERIAL.BONE_RAT */, 40);
+            master._skills[9 /* SKILL.BONE_CARVING */] = 100;
+            master._perks[2 /* PERK.PRO_BONEWORK */] = 1;
             master.savings.inc(TONS_OF_MONEY);
             return master;
         }
         Character.WeaponMasterBone = WeaponMasterBone;
         function MasterUnarmed(faction) {
             let master = GenericHuman('Monk', faction);
-            master._skills.noweapon = 100;
-            master._perks.dodge = true;
-            master._perks.advanced_unarmed = true;
+            master._skills[24 /* SKILL.UNARMED */] = 100;
+            master._perks[16 /* PERK.BATTLE_DODGE */] = 1;
+            master._perks[7 /* PERK.PRO_FIGHTER_UNARMED */] = 1;
             master.savings.inc(LUMP_OF_MONEY);
             return master;
         }

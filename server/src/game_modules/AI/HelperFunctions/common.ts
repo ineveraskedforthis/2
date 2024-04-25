@@ -112,10 +112,21 @@ export namespace AIfunctions {
         return total
     }
 
+    export function desired_stash_weight(actor: Character) : number {
+        let total_weight = 0
+        for (const material of MaterialConfiguration.MATERIAL) {
+            const data = MaterialStorage.get(material)
+            console
+            total_weight += actor.ai_desired_stash.get(material) * data.unit_size * data.density
+        }
+        return total_weight
+    }
+
     export function trade_stash_weight(actor: Character) : number {
         let total_weight = 0
         for (const material of MaterialConfiguration.MATERIAL) {
             const data = MaterialStorage.get(material)
+            console
             total_weight += actor.trade_stash.get(material) * data.unit_size * data.density
         }
         return total_weight
@@ -239,7 +250,7 @@ export namespace AIfunctions {
                 if (ItemOrders.count_weapon_orders_of_type(character.cell_id, item.output.value) >= 3) continue
             }
 
-            if (CraftValues.durability(character, item) > 100) {
+            if (CraftValues.durability(character, item) > 80) {
                 result.push(item)
             }
         }

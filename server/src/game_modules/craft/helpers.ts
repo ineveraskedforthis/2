@@ -1,4 +1,4 @@
-import { box, skill_check } from "@custom_types/inventory";
+import { box, skill_check, skill_checks_container, skilled_box } from "@custom_types/inventory";
 import { trim } from "../calculations/basic_functions";
 import { Character } from "../data/entities/character";
 import { Stash } from "../data/entities/stash";
@@ -22,15 +22,17 @@ export function roll_skill_improvement(current: number, target: number) {
         return true;
 }
 
-export function on_craft_update(character: Character, difficulty: skill_check[]) {
+export function on_craft_update(character: Character, difficulty: skill_checks_container[]) {
     let fatigue = 5;
     for (let item of difficulty) {
-        const pure_skill = CharacterValues.pure_skill(character, item.skill);
-        const total_skill = CharacterValues.skill(character, item.skill);
-        if (roll_skill_improvement(pure_skill, item.difficulty)) {
-            Effect.Change.skill(character, item.skill, 1, CHANGE_REASON.CRAFTING);
+        for (const skill_ckeck of item.skill_checks) {
+            const pure_skill = CharacterValues.pure_skill(character, skill_ckeck.skill);
+            const total_skill = CharacterValues.skill(character, skill_ckeck.skill);
+            if (roll_skill_improvement(pure_skill, skill_ckeck.difficulty)) {
+                Effect.Change.skill(character, skill_ckeck.skill, 1, CHANGE_REASON.CRAFTING);
+            }
+            fatigue += trim(skill_ckeck.difficulty - total_skill, 0, 20);
         }
-        fatigue += trim(item.difficulty - total_skill, 0, 20);
     }
 
     Effect.Change.stress(character, 1, CHANGE_REASON.CRAFTING);

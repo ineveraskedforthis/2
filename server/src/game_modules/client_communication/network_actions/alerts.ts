@@ -1,5 +1,5 @@
 import { BattleKeyframeSocket, BattleEventTag, battle_position } from "../../../../../shared/battle_data";
-import { ItemData, skill } from "../../../../../shared/inventory";
+import { ItemData } from "../../../../../shared/inventory";
 import { AttackObj } from "../../attack/class";
 import { Battle } from "../../battle/classes/battle";
 import { BattleSystem } from "../../battle/system";
@@ -16,7 +16,7 @@ import { DataID } from "../../data/data_id";
 import { Data } from "../../data/data_objects";
 import { CHANGE_REASON } from "../../effects/effects";
 import { Stash } from "../../data/entities/stash";
-import { MATERIAL, MaterialConfiguration, MaterialStorage } from "@content/content";
+import { MATERIAL, MaterialConfiguration, MaterialStorage, SKILL, SkillStorage } from "@content/content";
 
 export namespace Alerts {
     export function not_enough_to_user(
@@ -131,8 +131,8 @@ export namespace Alerts {
         Alerts.generic_user_alert(user, 'craft-item-complete', {tag: tag, value: value})
     }
 
-    export function skill(user: User, tag: string, pure_value: number, current_value: number) {
-        Alerts.generic_user_alert(user, `val_${tag}_c`, current_value)
+    export function skill(user: User, tag: SKILL, pure_value: number, current_value: number) {
+        Alerts.generic_user_alert(user, `val_${SkillStorage.get(tag).id_string}_c`, current_value)
     }
 
     export function battle_action_chance(user: User, tag: string, value: number) {
@@ -374,8 +374,8 @@ export namespace Alerts {
             Alerts.log_to_character(character, `Your rage was set to ${d}. Reason: ${reason}`)
         }
 
-        export function skill_change(character: Character, skill: skill, d: number, reason: CHANGE_REASON) {
-            Alerts.log_to_character(character, `Your ${skill} skill changed by ${d}. Reason: ${reason}`)
+        export function skill_change(character: Character, skill: SKILL, d: number, reason: CHANGE_REASON) {
+            Alerts.log_to_character(character, `Your ${SkillStorage.get(skill).name} skill changed by ${d}. Reason: ${reason}`)
         }
     }
 }

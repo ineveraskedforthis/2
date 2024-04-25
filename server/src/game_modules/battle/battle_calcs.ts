@@ -1,3 +1,4 @@
+import { SKILL } from "@content/content";
 import { Character } from "../data/entities/character";
 import { CharacterValues } from "../scripted-values/character";
 
@@ -14,7 +15,7 @@ export namespace Accuracy {
         if (distance < EASY_DIST) return 1
 
         let skill_difficulty_multiplier = 60
-        const ranged_skill = CharacterValues.skill(character, 'ranged')
+        const ranged_skill = CharacterValues.skill(character, SKILL.RANGED)
         if (ranged_skill > 0) {
             skill_difficulty_multiplier = AVERAGE_SKILL / ranged_skill
         }

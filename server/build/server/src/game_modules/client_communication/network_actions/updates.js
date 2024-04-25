@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.weapon_attack_tags = exports.SendUpdate = void 0;
+exports.SendUpdate = void 0;
 const system_1 = require("../../attack/system");
 const battle_calcs_1 = require("../../battle/battle_calcs");
 const heap_1 = require("../../battle/classes/heap");
@@ -19,6 +19,7 @@ const systems_communication_1 = require("../../systems_communication");
 const helper_functions_1 = require("../helper_functions");
 const alerts_1 = require("./alerts");
 const craft_1 = require("../../scripted-values/craft");
+const content_1 = require("../../../.././../game_content/src/content");
 var SendUpdate;
 (function (SendUpdate) {
     function all(user) {
@@ -131,34 +132,30 @@ var SendUpdate;
     }
     SendUpdate.skills = skills;
     function skill_clothier(user) {
-        skill(user, 'clothier');
+        skill(user, 0 /* SKILL.CLOTHIER */);
     }
     SendUpdate.skill_clothier = skill_clothier;
     function skill_cooking(user) {
-        skill(user, 'cooking');
+        skill(user, 2 /* SKILL.COOKING */);
     }
     SendUpdate.skill_cooking = skill_cooking;
     function skill_woodwork(user) {
-        skill(user, 'woodwork');
+        skill(user, 4 /* SKILL.WOODWORKING */);
     }
     SendUpdate.skill_woodwork = skill_woodwork;
     function skill_skinning(user) {
-        skill(user, 'skinning');
+        skill(user, 3 /* SKILL.SKINNING */);
     }
     SendUpdate.skill_skinning = skill_skinning;
-    function skill_weapon(user) {
-        skills(user, exports.weapon_attack_tags);
-    }
-    SendUpdate.skill_weapon = skill_weapon;
     function skill_defence(user) {
-        skills(user, ['evasion', 'blocking']);
+        skills(user, [19 /* SKILL.EVASION */, 20 /* SKILL.BLOCKING */]);
     }
     SendUpdate.skill_defence = skill_defence;
     function all_skills(user) {
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        skills(user, Object.keys(character._skills));
+        skills(user, content_1.SkillConfiguration.SKILL);
         cell_probability(user);
         alerts_1.Alerts.perks(user, character);
     }
@@ -367,7 +364,6 @@ var SendUpdate;
     }
     SendUpdate.update_player_actions_availability = update_player_actions_availability;
 })(SendUpdate || (exports.SendUpdate = SendUpdate = {}));
-exports.weapon_attack_tags = ['polearms', 'noweapon', 'onehand', 'ranged', 'twohanded'];
 // update_market_info(market: Cell) {
 //     let response = this.prepare_market_orders(market)
 //     for (let i of this.sockets) {
@@ -383,3 +379,4 @@ exports.weapon_attack_tags = ['polearms', 'noweapon', 'onehand', 'ranged', 'twoh
 //         }
 //     }
 // }
+

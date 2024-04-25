@@ -14,6 +14,8 @@ var Attack;
         //account for strength
         const physical_modifier = 1 + character_1.CharacterValues.phys_power(character) / 30;
         damage_types_1.DmgOps.mult_ip(result.damage, physical_modifier);
+        // general fighting skill
+        result.attack_skill += character_1.CharacterValues.skill(character, 25 /* SKILL.FIGHTING */);
         //account for character own skill
         result.attack_skill += character_1.CharacterValues.attack_skill(character);
         //account for items modifiers
@@ -40,7 +42,7 @@ var Attack;
     }
     Attack.best_melee_damage_type = best_melee_damage_type;
     function generate_ranged(character) {
-        const result = new class_1.AttackObj('ranged');
+        const result = new class_1.AttackObj([18 /* SKILL.RANGED */]);
         //raw items damage
         damage_types_1.DmgOps.add_ip(result.damage, character_1.CharacterValues.ranged_damage_raw(character));
         //account for strength
@@ -49,7 +51,7 @@ var Attack;
         //account for items modifiers
         equipment_effects_1.EquipmentEffects.modify_attack(character.equip, result);
         //account for own skill
-        const skill = character_1.CharacterValues.skill(character, 'ranged');
+        const skill = character_1.CharacterValues.skill(character, 18 /* SKILL.RANGED */);
         result.attack_skill += skill;
         //modify current damage with skill
         damage_types_1.DmgOps.mult_ip(result.damage, 1 + skill / 50);
@@ -61,14 +63,14 @@ var Attack;
         if (charge_flag) {
             base_damage += 2;
         }
-        if (character._perks.magic_bolt)
+        if (character_1.CharacterValues.perk(character, 14 /* PERK.MAGIC_BOLT */))
             (base_damage += 2);
-        const skill = character_1.CharacterValues.skill(character, 'magic_mastery');
+        const skill = character_1.CharacterValues.skill(character, 29 /* SKILL.BATTLE_MAGIC */);
         return Math.round(base_damage * character_1.CharacterValues.magic_power(character) / 10 * (1 + skill / 10));
     }
     Attack.magic_bolt_base_damage = magic_bolt_base_damage;
     function generate_magic_bolt(character, dist, charge_flag) {
-        const result = new class_1.AttackObj('ranged');
+        const result = new class_1.AttackObj([29 /* SKILL.BATTLE_MAGIC */]);
         result.damage.fire = magic_bolt_base_damage(character, charge_flag);
         if (dist > 1) {
             result.damage.fire = Math.round(result.damage.fire / 3 + (result.damage.fire * 2 / 3) / dist);

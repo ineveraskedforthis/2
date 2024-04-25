@@ -1,8 +1,6 @@
-import { EQUIP_SLOT, EquipSlotConfiguration, MATERIAL, MATERIAL_CATEGORY, MaterialStorage } from "@content/content";
+import { EQUIP_SLOT, EquipSlotConfiguration, MATERIAL, MATERIAL_CATEGORY, MaterialStorage, PERK, PerkStorage, SKILL, SkillStorage } from "@content/content";
 import { melee_attack_type } from "@custom_types/common";
 import { cell_id, location_id } from "@custom_types/ids";
-import { skill } from "@custom_types/inventory";
-import { Perks } from "../../../../shared/character";
 import { handle_attack_reputation_change } from "../SYSTEM_REPUTATION";
 import { AttackObj } from "../attack/class";
 import { Attack } from "../attack/system";
@@ -34,7 +32,7 @@ const GRAVEYARD_CELL = 0 as cell_id
 
 export namespace Event {
 
-    export function buy_perk(student: Character, perk: Perks, teacher: Character) {
+    export function buy_perk(student: Character, perk: PERK, teacher: Character) {
         let savings = student.savings.get()
         let price = perk_price(perk, student, teacher)
 
@@ -44,17 +42,28 @@ export namespace Event {
         }
 
 
-        let response = perk_requirement(perk, student)
-        if (response != 'ok') {
-            Alerts.generic_character_alert(student, 'alert', response)
-            return
+        let response = perk_requirement(perk)
+        let flag_allowed = true
+        for (const perk_check of response.perks) {
+            if (CharacterValues.perk(student, perk_check) == 0) {
+                Alerts.alert(student, `You need perk ${PerkStorage.get(perk_check).name} to learn ${PerkStorage.get(perk).name}`)
+                flag_allowed = false
+            }
         }
+        for (const skill_check of response.skills) {
+            if (CharacterValues.skill(student, skill_check.skill) < skill_check.difficulty) {
+                Alerts.alert(student, `You need perk ${SkillStorage.get(skill_check.skill).name} to learn ${PerkStorage.get(perk).name}`)
+                flag_allowed = false
+            }
+        }
+
+        if (!flag_allowed) return;
 
         Effect.Transfer.savings(student, teacher, price, CHANGE_REASON.EDUCATION)
         Effect.learn_perk(student, perk)
     }
 
-    export function buy_skill(student: Character, skill: skill, teacher: Character) {
+    export function buy_skill(student: Character, skill: SKILL, teacher: Character) {
         let response = Trigger.can_learn_from(student, teacher, skill)
         if (response.response == 'ok') {
             Effect.Transfer.savings(student, teacher, response.price, CHANGE_REASON.EDUCATION)
@@ -116,8 +125,8 @@ export namespace Event {
         if (dice < probability) {
             Effect.change_durability(character, EQUIP_SLOT.BOOTS, -1)
             let skill_dice = Math.random()
-            if (skill_dice * skill_dice * skill_dice > CharacterValues.skill(character, 'travelling') / 100) {
-                Effect.Change.skill(character, 'travelling', 1, CHANGE_REASON.TRAVEL)
+            if (skill_dice * skill_dice * skill_dice > CharacterValues.skill(character, SKILL.TRAVELLING) / 100) {
+                Effect.Change.skill(character, SKILL.TRAVELLING, 1, CHANGE_REASON.TRAVEL)
             }
         }
     }
@@ -139,7 +148,7 @@ export namespace Event {
         // it gives base 10% of arrows missing
         // and you rise your evasion if you are attacked
         const attack_skill = 2 * attack.attack_skill
-        const evasion = CharacterValues.skill(defender, 'evasion')
+        const evasion = CharacterValues.skill(defender, SKILL.EVASION)
 
         let evasion_chance = evasion / (100 + attack_skill)
         if (flag_dodge) evasion_chance = evasion_chance + 0.1
@@ -151,10 +160,7 @@ export namespace Event {
         }
 
         if (flag_dodge) {
-            const dice_evasion_skill_up = Math.random()
-            if (dice_evasion_skill_up > evasion_chance) {
-                Effect.Change.skill(defender, 'evasion', 1, CHANGE_REASON.DODGE)
-            }
+            Effect.roll_skill_improvement(defender, SKILL.EVASION, 100 - evasion_chance * 100, CHANGE_REASON.DODGE)
         }
     }
 
@@ -170,19 +176,13 @@ export namespace Event {
         //check missed attack because of lack of skill
         const acc = Accuracy.ranged(attacker, distance)
         const dice_accuracy = Math.random()
-        const attacker_ranged_skill = CharacterValues.skill(attacker, 'ranged')
+        const attacker_ranged_skill = CharacterValues.skill(attacker, SKILL.RANGED)
         if (dice_accuracy > acc) {
-            const dice_skill_up = Math.random()
-            if (dice_skill_up * 100 > attacker_ranged_skill) {
-                Effect.Change.skill(attacker, 'ranged', 1, CHANGE_REASON.SHOOTING)
-            }
+            Effect.roll_skill_improvement(attacker, SKILL.RANGED, 100 - 50 * acc, CHANGE_REASON.SHOOTING)
             return 'miss'
         }
 
-        const dice_skill_up = Math.random()
-        if (dice_skill_up * 50 > attacker_ranged_skill) {
-            Effect.Change.skill(attacker, 'ranged', 1, CHANGE_REASON.SHOOTING)
-        }
+        Effect.roll_skill_improvement(attacker, SKILL.RANGED, 100, CHANGE_REASON.SHOOTING)
 
         // create attack
         const attack = Attack.generate_ranged(attacker)
@@ -206,7 +206,7 @@ export namespace Event {
         attack.defender_status_change.fatigue += 5
         attack.defender_status_change.stress += 3
 
-        attack.defence_skill += CharacterValues.skill(defender, 'evasion')
+        attack.defence_skill += CharacterValues.skill(defender, SKILL.EVASION)
         deal_damage(defender, attack, attacker, false, CHANGE_REASON.RANGED_ATTACK)
 
         //if target is dead, loot it all
@@ -219,10 +219,9 @@ export namespace Event {
 
     export function unconditional_magic_bolt(attacker: Character, defender: Character, dist: number, flag_dodge: boolean, flag_charged: boolean) {
 
-        const dice = Math.random()
-        if (dice > CharacterValues.skill(attacker, 'magic_mastery') / 50) {
-            Effect.Change.skill(attacker, 'magic_mastery', 1, CHANGE_REASON.MAGIC_APPLICATION)
-        }
+        Effect.roll_skill_improvement(attacker, SKILL.MAGIC, 30, CHANGE_REASON.MAGIC_APPLICATION)
+        Effect.roll_skill_improvement(attacker, SKILL.BATTLE_MAGIC, 70, CHANGE_REASON.MAGIC_APPLICATION)
+
         const attack = Attack.generate_magic_bolt(attacker, dist, flag_charged)
         attack.defender_status_change.stress += 5
         deal_damage(defender, attack, attacker, false, CHANGE_REASON.MAGIC_BOLT);
@@ -339,34 +338,40 @@ export namespace Event {
 
     function attack_skill_improvement(attacker: Character, defender: Character, attack: AttackObj) {
         // if attacker skill is lower than total defence skill of attack, then attacker can improve
-        if (attack.attack_skill < attack.defence_skill) {
-            const improvement_rate = (100 + attack.defence_skill) / (100 + attack.attack_skill)
-            if (improvement_rate > 1) {
-                Effect.Change.skill(attacker, attack.weapon_type, Math.floor(improvement_rate), CHANGE_REASON.ATTACK)
-            } else {
-                const dice = Math.random();
-                if (dice < improvement_rate)
-                    Effect.Change.skill(attacker, attack.weapon_type, 1, CHANGE_REASON.ATTACK);
+        for (const attack_skill of attack.related_skills) {
+            if (attack.attack_skill < attack.defence_skill) {
+                const improvement_rate = (100 + attack.defence_skill) / (100 + attack.attack_skill)
+                if (improvement_rate > 1) {
+                    Effect.Change.skill(attacker, attack_skill, Math.floor(improvement_rate), CHANGE_REASON.ATTACK)
+                } else {
+                    const dice = Math.random();
+                    if (dice < improvement_rate)
+                        Effect.Change.skill(attacker, attack_skill, 1, CHANGE_REASON.ATTACK);
+                }
             }
         }
 
         //fighting provides constant growth of this skill up to some level
         //for defender
-        const dice = Math.random();
-        if ((dice < 0.5) && (attack.attack_skill <= 30)) {
-            Effect.Change.skill(defender, CharacterValues.equiped_weapon_required_skill(defender), 1, CHANGE_REASON.FIGHTING);
+        for (const fighting_skill of CharacterValues.equiped_weapon_required_skill(defender)) {
+            Effect.roll_skill_improvement(defender, fighting_skill, 30, CHANGE_REASON.FIGHTING)
         }
         //for attacker
-        const dice2 = Math.random();
-        if ((dice2 < 0.5) && (attack.attack_skill <= 30)) {
-            Effect.Change.skill(attacker, attack.weapon_type, 1, CHANGE_REASON.FIGHTING);
+        for (const fighting_skill of CharacterValues.equiped_weapon_required_skill(attacker)) {
+            Effect.roll_skill_improvement(attacker, fighting_skill, 30, CHANGE_REASON.FIGHTING)
         }
+
+        Effect.roll_skill_improvement(defender, SKILL.FIGHTING, attack.attack_skill, CHANGE_REASON.FIGHTING)
+        Effect.roll_skill_improvement(attacker, SKILL.FIGHTING, attack.defence_skill, CHANGE_REASON.FIGHTING)
     }
 
     function parry(defender: Character, attack: AttackObj) {
         const weapon = CharacterValues.equiped_weapon_required_skill(defender);
         const skill = CharacterValues.attack_skill(defender) + Math.round(Math.random() * 5);
         attack.defence_skill += skill;
+
+        attack.defence_skill += CharacterValues.skill(defender, SKILL.FIGHTING)
+        Effect.roll_skill_improvement(defender, SKILL.FIGHTING, attack.attack_skill, CHANGE_REASON.FIGHTING)
 
         // roll parry
         const parry_dice = Math.random()
@@ -376,18 +381,20 @@ export namespace Event {
         }
 
         //fighting provides constant growth of this skill up to some level
-        if (skill < attack.attack_skill) {
-            Effect.Change.skill(defender, weapon, 1, CHANGE_REASON.FIGHTING);
-        }
+        for (const weapon_skill of weapon) {
+            if (skill < attack.attack_skill) {
+                Effect.Change.skill(defender, weapon_skill, 1, CHANGE_REASON.FIGHTING);
+            }
 
-        const dice = Math.random();
-        if ((dice < 0.1) && (skill <= 10)) {
-            Effect.Change.skill(defender, weapon, 1, CHANGE_REASON.FIGHTING);
+            const dice = Math.random();
+            if ((dice < 0.1) && (skill <= 10)) {
+                Effect.Change.skill(defender, weapon_skill, 1, CHANGE_REASON.FIGHTING);
+            }
         }
     }
 
     function block(defender: Character, attack: AttackObj) {
-        const skill = CharacterValues.skill(defender, 'blocking') + Math.round(Math.random() * 10);
+        const skill = CharacterValues.skill(defender, SKILL.BLOCKING) + Math.round(Math.random() * 10);
         attack.defence_skill += skill;
 
         // roll block
@@ -398,18 +405,18 @@ export namespace Event {
 
         //fighting provides constant growth of this skill
         if (skill < attack.attack_skill) {
-            Effect.Change.skill(defender, 'blocking', 1, CHANGE_REASON.FIGHTING);
+            Effect.Change.skill(defender, SKILL.BLOCKING, 1, CHANGE_REASON.FIGHTING);
         }
 
         const dice = Math.random();
         if ((dice < 0.1) && (skill <= 20)) {
-            Effect.Change.skill(defender, 'blocking', 1, CHANGE_REASON.FIGHTING);
+            Effect.Change.skill(defender, SKILL.BLOCKING, 1, CHANGE_REASON.FIGHTING);
         }
     }
 
     function evade(defender: Character, attack: AttackObj, dodge_flag: boolean) {
         //this skill has quite wide deviation
-        const skill = trim(CharacterValues.skill(defender, 'evasion') + Math.round((Math.random() - 0.5) * 40), 0, 200);
+        const skill = trim(CharacterValues.skill(defender, SKILL.EVASION) + Math.round((Math.random() - 0.5) * 40), 0, 200);
 
         //passive evasion
         attack.defence_skill += skill;
@@ -428,12 +435,12 @@ export namespace Event {
 
         //fighting provides constant growth of this skill
         if (skill < attack.attack_skill) {
-            Effect.Change.skill(defender, 'evasion', 1, CHANGE_REASON.FIGHTING);
+            Effect.Change.skill(defender, SKILL.EVASION, 1, CHANGE_REASON.FIGHTING);
         }
 
         const dice = Math.random();
         if ((dice < 0.1) && (skill <= 10)) {
-            Effect.Change.skill(defender, 'evasion', 1, CHANGE_REASON.FIGHTING);
+            Effect.Change.skill(defender, SKILL.EVASION, 1, CHANGE_REASON.FIGHTING);
         }
     }
 
@@ -476,11 +483,11 @@ export namespace Event {
         for (const item of loot) {
             if (MaterialStorage.get(item.material).category == MATERIAL_CATEGORY.SKIN) {
                 const dice = Math.random()
-                const skinning_skill = CharacterValues.skill(killer, 'skinning')
+                const skinning_skill = CharacterValues.skill(killer, SKILL.SKINNING)
                 const amount = Math.round(item.amount * dice * skinning_skill / 100 * skinning_skill / 100)
                 Event.change_stash(killer, item.material, amount)
                 if (dice > skinning_skill / 100) {
-                    Effect.Change.skill(killer, 'skinning', 1, CHANGE_REASON.SKINNING)
+                    Effect.Change.skill(killer, SKILL.SKINNING, 1, CHANGE_REASON.SKINNING)
                 }
             } else {
                 Event.change_stash(killer, item.material, item.amount)
@@ -540,7 +547,10 @@ export namespace Event {
         let cost = 1
         if (cost > character.stash.get(MATERIAL.WOOD_RED)) return;
         let difficulty = Math.floor((location.devastation) / 3 + 10)
-        on_craft_update(character, [{skill: 'woodwork', difficulty: difficulty}])
+        on_craft_update(character, [{skill_checks: [
+            {skill: SKILL.WOODWORKING, difficulty: difficulty / 2},
+            {skill: SKILL.CARPENTER, difficulty: difficulty}
+        ]}])
         change_stash(character, MATERIAL.WOOD_RED, -cost)
         Effect.location_repair(location, repair)
     }

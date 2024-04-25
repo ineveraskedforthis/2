@@ -9,28 +9,28 @@ function generate_skill_check(skill_check, difficulty, material_category) {
         case 1 /* MATERIAL_CATEGORY.PLANT */: break;
         case 2 /* MATERIAL_CATEGORY.MATERIAL */: break;
         case 3 /* MATERIAL_CATEGORY.BONE */:
-            skill_check.push({ skill: 'bone_carving', difficulty: difficulty });
+            skill_check.push({ skill: 9 /* SKILL.BONE_CARVING */, difficulty: difficulty });
             break;
         case 4 /* MATERIAL_CATEGORY.SKIN */:
-            skill_check.push({ skill: "clothier", difficulty: difficulty });
+            skill_check.push({ skill: 5 /* SKILL.LEATHERWORKING */, difficulty: difficulty });
             break;
         case 5 /* MATERIAL_CATEGORY.LEATHER */:
-            skill_check.push({ skill: "clothier", difficulty: difficulty });
+            skill_check.push({ skill: 5 /* SKILL.LEATHERWORKING */, difficulty: difficulty });
             break;
         case 6 /* MATERIAL_CATEGORY.MEAT */:
-            skill_check.push({ skill: "clothier", difficulty: difficulty });
+            skill_check.push({ skill: 0 /* SKILL.CLOTHIER */, difficulty: difficulty });
             break;
         case 7 /* MATERIAL_CATEGORY.FISH */: break;
         case 8 /* MATERIAL_CATEGORY.FOOD */: break;
         case 9 /* MATERIAL_CATEGORY.FRUIT */: break;
         case 10 /* MATERIAL_CATEGORY.WOOD */:
-            skill_check.push({ skill: "woodwork", difficulty: difficulty });
+            skill_check.push({ skill: 4 /* SKILL.WOODWORKING */, difficulty: difficulty });
             break;
         case 12 /* MATERIAL_CATEGORY.METAL */:
-            skill_check.push({ skill: "smith", difficulty: difficulty });
+            skill_check.push({ skill: 11 /* SKILL.SMITH */, difficulty: difficulty });
             break;
         case 11 /* MATERIAL_CATEGORY.TEXTILE */:
-            skill_check.push({ skill: "clothier", difficulty: difficulty });
+            skill_check.push({ skill: 0 /* SKILL.CLOTHIER */, difficulty: difficulty });
             break;
     }
     return skill_check;
@@ -82,6 +82,9 @@ function generate_item_crafts() {
         const slot = content_1.EquipSlotStorage.get(armour.slot);
         let difficulty = 50;
         let skills = [];
+        if (slot.id == 8 /* EQUIP_SLOT.BOOTS */) {
+            skills.push({ skill: 10 /* SKILL.CORDWAINING */, difficulty: 30 });
+        }
         skills = generate_skill_check(skills, difficulty, material_data.category);
         const main_box = {
             amount: Math.floor(1 + armour.size * input_multiplier / material_data.unit_size),

@@ -1,62 +1,26 @@
-import { Perks } from "../../../../shared/character";
+import { PERK, SKILL } from "@content/content";
+import { skill_check } from "@custom_types/inventory";
 import { Character } from "../data/entities/character";
-// import { Perks } from "./Perks";
 
-export function perk_requirement(tag: Perks, character: Character) {
+export function perk_requirement(tag: PERK) : {perks: PERK[], skills: skill_check[]} {
     switch (tag) {
-        case 'meat_master': {
-            if (character._skills.cooking < 15) {
-                return 'not_enough_cooking_skill_15';
-            }
-            return 'ok';
-        }
-        case 'fletcher': {
-            if (character._skills.woodwork < 15) {
-                return 'not_enough_woodwork_skill_15';
-            }
-            return 'ok';
-        }
-        case 'advanced_unarmed': {
-            if (character._skills.noweapon < 15) {
-                return 'not_enough_unarmed_skill_15';
-            }
-            return 'ok';
-        }
-        case 'advanced_polearm': {
-            if (character._skills.polearms < 15) {
-                return 'not_enough_polearms_skill_15';
-            }
-            return 'ok';
-        }
-        case 'mage_initiation': {
-            if (character._skills.magic_mastery < 15) {
-                return 'not_enough_magic_skill_15';
-            }
-            return 'ok';
-        }
-        case 'magic_bolt': {
-            if (!character._perks.mage_initiation) {
-                return 'not_initiated';
-            }
-            if (character._skills.magic_mastery < 15) {
-                return 'not_enough_magic_skill_15';
-            }
-            return 'ok';
-        }
-        case 'blood_mage': {
-            if (!character._perks.mage_initiation) {
-                return 'not_initiated';
-            }
-            if (character._skills.magic_mastery < 30) {
-                return 'not_enough_magic_skill_30';
-            }
-            return 'ok';
-        }
-        case 'skin_armour_master': {
-            if (character._skills.clothier < 15) {
-                return 'not_enough_clothier_skill_15';
-            }
-            return 'ok';
-        }
+        case PERK.PRO_BUTCHER: return {perks: [], skills: [{skill: SKILL.COOKING, difficulty: 15}]}
+        case PERK.PRO_COOK: return {perks: [], skills: [{skill: SKILL.COOKING, difficulty: 25}]}
+        case PERK.PRO_BONEWORK: return {perks: [], skills: [{skill: SKILL.BONE_CARVING, difficulty: 25}]}
+        case PERK.PRO_FLETCHER: return {perks: [], skills: [{skill: SKILL.FLETCHING, difficulty: 25}]}
+        case PERK.PRO_LEATHERWORK: return {perks: [], skills: [{skill: SKILL.LEATHERWORKING, difficulty: 25}]}
+        case PERK.PRO_TANNING: return {perks: [], skills: [{skill: SKILL.TANNING, difficulty: 25}]}
+        case PERK.PRO_CORDWAINER: return {perks: [], skills: [{skill: SKILL.CORDWAINING, difficulty: 25}]}
+        case PERK.PRO_FIGHTER_UNARMED: return {perks: [], skills: [{skill: SKILL.UNARMED, difficulty: 25}, {skill: SKILL.FIGHTING, difficulty: 50}]}
+        case PERK.PRO_FIGHTER_POLEARMS: return {perks: [], skills: [{skill: SKILL.POLEARMS, difficulty: 25}, {skill: SKILL.FIGHTING, difficulty: 50}]}
+        case PERK.PRO_FIGHTER_ONEHAND: return {perks: [], skills: [{skill: SKILL.ONEHANDED, difficulty: 25}, {skill: SKILL.FIGHTING, difficulty: 50}]}
+        case PERK.PRO_FIGHTER_TWOHAND: return {perks: [], skills: [{skill: SKILL.TWOHANDED, difficulty: 25}, {skill: SKILL.FIGHTING, difficulty: 50}]}
+        case PERK.MAGIC_INITIATION: return {perks: [], skills: [{skill: SKILL.MAGIC, difficulty: 15}]}
+        case PERK.PRO_ALCHEMIST: return {perks: [PERK.MAGIC_INITIATION], skills: [{skill: SKILL.MAGIC, difficulty: 20}]}
+        case PERK.MAGIC_BLOOD: return {perks: [PERK.MAGIC_INITIATION], skills: [{skill: SKILL.MAGIC, difficulty: 50}]}
+        case PERK.MAGIC_BOLT: return {perks: [PERK.MAGIC_INITIATION], skills: [{skill: SKILL.MAGIC, difficulty: 15}]}
+        case PERK.MAGIC_BLINK: return {perks: [PERK.MAGIC_INITIATION], skills: [{skill: SKILL.MAGIC, difficulty: 50}]}
+        case PERK.BATTLE_DODGE: return {perks: [], skills: [{skill: SKILL.FIGHTING, difficulty: 25}]}
+        case PERK.BATTLE_CHARGE: return {perks: [], skills: [{skill: SKILL.FIGHTING, difficulty: 25}]}
     }
 }

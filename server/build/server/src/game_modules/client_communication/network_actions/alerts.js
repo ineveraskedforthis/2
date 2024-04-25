@@ -117,7 +117,7 @@ var Alerts;
     }
     Alerts.craft_item_complete = craft_item_complete;
     function skill(user, tag, pure_value, current_value) {
-        Alerts.generic_user_alert(user, `val_${tag}_c`, current_value);
+        Alerts.generic_user_alert(user, `val_${content_1.SkillStorage.get(tag).id_string}_c`, current_value);
     }
     Alerts.skill = skill;
     function battle_action_chance(user, tag, value) {
@@ -359,7 +359,7 @@ var Alerts;
         }
         Log.rage_set = rage_set;
         function skill_change(character, skill, d, reason) {
-            Alerts.log_to_character(character, `Your ${skill} skill changed by ${d}. Reason: ${reason}`);
+            Alerts.log_to_character(character, `Your ${content_1.SkillStorage.get(skill).name} skill changed by ${d}. Reason: ${reason}`);
         }
         Log.skill_change = skill_change;
     })(Log = Alerts.Log || (Alerts.Log = {}));

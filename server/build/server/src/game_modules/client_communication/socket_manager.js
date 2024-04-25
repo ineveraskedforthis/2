@@ -3,11 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SocketManager = void 0;
 const user_1 = require("./user");
 const user_manager_1 = require("./user_manager");
-// import { SECTIONS } from "../static_data/map_definitions";
 const content_1 = require("../../.././../game_content/src/content");
 const actions_00_1 = require("../actions/actions_00");
 const crafts_storage_1 = require("../craft/crafts_storage");
-const skills_1 = require("../static_data/skills");
 const systems_communication_1 = require("../systems_communication");
 const actions_1 = require("./network_actions/actions");
 const alerts_1 = require("./network_actions/alerts");
@@ -115,8 +113,6 @@ class SocketManager {
     }
     connection(socket) {
         console.log('a user connected');
-        socket.emit('skill-tags', skills_1.SKILLS);
-        // socket.emit('sections', SECTIONS);
         var messages = this.MESSAGES;
         for (let message of messages) {
             socket.emit('new-message', { id: message.id, msg: message.content, user: message.sender });

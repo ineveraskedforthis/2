@@ -3,15 +3,15 @@ import { Convert } from "../../systems_communication"
 import { SocketWrapper } from "../user"
 import { perk_price } from "../../prices/perk_base_price"
 import { ResponseNegativeQuantified, Trigger } from "../../events/triggers"
-import { Perks } from "@custom_types/character"
 import { skill_price } from "../../prices/skill_price"
 import { can_talk, is_enemy_characters } from "../../SYSTEM_REPUTATION"
 import { Character } from "../../data/entities/character"
-import { skill } from "@custom_types/inventory"
 import { Data } from "../../data/data_objects"
 import { DataID } from "../../data/data_id"
 import { Extract } from "../../data-extraction/extract-data"
 import { CharacterValues } from "../../scripted-values/character"
+import { PERK, PerkConfiguration, SKILL, SkillConfiguration } from "@content/content"
+import { money } from "@custom_types/common"
 
 export namespace Dialog {
     function talking_check(sw: SocketWrapper, character_id: unknown): [undefined, undefined]|[Character, Character]  {
@@ -81,23 +81,23 @@ export namespace Dialog {
             race: target_character.race,
             factions: DataID.Reputation.character(target_character.id).map(Convert.reputation_to_socket),
             current_goal: target_character.current_ai_action,
-            perks: {},
-            skills: {},
+            perks: [] as Partial<Record<PERK, money>>,
+            skills: [] as Partial<Record<SKILL, [number, number]>>,
             model: target_character.model,
             equip: Extract.CharacterEquipModel(target_character)
         }
-        for (let perk of Object.keys(data) ) {
-            if (data[perk as Perks] == true) {
-                response.perks[perk as Perks] = perk_price(perk as Perks, character, target_character)
+        for (let perk of PerkConfiguration.PERK ) {
+            if (data[perk]) {
+                response.perks[perk] = perk_price(perk, character, target_character)
             }
         }
-        for (let skill of Object.keys(target_character._skills)) {
-            let teaching_response = Trigger.can_learn_from(character, target_character, skill as skill)
+        for (let skill of SkillConfiguration.SKILL) {
+            let teaching_response = Trigger.can_learn_from(character, target_character, skill)
             if (teaching_response.response == 'ok' || teaching_response.response == ResponseNegativeQuantified.Money) {
-                const teacher_skill = CharacterValues.skill(target_character, skill as skill)
-                response.skills[skill as skill] = [
+                const teacher_skill = CharacterValues.skill(target_character, skill)
+                response.skills[skill] = [
                     teacher_skill,
-                    skill_price(skill as skill, character, target_character)
+                    skill_price(skill, character, target_character)
                 ]
             }
         }

@@ -121,6 +121,62 @@ export const enum ARMOUR {
 }
 export type armour_string_id = "helmet-skull-rat"|"helmet-textile"|"helmet-leather-rat"|"helmet-hair-graci"|"mail-bone-rat"|"mail-leather-rat"|"mail-textile"|"mail-leather-ball"|"mail-leather-graci"|"dress-meat-elodino"|"pants-leather-rat"|"pants-textile"|"boots-leather-rat"|"gauntlet-right-leather-rat"|"gauntlet-right-textile"|"gauntlet-left-leather-rat"|"gauntlet-left-textile"|"socks-textile"|"pauldron-left-bone-rat"|"pauldron-left-leather-rat"|"pauldron-right-bone-rat"|"robe-leather-rat"|"belt-textile"|"shirt-textile"
 
+export const enum SKILL {
+    CLOTHIER,
+    WEAVING,
+    COOKING,
+    SKINNING,
+    WOODWORKING,
+    LEATHERWORKING,
+    CARPENTER,
+    BOWMAKING,
+    FLETCHING,
+    BONE_CARVING,
+    CORDWAINING,
+    SMITH,
+    TANNING,
+    HUNTING,
+    GATHERING,
+    FISHING,
+    WOODCUTTING,
+    TRAVELLING,
+    RANGED,
+    EVASION,
+    BLOCKING,
+    ONEHANDED,
+    TWOHANDED,
+    POLEARMS,
+    UNARMED,
+    FIGHTING,
+    MAGIC,
+    ALCHEMY,
+    ENCHANTING,
+    BATTLE_MAGIC,
+}
+export type skill_string_id = "clothier"|"weaving"|"cooking"|"skinning"|"woodworking"|"leatherworking"|"carpenter"|"bowmaking"|"fletching"|"bone_carving"|"cordwaining"|"smith"|"tanning"|"hunting"|"gathering"|"fishing"|"woodcutting"|"travelling"|"ranged"|"evasion"|"blocking"|"onehanded"|"twohanded"|"polearms"|"unarmed"|"fighting"|"magic"|"alchemy"|"enchanting"|"battle_magic"
+
+export const enum PERK {
+    PRO_BUTCHER,
+    PRO_COOK,
+    PRO_BONEWORK,
+    PRO_FLETCHER,
+    PRO_LEATHERWORK,
+    PRO_TANNING,
+    PRO_CORDWAINER,
+    PRO_FIGHTER_UNARMED,
+    PRO_FIGHTER_POLEARMS,
+    PRO_FIGHTER_ONEHAND,
+    PRO_FIGHTER_TWOHAND,
+    MAGIC_INITIATION,
+    PRO_ALCHEMIST,
+    MAGIC_BLOOD,
+    MAGIC_BOLT,
+    MAGIC_BLINK,
+    BATTLE_DODGE,
+    BATTLE_CHARGE,
+}
+export type perk_string_id = "pro_butcher"|"pro_cook"|"pro_bonework"|"pro_fletcher"|"pro_leatherwork"|"pro_tanning"|"pro_cordwainer"|"pro_fighter_unarmed"|"pro_fighter_polearms"|"pro_fighter_onehand"|"pro_fighter_twohand"|"magic_initiation"|"pro_alchemist"|"magic_blood"|"magic_bolt"|"magic_blink"|"battle_dodge"|"battle_charge"
+
 export interface MaterialData {
     readonly id : MATERIAL
     readonly category : MATERIAL_CATEGORY
@@ -181,6 +237,25 @@ export interface ArmourData {
     readonly size : number
     readonly secondary_size : number
     readonly craftable : number
+    readonly name : string
+}
+
+
+export interface SkillData {
+    readonly id : SKILL
+    readonly fighting : number
+    readonly crafting : number
+    readonly strength_bonus : number
+    readonly magic_bonus : number
+    readonly name : string
+}
+
+
+export interface PerkData {
+    readonly id : PERK
+    readonly base_price : number
+    readonly strength_bonus : number
+    readonly magic_bonus : number
     readonly name : string
 }
 
@@ -398,6 +473,73 @@ export class ArmourConfiguration {
     // Strings: 
 
     static ARMOUR_NAME : Record<ARMOUR, string> = ["Rat skull", "Hat", "Hat", "Wig", "Mail", "Mail", "Mail", "Mail", "Mail", "Dress", "Pants", "Pants", "Boots", "Right Glove", "Right Glove", "Left Glove", "Left Glove", "Socks", "Left Bone Pauldron", "Left Pauldron", "Right Bone Pauldron", "Robe", "Belt", "Shirt", ]
+}
+
+export class SkillConfiguration {
+    static SKILL : SKILL[] = [SKILL.CLOTHIER, SKILL.WEAVING, SKILL.COOKING, SKILL.SKINNING, SKILL.WOODWORKING, SKILL.LEATHERWORKING, SKILL.CARPENTER, SKILL.BOWMAKING, SKILL.FLETCHING, SKILL.BONE_CARVING, SKILL.CORDWAINING, SKILL.SMITH, SKILL.TANNING, SKILL.HUNTING, SKILL.GATHERING, SKILL.FISHING, SKILL.WOODCUTTING, SKILL.TRAVELLING, SKILL.RANGED, SKILL.EVASION, SKILL.BLOCKING, SKILL.ONEHANDED, SKILL.TWOHANDED, SKILL.POLEARMS, SKILL.UNARMED, SKILL.FIGHTING, SKILL.MAGIC, SKILL.ALCHEMY, SKILL.ENCHANTING, SKILL.BATTLE_MAGIC, ]
+    static SKILL_FROM_STRING : Record<skill_string_id, SKILL> = { "clothier": SKILL.CLOTHIER, "weaving": SKILL.WEAVING, "cooking": SKILL.COOKING, "skinning": SKILL.SKINNING, "woodworking": SKILL.WOODWORKING, "leatherworking": SKILL.LEATHERWORKING, "carpenter": SKILL.CARPENTER, "bowmaking": SKILL.BOWMAKING, "fletching": SKILL.FLETCHING, "bone_carving": SKILL.BONE_CARVING, "cordwaining": SKILL.CORDWAINING, "smith": SKILL.SMITH, "tanning": SKILL.TANNING, "hunting": SKILL.HUNTING, "gathering": SKILL.GATHERING, "fishing": SKILL.FISHING, "woodcutting": SKILL.WOODCUTTING, "travelling": SKILL.TRAVELLING, "ranged": SKILL.RANGED, "evasion": SKILL.EVASION, "blocking": SKILL.BLOCKING, "onehanded": SKILL.ONEHANDED, "twohanded": SKILL.TWOHANDED, "polearms": SKILL.POLEARMS, "unarmed": SKILL.UNARMED, "fighting": SKILL.FIGHTING, "magic": SKILL.MAGIC, "alchemy": SKILL.ALCHEMY, "enchanting": SKILL.ENCHANTING, "battle_magic": SKILL.BATTLE_MAGIC }
+    static SKILL_TO_STRING : Record<SKILL, skill_string_id> = ["clothier", "weaving", "cooking", "skinning", "woodworking", "leatherworking", "carpenter", "bowmaking", "fletching", "bone_carving", "cordwaining", "smith", "tanning", "hunting", "gathering", "fishing", "woodcutting", "travelling", "ranged", "evasion", "blocking", "onehanded", "twohanded", "polearms", "unarmed", "fighting", "magic", "alchemy", "enchanting", "battle_magic", ]
+    static get zero_record() : Record<SKILL, number> {
+        return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
+    }
+    static get ones_record() : Record<SKILL, number> {
+        return [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ]
+    }
+    static is_valid_id(id: number): id is SKILL {
+        return id in this.SKILL 
+    }
+    static is_valid_string_id(id: string): id is skill_string_id {
+        return id in this.SKILL_FROM_STRING 
+    }
+
+    // ENUMS: 
+
+    static SKILL_SKILL : Record<SKILL, SKILL> = [SKILL.CLOTHIER, SKILL.WEAVING, SKILL.COOKING, SKILL.SKINNING, SKILL.WOODWORKING, SKILL.LEATHERWORKING, SKILL.CARPENTER, SKILL.BOWMAKING, SKILL.FLETCHING, SKILL.BONE_CARVING, SKILL.CORDWAINING, SKILL.SMITH, SKILL.TANNING, SKILL.HUNTING, SKILL.GATHERING, SKILL.FISHING, SKILL.WOODCUTTING, SKILL.TRAVELLING, SKILL.RANGED, SKILL.EVASION, SKILL.BLOCKING, SKILL.ONEHANDED, SKILL.TWOHANDED, SKILL.POLEARMS, SKILL.UNARMED, SKILL.FIGHTING, SKILL.MAGIC, SKILL.ALCHEMY, SKILL.ENCHANTING, SKILL.BATTLE_MAGIC, ]
+    static SKILL_SKILL_STRING : Record<SKILL, skill_string_id> = ["clothier", "weaving", "cooking", "skinning", "woodworking", "leatherworking", "carpenter", "bowmaking", "fletching", "bone_carving", "cordwaining", "smith", "tanning", "hunting", "gathering", "fishing", "woodcutting", "travelling", "ranged", "evasion", "blocking", "onehanded", "twohanded", "polearms", "unarmed", "fighting", "magic", "alchemy", "enchanting", "battle_magic", ]
+
+    // Numbers: 
+
+    static SKILL_FIGHTING : Record<SKILL, number> = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, ]
+    static SKILL_CRAFTING : Record<SKILL, number> = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
+    static SKILL_STRENGTH_BONUS : Record<SKILL, number> = [1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 3.0, 1.0, 3.0, 2.0, 2.0, 5.0, 5.0, 1.0, 2.0, 3.0, 5.0, 5.0, 5.0, 5.0, 8.0, 0.0, 0.0, 0.0, 1.0, ]
+    static SKILL_MAGIC_BONUS : Record<SKILL, number> = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 2, 4, 10, ]
+
+    // Strings: 
+
+    static SKILL_NAME : Record<SKILL, string> = ["Clothier", "Weaving", "Cooking", "Skinning", "Woodworking", "Leatherworking", "Carpentry", "Bowmaking", "Fletching", "Bone carving", "Cordwaining", "Smithing", "Tanning", "Hunting", "Gathering", "Fishing", "Woodcutting", "Travelling", "Sniping", "Evading", "Blocking", "One handed weapons", "Two handed weapons", "Polearms", "Unarmed", "Fighting", "Magic", "Alchemy", "Enchanting", "Battle magic", ]
+}
+
+export class PerkConfiguration {
+    static PERK : PERK[] = [PERK.PRO_BUTCHER, PERK.PRO_COOK, PERK.PRO_BONEWORK, PERK.PRO_FLETCHER, PERK.PRO_LEATHERWORK, PERK.PRO_TANNING, PERK.PRO_CORDWAINER, PERK.PRO_FIGHTER_UNARMED, PERK.PRO_FIGHTER_POLEARMS, PERK.PRO_FIGHTER_ONEHAND, PERK.PRO_FIGHTER_TWOHAND, PERK.MAGIC_INITIATION, PERK.PRO_ALCHEMIST, PERK.MAGIC_BLOOD, PERK.MAGIC_BOLT, PERK.MAGIC_BLINK, PERK.BATTLE_DODGE, PERK.BATTLE_CHARGE, ]
+    static PERK_FROM_STRING : Record<perk_string_id, PERK> = { "pro_butcher": PERK.PRO_BUTCHER, "pro_cook": PERK.PRO_COOK, "pro_bonework": PERK.PRO_BONEWORK, "pro_fletcher": PERK.PRO_FLETCHER, "pro_leatherwork": PERK.PRO_LEATHERWORK, "pro_tanning": PERK.PRO_TANNING, "pro_cordwainer": PERK.PRO_CORDWAINER, "pro_fighter_unarmed": PERK.PRO_FIGHTER_UNARMED, "pro_fighter_polearms": PERK.PRO_FIGHTER_POLEARMS, "pro_fighter_onehand": PERK.PRO_FIGHTER_ONEHAND, "pro_fighter_twohand": PERK.PRO_FIGHTER_TWOHAND, "magic_initiation": PERK.MAGIC_INITIATION, "pro_alchemist": PERK.PRO_ALCHEMIST, "magic_blood": PERK.MAGIC_BLOOD, "magic_bolt": PERK.MAGIC_BOLT, "magic_blink": PERK.MAGIC_BLINK, "battle_dodge": PERK.BATTLE_DODGE, "battle_charge": PERK.BATTLE_CHARGE }
+    static PERK_TO_STRING : Record<PERK, perk_string_id> = ["pro_butcher", "pro_cook", "pro_bonework", "pro_fletcher", "pro_leatherwork", "pro_tanning", "pro_cordwainer", "pro_fighter_unarmed", "pro_fighter_polearms", "pro_fighter_onehand", "pro_fighter_twohand", "magic_initiation", "pro_alchemist", "magic_blood", "magic_bolt", "magic_blink", "battle_dodge", "battle_charge", ]
+    static get zero_record() : Record<PERK, number> {
+        return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
+    }
+    static get ones_record() : Record<PERK, number> {
+        return [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ]
+    }
+    static is_valid_id(id: number): id is PERK {
+        return id in this.PERK 
+    }
+    static is_valid_string_id(id: string): id is perk_string_id {
+        return id in this.PERK_FROM_STRING 
+    }
+
+    // ENUMS: 
+
+    static PERK_PERK : Record<PERK, PERK> = [PERK.PRO_BUTCHER, PERK.PRO_COOK, PERK.PRO_BONEWORK, PERK.PRO_FLETCHER, PERK.PRO_LEATHERWORK, PERK.PRO_TANNING, PERK.PRO_CORDWAINER, PERK.PRO_FIGHTER_UNARMED, PERK.PRO_FIGHTER_POLEARMS, PERK.PRO_FIGHTER_ONEHAND, PERK.PRO_FIGHTER_TWOHAND, PERK.MAGIC_INITIATION, PERK.PRO_ALCHEMIST, PERK.MAGIC_BLOOD, PERK.MAGIC_BOLT, PERK.MAGIC_BLINK, PERK.BATTLE_DODGE, PERK.BATTLE_CHARGE, ]
+    static PERK_PERK_STRING : Record<PERK, perk_string_id> = ["pro_butcher", "pro_cook", "pro_bonework", "pro_fletcher", "pro_leatherwork", "pro_tanning", "pro_cordwainer", "pro_fighter_unarmed", "pro_fighter_polearms", "pro_fighter_onehand", "pro_fighter_twohand", "magic_initiation", "pro_alchemist", "magic_blood", "magic_bolt", "magic_blink", "battle_dodge", "battle_charge", ]
+
+    // Numbers: 
+
+    static PERK_BASE_PRICE : Record<PERK, number> = [500, 500, 1000, 500, 1000, 500, 750, 300, 300, 300, 300, 1500, 2000, 500, 1000, 1500, 250, 250, ]
+    static PERK_STRENGTH_BONUS : Record<PERK, number> = [1.0, 0.0, 0.1, 0.1, 0.1, 0.1, 0.1, 5.0, 2.0, 2.0, 4.0, 0.0, 0.0, 0.5, 0.0, 0.0, 1.0, 1.0, ]
+    static PERK_MAGIC_BONUS : Record<PERK, number> = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 1, 2, 2, 2, 0, 0, ]
+
+    // Strings: 
+
+    static PERK_NAME : Record<PERK, string> = ["Butcher", "Cook", "Bonecarver", "Fletcher", "Leatherworker", "Tanner", "Cordwainer", "Wrestler", "Spearman", "Fighter(onehand)", "Fighter(twohand)", "Initiated mage", "Alchemist", "Blood mage", "Magic bolt", "Magic blink", "Dodge", "Charge", ]
 }
 
 
@@ -631,6 +773,69 @@ class ArmourInstance implements ArmourData {
 }
 
 
+
+class SkillInstance implements SkillData {
+    private _id: SKILL
+    constructor(id: SKILL) {
+        if (!(id in SkillConfiguration.SKILL)) {
+            throw new Error(`Invalid Skill id: ${id}`);
+        }
+        this._id = id
+    }
+    get id() {
+        return this._id
+    }
+    get id_string() {
+        return SkillConfiguration.SKILL_SKILL_STRING[this._id]
+    }
+    get fighting() {
+        return SkillConfiguration.SKILL_FIGHTING[this._id]
+    }
+    get crafting() {
+        return SkillConfiguration.SKILL_CRAFTING[this._id]
+    }
+    get strength_bonus() {
+        return SkillConfiguration.SKILL_STRENGTH_BONUS[this._id]
+    }
+    get magic_bonus() {
+        return SkillConfiguration.SKILL_MAGIC_BONUS[this._id]
+    }
+    get name() {
+        return SkillConfiguration.SKILL_NAME[this._id]
+    }
+}
+
+
+
+class PerkInstance implements PerkData {
+    private _id: PERK
+    constructor(id: PERK) {
+        if (!(id in PerkConfiguration.PERK)) {
+            throw new Error(`Invalid Perk id: ${id}`);
+        }
+        this._id = id
+    }
+    get id() {
+        return this._id
+    }
+    get id_string() {
+        return PerkConfiguration.PERK_PERK_STRING[this._id]
+    }
+    get base_price() {
+        return PerkConfiguration.PERK_BASE_PRICE[this._id]
+    }
+    get strength_bonus() {
+        return PerkConfiguration.PERK_STRENGTH_BONUS[this._id]
+    }
+    get magic_bonus() {
+        return PerkConfiguration.PERK_MAGIC_BONUS[this._id]
+    }
+    get name() {
+        return PerkConfiguration.PERK_NAME[this._id]
+    }
+}
+
+
 export class MaterialStorage {
     private static instances : Record<MATERIAL, MaterialInstance> = [new MaterialInstance(MATERIAL.ARROW_BONE), new MaterialInstance(MATERIAL.ARROW_ZAZ), new MaterialInstance(MATERIAL.COTTON), new MaterialInstance(MATERIAL.TEXTILE), new MaterialInstance(MATERIAL.SMALL_BONE_RAT), new MaterialInstance(MATERIAL.SMALL_BONE_HUMAN), new MaterialInstance(MATERIAL.SMALL_BONE_GRACI), new MaterialInstance(MATERIAL.BONE_RAT), new MaterialInstance(MATERIAL.BONE_HUMAN), new MaterialInstance(MATERIAL.BONE_GRACI), new MaterialInstance(MATERIAL.SKIN_RAT), new MaterialInstance(MATERIAL.SKIN_HUMAN), new MaterialInstance(MATERIAL.SKIN_GRACI), new MaterialInstance(MATERIAL.SKIN_BALL), new MaterialInstance(MATERIAL.LEATHER_RAT), new MaterialInstance(MATERIAL.LEATHER_HUMAN), new MaterialInstance(MATERIAL.LEATHER_GRACI), new MaterialInstance(MATERIAL.LEATHER_BALL), new MaterialInstance(MATERIAL.MEAT_RAT), new MaterialInstance(MATERIAL.MEAT_RAT_FRIED), new MaterialInstance(MATERIAL.MEAT_ELODINO), new MaterialInstance(MATERIAL.MEAT_BALL), new MaterialInstance(MATERIAL.MEAT_HUMAN), new MaterialInstance(MATERIAL.MEAT_GRACI), new MaterialInstance(MATERIAL.MEAT_HUMAN_FRIED), new MaterialInstance(MATERIAL.MEAT_GRACI_FRIED), new MaterialInstance(MATERIAL.FISH_OKU), new MaterialInstance(MATERIAL.FISH_OKU_FRIED), new MaterialInstance(MATERIAL.BERRY_FIE), new MaterialInstance(MATERIAL.BERRY_ZAZ), new MaterialInstance(MATERIAL.ZAZ), new MaterialInstance(MATERIAL.WOOD_RED), new MaterialInstance(MATERIAL.WOOD_RED_PLATE), new MaterialInstance(MATERIAL.HAIR_GRACI), new MaterialInstance(MATERIAL.STEEL)]
 
@@ -736,6 +941,42 @@ export class ArmourStorage {
             throw new Error(`Invalid Armour id: ${id}`);
         }
         return ArmourStorage.instances[ArmourConfiguration.ARMOUR_FROM_STRING[id]]
+    }
+}
+
+export class SkillStorage {
+    private static instances : Record<SKILL, SkillInstance> = [new SkillInstance(SKILL.CLOTHIER), new SkillInstance(SKILL.WEAVING), new SkillInstance(SKILL.COOKING), new SkillInstance(SKILL.SKINNING), new SkillInstance(SKILL.WOODWORKING), new SkillInstance(SKILL.LEATHERWORKING), new SkillInstance(SKILL.CARPENTER), new SkillInstance(SKILL.BOWMAKING), new SkillInstance(SKILL.FLETCHING), new SkillInstance(SKILL.BONE_CARVING), new SkillInstance(SKILL.CORDWAINING), new SkillInstance(SKILL.SMITH), new SkillInstance(SKILL.TANNING), new SkillInstance(SKILL.HUNTING), new SkillInstance(SKILL.GATHERING), new SkillInstance(SKILL.FISHING), new SkillInstance(SKILL.WOODCUTTING), new SkillInstance(SKILL.TRAVELLING), new SkillInstance(SKILL.RANGED), new SkillInstance(SKILL.EVASION), new SkillInstance(SKILL.BLOCKING), new SkillInstance(SKILL.ONEHANDED), new SkillInstance(SKILL.TWOHANDED), new SkillInstance(SKILL.POLEARMS), new SkillInstance(SKILL.UNARMED), new SkillInstance(SKILL.FIGHTING), new SkillInstance(SKILL.MAGIC), new SkillInstance(SKILL.ALCHEMY), new SkillInstance(SKILL.ENCHANTING), new SkillInstance(SKILL.BATTLE_MAGIC)]
+
+    // Retrieve instance of SkillInstance 
+    static get(id: SKILL) : SkillInstance {
+        if (!(id in SkillStorage.instances)) {
+            throw new Error(`Invalid Skill id: ${id}`);
+        }
+        return SkillStorage.instances[id]
+    }
+    static from_string(id: skill_string_id) : SkillInstance {
+        if (!(id in SkillConfiguration.SKILL_FROM_STRING)) {
+            throw new Error(`Invalid Skill id: ${id}`);
+        }
+        return SkillStorage.instances[SkillConfiguration.SKILL_FROM_STRING[id]]
+    }
+}
+
+export class PerkStorage {
+    private static instances : Record<PERK, PerkInstance> = [new PerkInstance(PERK.PRO_BUTCHER), new PerkInstance(PERK.PRO_COOK), new PerkInstance(PERK.PRO_BONEWORK), new PerkInstance(PERK.PRO_FLETCHER), new PerkInstance(PERK.PRO_LEATHERWORK), new PerkInstance(PERK.PRO_TANNING), new PerkInstance(PERK.PRO_CORDWAINER), new PerkInstance(PERK.PRO_FIGHTER_UNARMED), new PerkInstance(PERK.PRO_FIGHTER_POLEARMS), new PerkInstance(PERK.PRO_FIGHTER_ONEHAND), new PerkInstance(PERK.PRO_FIGHTER_TWOHAND), new PerkInstance(PERK.MAGIC_INITIATION), new PerkInstance(PERK.PRO_ALCHEMIST), new PerkInstance(PERK.MAGIC_BLOOD), new PerkInstance(PERK.MAGIC_BOLT), new PerkInstance(PERK.MAGIC_BLINK), new PerkInstance(PERK.BATTLE_DODGE), new PerkInstance(PERK.BATTLE_CHARGE)]
+
+    // Retrieve instance of PerkInstance 
+    static get(id: PERK) : PerkInstance {
+        if (!(id in PerkStorage.instances)) {
+            throw new Error(`Invalid Perk id: ${id}`);
+        }
+        return PerkStorage.instances[id]
+    }
+    static from_string(id: perk_string_id) : PerkInstance {
+        if (!(id in PerkConfiguration.PERK_FROM_STRING)) {
+            throw new Error(`Invalid Perk id: ${id}`);
+        }
+        return PerkStorage.instances[PerkConfiguration.PERK_FROM_STRING[id]]
     }
 }
 

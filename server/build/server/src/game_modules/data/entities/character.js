@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Character = exports.NotificationResponse = exports.ResponseOK = void 0;
 const content_1 = require("../../../.././../game_content/src/content");
 const basic_functions_1 = require("../../calculations/basic_functions");
-const SkillList_1 = require("../../character/SkillList");
 const max_hp_1 = require("../../races/max_hp");
 const types_1 = require("../../types");
 const data_id_1 = require("../data_id");
@@ -66,8 +65,8 @@ class Character {
         this.ai_price_sell_log_precision = content_1.MaterialConfiguration.zero_record;
         this.ai_desired_stash = new stash_1.Stash();
         this.ai_gathering_target = new stash_1.Stash();
-        this._skills = new SkillList_1.SkillList();
-        this._perks = {};
+        this._skills = content_1.SkillConfiguration.zero_record;
+        this._perks = content_1.PerkConfiguration.zero_record;
         this._traits = {};
         this.action_points_left = 0;
         this.action_points_max = 10;

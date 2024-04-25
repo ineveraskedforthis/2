@@ -19,6 +19,9 @@ const data_id_1 = require("../../data/data_id");
 storage_1.AIActionsStorage.register_action_self({
     tag: "update-desired-stash",
     utility(actor, target) {
+        if (common_1.AIfunctions.desired_stash_weight(actor) == 0) {
+            return 1000;
+        }
         if (Math.random() < 0.01) {
             return 1;
         }
@@ -39,29 +42,29 @@ storage_1.AIActionsStorage.register_action_self({
         // food: replace with distribution later
         for (const item of content_1.MaterialConfiguration.MATERIAL) {
             if (character_conditions_1.CharacterCondition.can_eat(actor, content_1.MaterialStorage.get(item))) {
-                actor.ai_desired_stash.inc(item, 10);
+                actor.ai_desired_stash.inc(item, 5);
             }
         }
         // craft bulk:
         const good_crafts = common_1.AIfunctions.profitable_bulk_craft(actor);
         for (const item of good_crafts) {
             for (const input of item.craft.input) {
-                actor.ai_desired_stash.inc(input.material, input.amount) * 10;
+                actor.ai_desired_stash.inc(input.material, input.amount) * 2;
             }
         }
         //craft items:
         const good_item_craft = common_1.AIfunctions.profitable_item_craft(actor);
         for (const item of good_item_craft) {
             for (const input of item.input) {
-                actor.ai_desired_stash.inc(input.material, input.amount) * 10;
+                actor.ai_desired_stash.inc(input.material, input.amount) * 2;
             }
         }
         //arrows:
-        if (character_1.CharacterValues.skill(actor, "ranged") > 20) {
+        if (character_1.CharacterValues.skill(actor, 18 /* SKILL.RANGED */) > 20) {
             actor.ai_desired_stash.inc(0 /* MATERIAL.ARROW_BONE */, 40);
         }
         //zaz for mages
-        if (character_1.CharacterValues.skill(actor, "magic_mastery") > 10) {
+        if (character_1.CharacterValues.skill(actor, 26 /* SKILL.MAGIC */) > 10) {
             actor.ai_desired_stash.inc(30 /* MATERIAL.ZAZ */, 40);
         }
     }
@@ -74,7 +77,7 @@ storage_1.AIActionsStorage.register_action_self({
             if (item.profit <= 0)
                 continue;
             if (character_conditions_1.CharacterCondition.can_potentially_bulk_craft(actor, item.craft)) {
-                return 0.8;
+                return 2;
             }
         }
         return 0;
@@ -102,7 +105,7 @@ storage_1.AIActionsStorage.register_action_self({
         const bulk_crafts = common_1.AIfunctions.profitable_item_craft(actor);
         for (let item of bulk_crafts) {
             if (character_conditions_1.CharacterCondition.can_item_craft(actor, item)) {
-                return 0.8;
+                return 10;
             }
         }
         return 0;
@@ -135,7 +138,6 @@ storage_1.AIActionsStorage.register_action_material({
 storage_1.AIActionsStorage.register_action_material({
     tag: "sell",
     utility(actor, target) {
-        let desire_to_update_prices = 0;
         for (const order_id of data_id_1.DataID.Character.market_orders_list(actor.id)) {
             const order = data_objects_1.Data.MarketOrders.from_id(order_id);
             if (order.material != target.id)
@@ -146,7 +148,7 @@ storage_1.AIActionsStorage.register_action_material({
                 return 100;
             }
         }
-        return (actor.stash.get(target.id) - actor.ai_desired_stash.get(target.id)) / 50 + desire_to_update_prices;
+        return (actor.stash.get(target.id) - actor.ai_desired_stash.get(target.id)) / 50;
     },
     potential_targets(actor) {
         return content_1.MaterialConfiguration.MATERIAL.map(content_1.MaterialStorage.get);
@@ -189,7 +191,7 @@ storage_1.AIActionsStorage.register_action_self({
 storage_1.AIActionsStorage.register_action_material({
     tag: "buy",
     utility(actor, target) {
-        let desire_to_update_prices = 0;
+        let already_trying_to_buy = 0;
         for (const order_id of data_id_1.DataID.Character.market_orders_list(actor.id)) {
             const order = data_objects_1.Data.MarketOrders.from_id(order_id);
             if (order.material != target.id)
@@ -199,8 +201,11 @@ storage_1.AIActionsStorage.register_action_material({
             if (order.price != actor.ai_price_buy_expectation[target.id]) {
                 return 100;
             }
+            else {
+                already_trying_to_buy += order.amount;
+            }
         }
-        return (actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id)) / 50;
+        return (actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id) - already_trying_to_buy) / 50;
     },
     potential_targets(actor) {
         return content_1.MaterialConfiguration.MATERIAL.map(content_1.MaterialStorage.get);
