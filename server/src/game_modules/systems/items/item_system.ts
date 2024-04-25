@@ -114,8 +114,6 @@ export namespace ItemSystem {
             affix_damage = effect(affix_damage);
         }
 
-
-
         // calculating base damage of item and adding affix
         let damage = new Damage()
 

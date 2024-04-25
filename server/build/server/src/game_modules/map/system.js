@@ -162,6 +162,17 @@ var MapSystem;
         }
     }
     MapSystem.can_move = can_move;
+    function can_move_location(location) {
+        const coord = data_objects_1.Data.World.id_to_coordinate(location.cell_id);
+        let terrain = data_objects_1.Data.World.get_terrain();
+        try {
+            return (0, terrain_1.terrain_can_move)(terrain[coord[0]][coord[1]]);
+        }
+        catch (error) {
+            return false;
+        }
+    }
+    MapSystem.can_move_location = can_move_location;
     function is_valid_move(dx, dy) {
         return ((dx == 0 && dy == 1) || (dx == 0 && dy == -1) || (dx == 1 && dy == 0) || (dx == -1 && dy == 0) || (dx == 1 && dy == 1) || (dx == -1 && dy == -1));
     }

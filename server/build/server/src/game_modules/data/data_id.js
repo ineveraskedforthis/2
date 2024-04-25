@@ -14,6 +14,10 @@ var item_id_list = [];
 //var item_id_backpack                        : Record<item_id, backpack_id>
 //var backpack_id_list                        : backpack_id[]                                                     = []
 //var backpack_id_items                       : Record<backpack_id, item_id>                                      = []
+var character_chunks = [[]];
+var character_chunks_time_since_last_update = [0];
+var character_chunk_to_update = 0;
+var character_chunk_to_put_id_in = 0;
 var character_id_list = [];
 var character_id_location = [];
 var character_id_owned_location_set = [];
@@ -386,6 +390,36 @@ var DataID;
     })(Battle = DataID.Battle || (DataID.Battle = {}));
     let Character;
     (function (Character) {
+        function update(dt_ms, time_between_updates, callback) {
+            for (let i = 0; i < character_chunks_time_since_last_update.length; i++) {
+                character_chunks_time_since_last_update[i] += dt_ms;
+            }
+            while (character_chunks_time_since_last_update[character_chunk_to_update] >= time_between_updates) {
+                for (const item of character_chunks[character_chunk_to_update]) {
+                    callback(item);
+                }
+                character_chunks_time_since_last_update[character_chunk_to_update] -= time_between_updates;
+            }
+            character_chunk_to_update++;
+        }
+        Character.update = update;
+        function add_id_to_chunk(id) {
+            character_chunks[character_chunk_to_put_id_in].push(id);
+            character_chunk_to_put_id_in = (character_chunk_to_put_id_in + 1) % character_chunks.length;
+        }
+        Character.add_id_to_chunk = add_id_to_chunk;
+        function set_amount_of_chunks(N) {
+            character_chunks = [];
+            character_chunks_time_since_last_update = [];
+            character_chunk_to_update = 0;
+            character_chunk_to_put_id_in = 0;
+            for (let i = 0; i < N; i++) {
+                character_chunks.push([]);
+                character_chunks_time_since_last_update.push(0);
+            }
+            for_each((id) => add_id_to_chunk(id));
+        }
+        Character.set_amount_of_chunks = set_amount_of_chunks;
         function set_up_id(id, location) {
             character_id_list.push(id);
             character_id_faction_id_reputation[id] = {};
@@ -394,6 +428,7 @@ var DataID;
             character_id_leader_of[id] = new Set();
             character_id_location[id] = location;
             location_id_guests[location].add(id);
+            add_id_to_chunk(id);
         }
         Character.set_up_id = set_up_id;
         function new_id(location) {
@@ -411,6 +446,10 @@ var DataID;
             last_id_character = Math.max(x, last_id_character);
         }
         Character.update_last_id = update_last_id;
+        function ownership(character) {
+            return Array.from(character_id_owned_location_set[character]);
+        }
+        Character.ownership = ownership;
         function for_each_ownership(character, callback) {
             let locations = character_id_owned_location_set[character];
             for (let id of locations.values()) {

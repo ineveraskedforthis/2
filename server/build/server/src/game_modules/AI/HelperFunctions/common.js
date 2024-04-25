@@ -26,6 +26,10 @@ var AIfunctions;
         return character.home_location_id !== undefined;
     }
     AIfunctions.has_home = has_home;
+    function owns_home(character) {
+        return data_id_1.DataID.Character.ownership(character.id).length > 0;
+    }
+    AIfunctions.owns_home = owns_home;
     function items_for_sale(character) {
         let total = 0;
         for (const item_id of character.equip.data.backpack.items) {

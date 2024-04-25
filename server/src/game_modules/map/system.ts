@@ -8,6 +8,7 @@ import { Data } from "../data/data_objects";
 import { CellData } from "./cell_interface";
 import { DataID } from "../data/data_id";
 import { Location } from "../location/location_class";
+import { LocationInterface } from "../location/location_interface";
 
 export namespace MapSystem {
     export function sea_nearby(cell: cell_id) {
@@ -167,6 +168,16 @@ export namespace MapSystem {
         let terrain = Data.World.get_terrain()
         try {
             return terrain_can_move(terrain[pos[0]][pos[1]])
+        } catch (error) {
+            return false
+        }
+    }
+
+    export function can_move_location(location: LocationInterface) {
+        const coord = Data.World.id_to_coordinate(location.cell_id)
+        let terrain = Data.World.get_terrain()
+        try {
+            return terrain_can_move(terrain[coord[0]][coord[1]])
         } catch (error) {
             return false
         }

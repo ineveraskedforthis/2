@@ -28,7 +28,7 @@ import "./game_modules/craft/craft"
 import * as path from "path";
 import { SAVE_GAME_PATH } from "./SAVE_GAME_PATH";
 import { GameMaster } from "./game_modules/game_master";
-import { ms } from "@custom_types/battle_data";
+import { ms, seconds } from "@custom_types/battle_data";
 
 
 if (!existsSync(SAVE_GAME_PATH)){
@@ -76,7 +76,7 @@ export function launch(http_server: Server) {
         load()
         console.log('systems are ready');
         MapSystem.initial_update()
-        gameloop.setGameLoop( (delta: number) => update(delta, http_server), 100 );
+        gameloop.setGameLoop( (delta: number) => update(delta * 1000 as ms, http_server), 1000 / 30 );
 
     } catch (e) {
         console.log(e);
@@ -84,6 +84,8 @@ export function launch(http_server: Server) {
 }
 
 function load() {
+    DataID.Character.set_amount_of_chunks(10);
+
     // MapSystem.load()
     Data.load()
 
@@ -124,10 +126,14 @@ function save() {
     Data.save()
 }
 
-var update_timer = 0
-var map_update_timer = 0
-                    // seconds
-function update(delta: number, http_server: Server) {
+var save_timer = 0
+// var map_update_profiler_rolling_data : number[] = []
+// var characters_update_profiler_rolling_data = []
+
+function update(delta: ms, http_server: Server) {
+
+    // console.log(delta)
+
     if (shutdown) {
         http_server.close()
         // express_server.close(() => {
@@ -138,10 +144,9 @@ function update(delta: number, http_server: Server) {
     }
 
     CharacterSystem.update(delta)
-
     ActionManager.update_characters(delta)
     UserManagement.update_users()
-    BattleSystem.update(delta * 1000 as ms)
+    BattleSystem.update(delta)
 
     Data.Characters.for_each(character => {
         if (character.dead()) {
@@ -149,16 +154,37 @@ function update(delta: number, http_server: Server) {
         }
     });
 
-    map_update_timer += delta
-    if (map_update_timer > 1) {
-        MapSystem.update(map_update_timer)
-        GameMaster.update(map_update_timer)
-        map_update_timer = 0
-    }
+    // const now = Date.now()
+    MapSystem.update(delta)
+    GameMaster.update(delta)
+    // const then = Date.now()
+    // map_update_profiler_rolling_data.push(then - now)
 
-    update_timer += delta
-    if (update_timer > 50000) {
+    // if (map_update_profiler_rolling_data.length == 100) {
+    //     let total = 0
+    //     let amount = 0
+    //     for (const item of map_update_profiler_rolling_data) {
+    //         total += item
+    //         amount++
+    //     }
+
+    //     const mean = total / amount
+
+    //     let mae = 0
+
+    //     for (const item of map_update_profiler_rolling_data) {
+    //         mae += Math.abs(item - mean) / amount
+    //     }
+
+    //     console.log("PROFILING: map update took: ", Math.round(mean) , " ms", `(+- ${Math.round(mae)})`)
+
+    //     map_update_profiler_rolling_data = []
+    // }
+
+
+    save_timer += delta
+    if (save_timer > 300000) {
         save()
-        update_timer = 0
+        save_timer = 0
     }
 }

@@ -41,7 +41,7 @@ var ActionManager;
     function update_characters(dt) {
         data_objects_1.Data.Characters.for_each(character => {
             if (character.action != undefined) {
-                character.action_progress += dt;
+                character.action_progress += dt / 1000;
                 if (character.action_progress > character.action_duration) {
                     call_action(character.action, character, character.next_cell || character.cell_id);
                 }

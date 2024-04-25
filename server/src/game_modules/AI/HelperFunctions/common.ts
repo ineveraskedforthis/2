@@ -46,6 +46,10 @@ export namespace AIfunctions {
         return character.home_location_id !== undefined
     }
 
+    export function owns_home(character: Character) : boolean {
+        return DataID.Character.ownership(character.id).length > 0
+    }
+
     export function items_for_sale(character: Character) : number {
         let total = 0
         for (const item_id of character.equip.data.backpack.items) {

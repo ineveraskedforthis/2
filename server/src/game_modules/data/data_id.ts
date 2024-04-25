@@ -23,6 +23,10 @@ var item_id_list                            : item_id[]                         
 //var backpack_id_list                        : backpack_id[]                                                     = []
 //var backpack_id_items                       : Record<backpack_id, item_id>                                      = []
 
+var character_chunks                        : character_id[][]                                                  = [[]]
+var character_chunks_time_since_last_update : number[]                                                          = [0]
+var character_chunk_to_update               : number                                                            = 0
+var character_chunk_to_put_id_in               : number                                                            = 0
 var character_id_list                       : character_id[]                                                    = []
 var character_id_location                   : Record<character_id, location_id>                                 = []
 var character_id_owned_location_set         : Record<character_id, Set<location_id>>                            = []
@@ -410,6 +414,41 @@ export namespace DataID {
     }
 
     export namespace Character {
+
+        export function update(dt_ms: number, time_between_updates: number, callback: (id: character_id) => void) {
+            for (let i = 0; i < character_chunks_time_since_last_update.length; i++) {
+                character_chunks_time_since_last_update[i] += dt_ms
+            }
+
+            while (character_chunks_time_since_last_update[character_chunk_to_update] >= time_between_updates) {
+                for (const item of character_chunks[character_chunk_to_update]) {
+                    callback(item)
+                }
+                character_chunks_time_since_last_update[character_chunk_to_update] -= time_between_updates
+            }
+
+            character_chunk_to_update++;
+        }
+
+        export function add_id_to_chunk(id: character_id) {
+            character_chunks[character_chunk_to_put_id_in].push(id);
+            character_chunk_to_put_id_in = (character_chunk_to_put_id_in + 1) % character_chunks.length;
+        }
+
+        export function set_amount_of_chunks(N: number) {
+            character_chunks = []
+            character_chunks_time_since_last_update = []
+            character_chunk_to_update = 0
+            character_chunk_to_put_id_in = 0
+
+            for (let i = 0; i < N; i++) {
+                character_chunks.push([])
+                character_chunks_time_since_last_update.push(0)
+            }
+
+            for_each((id) => add_id_to_chunk(id));
+        }
+
         export function set_up_id(id: character_id, location: location_id) {
             character_id_list.push(id)
             character_id_faction_id_reputation[id] = {}
@@ -420,6 +459,8 @@ export namespace DataID {
 
             character_id_location[id] = location
             location_id_guests[location].add(id)
+
+            add_id_to_chunk(id);
         }
 
         export function new_id(location: location_id): character_id {
@@ -435,6 +476,10 @@ export namespace DataID {
 
         export function update_last_id(x: character_id) {
             last_id_character = Math.max(x, last_id_character) as character_id
+        }
+
+        export function ownership(character: character_id) {
+            return Array.from(character_id_owned_location_set[character])
         }
 
         export function for_each_ownership(character: character_id, callback : (location: location_id) => void) {

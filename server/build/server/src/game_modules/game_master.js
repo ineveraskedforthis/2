@@ -167,7 +167,7 @@ var GameMaster;
             //hunters
             for (let i = 0; i <= 10; i++) {
                 const hunter = templates_1.Template.Character.HumanRatHunter(generate_human_name(false, "peasant"));
-                hunter.savings.inc(500);
+                hunter.savings.inc(10);
             }
         }
         if (faction == 'rats') {

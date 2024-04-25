@@ -84,7 +84,7 @@ function launch(http_server) {
         load();
         console.log('systems are ready');
         system_2.MapSystem.initial_update();
-        gameloop.setGameLoop((delta) => update(delta, http_server), 100);
+        gameloop.setGameLoop((delta) => update(delta * 1000, http_server), 1000 / 30);
     }
     catch (e) {
         console.log(e);
@@ -92,6 +92,7 @@ function launch(http_server) {
 }
 exports.launch = launch;
 function load() {
+    data_id_1.DataID.Character.set_amount_of_chunks(10);
     // MapSystem.load()
     data_objects_1.Data.load();
     user_manager_1.UserManagement.load_users();
@@ -126,10 +127,11 @@ function save() {
     auth_1.Auth.save();
     data_objects_1.Data.save();
 }
-var update_timer = 0;
-var map_update_timer = 0;
-// seconds
+var save_timer = 0;
+// var map_update_profiler_rolling_data : number[] = []
+// var characters_update_profiler_rolling_data = []
 function update(delta, http_server) {
+    // console.log(delta)
     if (shutdown) {
         http_server.close();
         // express_server.close(() => {
@@ -141,21 +143,35 @@ function update(delta, http_server) {
     system_1.CharacterSystem.update(delta);
     manager_1.ActionManager.update_characters(delta);
     user_manager_1.UserManagement.update_users();
-    system_3.BattleSystem.update(delta * 1000);
+    system_3.BattleSystem.update(delta);
     data_objects_1.Data.Characters.for_each(character => {
         if (character.dead()) {
             events_1.Event.death(character);
         }
     });
-    map_update_timer += delta;
-    if (map_update_timer > 1) {
-        system_2.MapSystem.update(map_update_timer);
-        game_master_1.GameMaster.update(map_update_timer);
-        map_update_timer = 0;
-    }
-    update_timer += delta;
-    if (update_timer > 50000) {
+    // const now = Date.now()
+    system_2.MapSystem.update(delta);
+    game_master_1.GameMaster.update(delta);
+    // const then = Date.now()
+    // map_update_profiler_rolling_data.push(then - now)
+    // if (map_update_profiler_rolling_data.length == 100) {
+    //     let total = 0
+    //     let amount = 0
+    //     for (const item of map_update_profiler_rolling_data) {
+    //         total += item
+    //         amount++
+    //     }
+    //     const mean = total / amount
+    //     let mae = 0
+    //     for (const item of map_update_profiler_rolling_data) {
+    //         mae += Math.abs(item - mean) / amount
+    //     }
+    //     console.log("PROFILING: map update took: ", Math.round(mean) , " ms", `(+- ${Math.round(mae)})`)
+    //     map_update_profiler_rolling_data = []
+    // }
+    save_timer += delta;
+    if (save_timer > 300000) {
         save();
-        update_timer = 0;
+        save_timer = 0;
     }
 }

@@ -13,11 +13,11 @@ import { CHANGE_REASON, Effect } from "../effects/effects";
 import { Loot } from "../races/generate_loot";
 import { CharacterValues } from "../scripted-values/character";
 import { CharacterTemplate } from "../types";
-var ai_campaign_decision_timer = 0
-var character_state_update_timer = 0
+import { ms } from "@custom_types/battle_data";
+import { DataID } from "../data/data_id";
+
 
 export namespace CharacterSystem {
-
     export function template_to_character(template: CharacterTemplate, name: string|undefined, location: location_id) {
         if (name == undefined) name = template.name_generator();
         const character = Data.Characters.create(location, name, template)
@@ -29,9 +29,6 @@ export namespace CharacterSystem {
 
         return character
     }
-
-
-
 
     /**
      * Damages character, accounting for resistances
@@ -66,43 +63,29 @@ export namespace CharacterSystem {
         return loot
     }
 
-    export function update(dt: number) {
-        ai_campaign_decision_timer += dt
-        character_state_update_timer += dt
+    export function update(dt: ms) {
+        DataID.Character.update(dt, 1000, (id) => {
+            const character = Data.Characters.from_id(id);
+            if (character.dead()) return;
+            if (!character.in_battle()) Effect.Change.rage(character, -2, CHANGE_REASON.REST);
+            for (const material_id of MaterialConfiguration.MATERIAL) {
+                const material = MaterialStorage.get(material_id)
+                if (material.category == MATERIAL_CATEGORY.FISH) Effect.spoilage(character, material_id, 0.01)
+                if (material.category == MATERIAL_CATEGORY.MEAT) Effect.spoilage(character, material_id, 0.01)
+                if (material.category == MATERIAL_CATEGORY.FRUIT) Effect.spoilage(character, material_id, 0.01)
+                if (material.category == MATERIAL_CATEGORY.FOOD) Effect.spoilage(character, material_id, 0.001)
+            }
 
-        if (ai_campaign_decision_timer > 8) {
-            decide()
-            ai_campaign_decision_timer = 0
-        }
+            {
+                if (character.hp_max < character.hp * 2) {
+                    Effect.Change.hp(character, -1, CHANGE_REASON.HUNGER)
+                } else {
+                    Effect.Change.fatigue(character, 1, CHANGE_REASON.HUNGER)
+                }
+            }
 
-        if (character_state_update_timer > 10) {
-            Data.Characters.for_each((character) => {
-                if (character.dead()) {
-                    return
-                }
-                if (!character.in_battle()) {
-                    Effect.Change.rage(character, -2, CHANGE_REASON.REST);
-                }
-                // spoilage
-                for (const material_id of MaterialConfiguration.MATERIAL) {
-                    const material = MaterialStorage.get(material_id)
-                    if (material.category == MATERIAL_CATEGORY.FISH) Effect.spoilage(character, material_id, 0.01)
-                    if (material.category == MATERIAL_CATEGORY.MEAT) Effect.spoilage(character, material_id, 0.01)
-                    if (material.category == MATERIAL_CATEGORY.FRUIT) Effect.spoilage(character, material_id, 0.01)
-                    if (material.category == MATERIAL_CATEGORY.FOOD) Effect.spoilage(character, material_id, 0.001)
-                }
-                // hunger
-                {
-                    if (character.hp_max < character.hp * 2) {
-                        Effect.Change.hp(character, -1, CHANGE_REASON.HUNGER)
-                    } else {
-                        Effect.Change.fatigue(character, 1, CHANGE_REASON.HUNGER)
-                    }
-                }
-            })
-
-            character_state_update_timer = 0
-        }
+            decide(character)
+        })
     }
     export function battle_update(character: Character) {
 

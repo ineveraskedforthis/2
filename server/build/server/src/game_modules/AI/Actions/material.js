@@ -39,6 +39,10 @@ storage_1.AIActionsStorage.register_action_self({
                 actor.ai_desired_stash.inc(item, 1);
             }
         }
+        // home owners want to maintain some amount of wood in their stash:
+        data_id_1.DataID.Character.for_each_ownership(actor.id, (location_id) => {
+            actor.ai_desired_stash.inc(31 /* MATERIAL.WOOD_RED */, 20);
+        });
         // food: replace with distribution later
         for (const item of content_1.MaterialConfiguration.MATERIAL) {
             if (character_conditions_1.CharacterCondition.can_eat(actor, content_1.MaterialStorage.get(item))) {

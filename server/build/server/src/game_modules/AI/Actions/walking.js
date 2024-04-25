@@ -10,6 +10,7 @@ const common_1 = require("../HelperFunctions/common");
 const basic_functions_1 = require("../../calculations/basic_functions");
 const effects_1 = require("../../effects/effects");
 const character_1 = require("../../scripted-values/character");
+const events_1 = require("../../events/events");
 storage_1.AIActionsStorage.register_action_location({
     tag: "go-home",
     utility(actor, target) {
@@ -24,7 +25,8 @@ storage_1.AIActionsStorage.register_action_location({
         const weight = common_1.AIfunctions.loot_weight(actor) / 20;
         const trade_stash_weight = common_1.AIfunctions.trade_stash_weight(actor) / 20;
         const backpack_size = actor.equip.data.backpack.items.length;
-        return 0.05 + utility_fatigue + utility_stress + lack_of_hp + weight + trade_stash_weight + backpack_size / 10;
+        let home_owner = target.owner_id == actor.id ? 0.5 : 0;
+        return 0.05 + utility_fatigue + utility_stress + lack_of_hp + weight + trade_stash_weight + backpack_size / 10 + home_owner;
     },
     potential_targets(actor) {
         const pre_result = [];
@@ -43,6 +45,21 @@ storage_1.AIActionsStorage.register_action_location({
     }
 });
 storage_1.AIActionsStorage.register_action_location({
+    tag: "repair-home",
+    utility(actor, target) {
+        if (actor.stash.get(31 /* MATERIAL.WOOD_RED */) == 0) {
+            return 0;
+        }
+        return (target.devastation / 50);
+    },
+    potential_targets(actor) {
+        return data_id_1.DataID.Character.ownership(actor.id).map(data_objects_1.Data.Locations.from_id);
+    },
+    action(actor, target) {
+        events_1.Event.repair_location(actor, target.id);
+    },
+});
+storage_1.AIActionsStorage.register_action_location({
     tag: "stay-home",
     utility(actor, target) {
         if (data_objects_1.Data.Locations.from_id(actor.location_id).cell_id != target.cell_id) {
@@ -50,7 +67,8 @@ storage_1.AIActionsStorage.register_action_location({
         }
         const unsold_items = common_1.AIfunctions.trade_stash_weight(actor) / 100;
         const backpack_size = common_1.AIfunctions.items_for_sale(actor) / 10;
-        return unsold_items + backpack_size;
+        let home_owner = target.owner_id == actor.id ? 0.05 : 0;
+        return unsold_items + backpack_size + home_owner;
     },
     potential_targets(actor) {
         const home = data_objects_1.Data.Locations.from_id(actor.location_id);
@@ -101,23 +119,31 @@ storage_1.AIActionsStorage.register_action_cell({
 });
 // AIs are pretty shortsighted
 function locations_nearby(actor, predicate) {
-    let result = data_id_1.DataID.Cells.locations(actor.cell_id).map(data_objects_1.Data.Locations.from_id).filter(predicate);
+    let result = data_id_1.DataID.Cells.locations(actor.cell_id)
+        .map(data_objects_1.Data.Locations.from_id)
+        .filter(predicate)
+        .filter(system_1.MapSystem.can_move_location);
     for (const neighbour of data_objects_1.Data.World.neighbours(actor.cell_id)) {
         result = result
             .concat(data_id_1.DataID.Cells.locations(neighbour)
             .map(data_objects_1.Data.Locations.from_id)
-            .filter((item) => item.berries > 0));
+            .filter(predicate)
+            .filter(system_1.MapSystem.can_move_location));
     }
     return result;
 }
 function inner_desire(actor, material) {
-    return (actor.ai_desired_stash.get(material) - actor.stash.get(material)) / 50;
+    const could_buy = actor.savings.get() / actor.ai_price_buy_expectation[material];
+    return (actor.ai_desired_stash.get(material) - actor.stash.get(material) - could_buy) / 50;
 }
 function for_sale_desire(actor, material) {
+    let modifier = 1;
+    if (common_1.AIfunctions.owns_home(actor))
+        modifier = 1 / 100;
     return (actor.ai_gathering_target.get(material)
         - actor.stash.get(material)
         + common_1.AIfunctions.check_local_demand_for_material(actor, material)
-        - common_1.AIfunctions.check_local_supply_for_material(actor, material)) / 50;
+        - common_1.AIfunctions.check_local_supply_for_material(actor, material)) / 50 * modifier;
 }
 function toward_action(actor, target, action) {
     if (target.cell_id == actor.cell_id) {
@@ -212,13 +238,7 @@ storage_1.AIActionsStorage.register_action_location({
     },
     // AIs are pretty shortsighted
     potential_targets(actor) {
-        let result = data_id_1.DataID.Cells.locations(actor.cell_id).map(data_objects_1.Data.Locations.from_id).filter((item) => item.forest > 0);
-        for (const neighbour of data_objects_1.Data.World.neighbours(actor.cell_id)) {
-            result = result.concat(data_id_1.DataID.Cells.locations(neighbour)
-                .map(data_objects_1.Data.Locations.from_id)
-                .filter((item) => (item.forest > 0) && (system_1.MapSystem.can_move(data_objects_1.Data.World.id_to_coordinate(item.cell_id)))));
-        }
-        return result;
+        return locations_nearby(actor, (item) => item.forest > 0);
     },
     action(actor, target) {
         common_1.AIfunctions.update_price_beliefs(actor);
@@ -239,20 +259,12 @@ storage_1.AIActionsStorage.register_action_location({
             return 0;
         if (actor.open_shop)
             return 0;
-        let desired = actor.ai_desired_stash.get(31 /* MATERIAL.WOOD_RED */)
-            - actor.stash.get(31 /* MATERIAL.WOOD_RED */);
         const skill = character_1.CharacterValues.skill(actor, 16 /* SKILL.WOODCUTTING */);
-        return desired / 50 * skill / 100 - actor.savings.get() / 1000;
+        return inner_desire(actor, 31 /* MATERIAL.WOOD_RED */) * skill / 100 - actor.savings.get() / 1000;
     },
     // AIs are pretty shortsighted
     potential_targets(actor) {
-        let result = data_id_1.DataID.Cells.locations(actor.cell_id).map(data_objects_1.Data.Locations.from_id).filter((item) => item.forest > 0);
-        for (const neighbour of data_objects_1.Data.World.neighbours(actor.cell_id)) {
-            result = result.concat(data_id_1.DataID.Cells.locations(neighbour)
-                .map(data_objects_1.Data.Locations.from_id)
-                .filter((item) => (item.forest > 0) && (system_1.MapSystem.can_move(data_objects_1.Data.World.id_to_coordinate(item.cell_id)))));
-        }
-        return result;
+        return locations_nearby(actor, (item) => item.forest > 0);
     },
     action(actor, target) {
         if (target.cell_id == actor.cell_id) {
@@ -271,24 +283,12 @@ storage_1.AIActionsStorage.register_action_location({
             return 0;
         if (actor.open_shop)
             return 0;
-        let disbalance = +actor.ai_gathering_target.get(2 /* MATERIAL.COTTON */)
-            + common_1.AIfunctions.check_local_demand_for_material(actor, 2 /* MATERIAL.COTTON */)
-            - common_1.AIfunctions.check_local_supply_for_material(actor, 2 /* MATERIAL.COTTON */)
-            - actor.stash.get(2 /* MATERIAL.COTTON */);
         const skill = character_1.CharacterValues.skill(actor, 14 /* SKILL.GATHERING */);
-        return disbalance / 50 * skill / 100 + Math.random() * 0.1 - actor.savings.get() / 1000;
+        return for_sale_desire(actor, 2 /* MATERIAL.COTTON */) * skill / 100 - actor.savings.get() / 1000;
     },
     // AIs are pretty shortsighted
     potential_targets(actor) {
-        let result = data_id_1.DataID.Cells.locations(actor.cell_id).map(data_objects_1.Data.Locations.from_id).filter((item) => item.cotton > 0);
-        for (const neighbour of data_objects_1.Data.World.neighbours(actor.cell_id)) {
-            result =
-                result
-                    .concat(data_id_1.DataID.Cells.locations(neighbour)
-                    .map(data_objects_1.Data.Locations.from_id)
-                    .filter((item) => (item.cotton > 0) && (system_1.MapSystem.can_move(data_objects_1.Data.World.id_to_coordinate(item.cell_id)))));
-        }
-        return result;
+        return locations_nearby(actor, (item) => item.cotton > 0);
     },
     action(actor, target) {
         common_1.AIfunctions.update_price_beliefs(actor);
@@ -309,22 +309,12 @@ storage_1.AIActionsStorage.register_action_location({
             return 0;
         if (actor.open_shop)
             return 0;
-        let desired = actor.ai_desired_stash.get(2 /* MATERIAL.COTTON */)
-            - actor.stash.get(2 /* MATERIAL.COTTON */);
         const skill = character_1.CharacterValues.skill(actor, 14 /* SKILL.GATHERING */);
-        return desired / 50 * skill / 100 + Math.random() * 0.1 - actor.savings.get() / 1000;
+        return inner_desire(actor, 2 /* MATERIAL.COTTON */) * skill / 100 - actor.savings.get() / 1000;
     },
     // AIs are pretty shortsighted
     potential_targets(actor) {
-        let result = data_id_1.DataID.Cells.locations(actor.cell_id).map(data_objects_1.Data.Locations.from_id).filter((item) => item.cotton > 0);
-        for (const neighbour of data_objects_1.Data.World.neighbours(actor.cell_id)) {
-            result =
-                result
-                    .concat(data_id_1.DataID.Cells.locations(neighbour)
-                    .map(data_objects_1.Data.Locations.from_id)
-                    .filter((item) => (item.cotton > 0) && (system_1.MapSystem.can_move(data_objects_1.Data.World.id_to_coordinate(item.cell_id)))));
-        }
-        return result;
+        return locations_nearby(actor, (item) => item.cotton > 0);
     },
     action(actor, target) {
         if (target.cell_id == actor.cell_id) {
@@ -343,24 +333,12 @@ storage_1.AIActionsStorage.register_action_location({
             return 0;
         if (actor.open_shop)
             return 0;
-        let desired = +common_1.AIfunctions.check_local_demand_for_material(actor, 26 /* MATERIAL.FISH_OKU */)
-            - common_1.AIfunctions.check_local_supply_for_material(actor, 26 /* MATERIAL.FISH_OKU */)
-            + actor.ai_gathering_target.get(26 /* MATERIAL.FISH_OKU */)
-            - actor.stash.get(26 /* MATERIAL.FISH_OKU */);
         const skill = character_1.CharacterValues.skill(actor, 15 /* SKILL.FISHING */);
-        return (desired / 50) * skill / 100 + Math.random() * 0.1 - actor.savings.get() / 2000;
+        return for_sale_desire(actor, 26 /* MATERIAL.FISH_OKU */) * skill / 100 - actor.savings.get() / 1000;
     },
     // AIs are pretty shortsighted
     potential_targets(actor) {
-        let result = data_id_1.DataID.Cells.locations(actor.cell_id).map(data_objects_1.Data.Locations.from_id).filter((item) => item.fish > 0);
-        for (const neighbour of data_objects_1.Data.World.neighbours(actor.cell_id)) {
-            result =
-                result
-                    .concat(data_id_1.DataID.Cells.locations(neighbour)
-                    .map(data_objects_1.Data.Locations.from_id)
-                    .filter((item) => (item.fish > 0) && (system_1.MapSystem.can_move(data_objects_1.Data.World.id_to_coordinate(item.cell_id)))));
-        }
-        return result;
+        return locations_nearby(actor, (item) => item.fish > 0);
     },
     action(actor, target) {
         common_1.AIfunctions.update_price_beliefs(actor);
@@ -381,22 +359,12 @@ storage_1.AIActionsStorage.register_action_location({
             return 0;
         if (actor.open_shop)
             return 0;
-        let desired = actor.ai_desired_stash.get(26 /* MATERIAL.FISH_OKU */)
-            - actor.stash.get(26 /* MATERIAL.FISH_OKU */);
         const skill = character_1.CharacterValues.skill(actor, 15 /* SKILL.FISHING */);
-        return (desired / 50) * skill / 100 + Math.random() * 0.1 - actor.savings.get() / 2000;
+        return inner_desire(actor, 26 /* MATERIAL.FISH_OKU */) * skill / 100 - actor.savings.get() / 1000;
     },
     // AIs are pretty shortsighted
     potential_targets(actor) {
-        let result = data_id_1.DataID.Cells.locations(actor.cell_id).map(data_objects_1.Data.Locations.from_id).filter((item) => item.fish > 0);
-        for (const neighbour of data_objects_1.Data.World.neighbours(actor.cell_id)) {
-            result =
-                result
-                    .concat(data_id_1.DataID.Cells.locations(neighbour)
-                    .map(data_objects_1.Data.Locations.from_id)
-                    .filter((item) => (item.fish > 0) && (system_1.MapSystem.can_move(data_objects_1.Data.World.id_to_coordinate(item.cell_id)))));
-        }
-        return result;
+        return locations_nearby(actor, (item) => item.fish > 0);
     },
     action(actor, target) {
         if (target.cell_id == actor.cell_id) {

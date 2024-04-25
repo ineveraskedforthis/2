@@ -40,6 +40,11 @@ AIActionsStorage.register_action_self({
             }
         }
 
+        // home owners want to maintain some amount of wood in their stash:
+        DataID.Character.for_each_ownership(actor.id, (location_id) => {
+            actor.ai_desired_stash.inc(MATERIAL.WOOD_RED, 20)
+        })
+
         // food: replace with distribution later
         for (const item of MaterialConfiguration.MATERIAL) {
             if (CharacterCondition.can_eat(actor, MaterialStorage.get(item))) {

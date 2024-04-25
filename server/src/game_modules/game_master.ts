@@ -5,6 +5,7 @@ import { Data } from "./data/data_objects";
 import { DataID } from "./data/data_id";
 import { CellData } from "./map/cell_interface";
 import { SkillConfiguration, SkillStorage } from "@content/content";
+import { ms } from "@custom_types/battle_data";
 
 // steppe_humans 9 9
 // city 2 6
@@ -197,7 +198,7 @@ export namespace GameMaster {
             //hunters
             for (let i = 0; i <= 10; i++) {
                 const hunter = Template.Character.HumanRatHunter(generate_human_name(false, "peasant"))
-                hunter.savings.inc(500 as money)
+                hunter.savings.inc(10 as money)
             }
         }
 
@@ -263,7 +264,7 @@ export namespace GameMaster {
         }
     }
 
-    export function update(dt: number) {
+    export function update(dt: ms) {
         let num_rats = 0
         let num_elos = 0
         let num_balls = 0
@@ -278,7 +279,6 @@ export namespace GameMaster {
             if ((character.race == 'ball') && (!character.dead())) {
                 num_balls += 1
             }
-
             if ((character.race == 'human' && (!character.dead()))) {
                 num_humans ++;
             }
