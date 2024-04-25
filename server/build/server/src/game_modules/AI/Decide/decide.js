@@ -27,9 +27,9 @@ function decide(character) {
         }
     }
     if (best) {
-        if (character.user_id !== undefined) {
-            console.log(best.tag, best.utility);
-        }
+        // if (character.user_id !== undefined) {
+        //     console.log(best.tag, best.utility)
+        // }
         best.action(character, best.target);
         character.current_ai_action = best.tag + " " + best.target.id;
     }
