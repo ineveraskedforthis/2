@@ -400,7 +400,7 @@ var DataID;
                 }
                 character_chunks_time_since_last_update[character_chunk_to_update] -= time_between_updates;
             }
-            character_chunk_to_update++;
+            character_chunk_to_update = (character_chunk_to_update + 1) % character_chunks.length;
         }
         Character.update = update;
         function add_id_to_chunk(id) {

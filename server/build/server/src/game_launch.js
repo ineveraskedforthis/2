@@ -84,7 +84,7 @@ function launch(http_server) {
         load();
         console.log('systems are ready');
         system_2.MapSystem.initial_update();
-        gameloop.setGameLoop((delta) => update(delta * 1000, http_server), 1000 / 30);
+        gameloop.setGameLoop((delta) => update(delta * 1000, http_server), 1000 / 15);
     }
     catch (e) {
         console.log(e);
@@ -92,7 +92,7 @@ function launch(http_server) {
 }
 exports.launch = launch;
 function load() {
-    data_id_1.DataID.Character.set_amount_of_chunks(10);
+    data_id_1.DataID.Character.set_amount_of_chunks(100);
     // MapSystem.load()
     data_objects_1.Data.load();
     user_manager_1.UserManagement.load_users();
