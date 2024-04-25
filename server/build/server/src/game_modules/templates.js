@@ -34,9 +34,10 @@ var Template;
             let human = Base(TEMPLATE_HUMANS_1.HumanTemplate, name, undefined, undefined, faction);
             human._skills[4 /* SKILL.WOODWORKING */] += 10;
             human._skills[2 /* SKILL.COOKING */] += 15;
-            human._skills[13 /* SKILL.HUNTING */] += 5;
-            human._skills[15 /* SKILL.FISHING */] += 5;
-            human._skills[17 /* SKILL.TRAVELLING */] += 5;
+            human._skills[13 /* SKILL.HUNTING */] += 10;
+            human._skills[15 /* SKILL.FISHING */] += 10;
+            human._skills[17 /* SKILL.TRAVELLING */] += 10;
+            human._skills[14 /* SKILL.GATHERING */] += 10;
             human._skills[24 /* SKILL.UNARMED */] += 10;
             return human;
         }
@@ -47,6 +48,8 @@ var Template;
             human._skills[3 /* SKILL.SKINNING */] += 10;
             human._skills[2 /* SKILL.COOKING */] += 10;
             human._skills[17 /* SKILL.TRAVELLING */] += 30;
+            human._skills[14 /* SKILL.GATHERING */] += 40;
+            human._skills[16 /* SKILL.WOODCUTTING */] += 10;
             human._skills[18 /* SKILL.RANGED */] += 20;
             human._skills[24 /* SKILL.UNARMED */] += 10;
             return human;
@@ -55,6 +58,9 @@ var Template;
         function Lumberjack(name) {
             let human = HumanSteppe(name);
             human._skills[17 /* SKILL.TRAVELLING */] += 20;
+            human._skills[14 /* SKILL.GATHERING */] += 20;
+            human._skills[16 /* SKILL.WOODCUTTING */] += 40;
+            human._skills[21 /* SKILL.ONEHANDED */] += 20;
             human.ai_map = 'lumberjack';
             let cutting_tool = data_objects_1.Data.Items.create_weapon(100, [], 3 /* WEAPON.DAGGER_BONE_RAT */);
             cutting_tool.durability = 200;
@@ -62,8 +68,14 @@ var Template;
             return human;
         }
         Character.Lumberjack = Lumberjack;
+        function Peasant(name) {
+            let human = HumanCity(name);
+            human._skills[14 /* SKILL.GATHERING */] = 90;
+            return human;
+        }
+        Character.Peasant = Peasant;
         function Fisherman(name) {
-            let human = HumanSteppe(name);
+            let human = HumanCity(name);
             human._skills[17 /* SKILL.TRAVELLING */] += 20;
             human._skills[15 /* SKILL.FISHING */] += 40;
             human.ai_map = 'fisherman';
@@ -201,7 +213,8 @@ var Template;
                 }
             }
             human.ai_map = 'urban_trader';
-            human.savings.inc(800);
+            human.savings.inc(TONS_OF_MONEY);
+            human.stash.inc(34 /* MATERIAL.STEEL */, 10);
             return human;
         }
         Character.HumanLocalTrader = HumanLocalTrader;
@@ -258,8 +271,8 @@ var Template;
             return graci;
         }
         Character.Graci = Graci;
-        function Mage(faction) {
-            let mage = GenericHuman('Mage', faction);
+        function Mage(name, faction) {
+            let mage = GenericHuman(name, faction);
             mage._skills[26 /* SKILL.MAGIC */] = 100;
             mage._perks[11 /* PERK.MAGIC_INITIATION */] = 1;
             mage._skills[29 /* SKILL.BATTLE_MAGIC */] = 60;
@@ -271,14 +284,14 @@ var Template;
             return mage;
         }
         Character.Mage = Mage;
-        function BloodMage(faction) {
-            const mage = Mage(faction);
+        function BloodMage(name, faction) {
+            const mage = Mage(name, faction);
             mage._perks[13 /* PERK.MAGIC_BLOOD */] = 1;
             return mage;
         }
         Character.BloodMage = BloodMage;
-        function Alchemist(faction) {
-            let alchemist = GenericHuman('Alchemist', faction);
+        function Alchemist(name, faction) {
+            let alchemist = GenericHuman(name, faction);
             alchemist._skills[26 /* SKILL.MAGIC */] = 60;
             alchemist._perks[11 /* PERK.MAGIC_INITIATION */] = 1;
             alchemist._perks[12 /* PERK.PRO_ALCHEMIST */] = 1;
@@ -287,8 +300,8 @@ var Template;
             return alchemist;
         }
         Character.Alchemist = Alchemist;
-        function ArmourMaster() {
-            let master = HumanCity('Armourer');
+        function ArmourMaster(name) {
+            let master = HumanCity(name);
             master._skills[0 /* SKILL.CLOTHIER */] = 100;
             master._skills[5 /* SKILL.LEATHERWORKING */] = 100;
             master._perks[4 /* PERK.PRO_LEATHERWORK */] = 1;
@@ -296,8 +309,8 @@ var Template;
             return master;
         }
         Character.ArmourMaster = ArmourMaster;
-        function Shoemaker() {
-            let master = HumanCity('Shoemaker');
+        function Shoemaker(name) {
+            let master = HumanCity(name);
             master._skills[5 /* SKILL.LEATHERWORKING */] = 50;
             master._skills[10 /* SKILL.CORDWAINING */] = 100;
             master._perks[6 /* PERK.PRO_CORDWAINER */] = 1;
@@ -305,23 +318,23 @@ var Template;
             return master;
         }
         Character.Shoemaker = Shoemaker;
-        function WeaponMasterWood(faction) {
-            let master = GenericHuman('Weapons maker', faction);
+        function WeaponMasterWood(name, faction) {
+            let master = GenericHuman(name, faction);
             master._skills[4 /* SKILL.WOODWORKING */] = 100;
             master.savings.inc(TONS_OF_MONEY);
             return master;
         }
         Character.WeaponMasterWood = WeaponMasterWood;
-        function WeaponMasterBone(faction) {
-            let master = GenericHuman('Weapons maker', faction);
+        function WeaponMasterBone(name, faction) {
+            let master = GenericHuman(name, faction);
             master._skills[9 /* SKILL.BONE_CARVING */] = 100;
             master._perks[2 /* PERK.PRO_BONEWORK */] = 1;
             master.savings.inc(TONS_OF_MONEY);
             return master;
         }
         Character.WeaponMasterBone = WeaponMasterBone;
-        function MasterUnarmed(faction) {
-            let master = GenericHuman('Monk', faction);
+        function MasterUnarmed(name, faction) {
+            let master = GenericHuman(name, faction);
             master._skills[24 /* SKILL.UNARMED */] = 100;
             master._perks[16 /* PERK.BATTLE_DODGE */] = 1;
             master._perks[7 /* PERK.PRO_FIGHTER_UNARMED */] = 1;

@@ -69,9 +69,10 @@ export namespace Template {
             let human = Base(HumanTemplate, name, undefined, undefined, faction)
             human._skills[SKILL.WOODWORKING] += 10
             human._skills[SKILL.COOKING] += 15
-            human._skills[SKILL.HUNTING] += 5
-            human._skills[SKILL.FISHING] += 5
-            human._skills[SKILL.TRAVELLING] += 5
+            human._skills[SKILL.HUNTING] += 10
+            human._skills[SKILL.FISHING] += 10
+            human._skills[SKILL.TRAVELLING] += 10
+            human._skills[SKILL.GATHERING] += 10
             human._skills[SKILL.UNARMED] += 10
             return human
         }
@@ -82,6 +83,8 @@ export namespace Template {
             human._skills[SKILL.SKINNING] += 10
             human._skills[SKILL.COOKING] += 10
             human._skills[SKILL.TRAVELLING] += 30
+            human._skills[SKILL.GATHERING] += 40
+            human._skills[SKILL.WOODCUTTING] += 10
             human._skills[SKILL.RANGED] += 20
             human._skills[SKILL.UNARMED] += 10
             return human
@@ -90,8 +93,10 @@ export namespace Template {
         export function Lumberjack(name: string) {
             let human = HumanSteppe(name)
 
-
             human._skills[SKILL.TRAVELLING] += 20
+            human._skills[SKILL.GATHERING] += 20
+            human._skills[SKILL.WOODCUTTING] += 40
+            human._skills[SKILL.ONEHANDED] += 20
             human.ai_map = 'lumberjack'
 
             let cutting_tool = Data.Items.create_weapon(100, [], WEAPON.DAGGER_BONE_RAT)
@@ -101,9 +106,15 @@ export namespace Template {
             return human
         }
 
-        export function Fisherman(name: string) {
-            let human = HumanSteppe(name)
+        export function Peasant(name: string) {
+            let human = HumanCity(name)
+            human._skills[SKILL.GATHERING] = 90
 
+            return human
+        }
+
+        export function Fisherman(name: string) {
+            let human = HumanCity(name)
 
             human._skills[SKILL.TRAVELLING] += 20
             human._skills[SKILL.FISHING] += 40
@@ -240,7 +251,8 @@ export namespace Template {
             }
 
             human.ai_map = 'urban_trader'
-            human.savings.inc(800 as money)
+            human.savings.inc(TONS_OF_MONEY)
+            human.stash.inc(MATERIAL.STEEL, 10)
             return human
         }
 
@@ -304,8 +316,8 @@ export namespace Template {
         }
 
 
-        export function Mage(faction: string) {
-            let mage = GenericHuman('Mage', faction)
+        export function Mage(name: string, faction: string) {
+            let mage = GenericHuman(name, faction)
 
             mage._skills[SKILL.MAGIC] = 100
             mage._perks[PERK.MAGIC_INITIATION] = 1
@@ -320,15 +332,15 @@ export namespace Template {
             return mage
         }
 
-        export function BloodMage(faction: string) {
-            const mage = Mage(faction)
+        export function BloodMage(name: string, faction: string) {
+            const mage = Mage(name, faction)
             mage._perks[PERK.MAGIC_BLOOD] = 1
 
             return mage
         }
 
-        export function Alchemist(faction: string) {
-            let alchemist = GenericHuman('Alchemist', faction)
+        export function Alchemist(name: string, faction: string) {
+            let alchemist = GenericHuman(name, faction)
 
             alchemist._skills[SKILL.MAGIC] = 60
             alchemist._perks[PERK.MAGIC_INITIATION] = 1
@@ -340,8 +352,8 @@ export namespace Template {
             return alchemist
         }
 
-        export function ArmourMaster() {
-            let master = HumanCity('Armourer')
+        export function ArmourMaster(name: string) {
+            let master = HumanCity(name)
 
             master._skills[SKILL.CLOTHIER] = 100
             master._skills[SKILL.LEATHERWORKING] = 100
@@ -350,8 +362,8 @@ export namespace Template {
             return master
         }
 
-        export function Shoemaker() {
-            let master = HumanCity('Shoemaker')
+        export function Shoemaker(name: string) {
+            let master = HumanCity(name)
 
             master._skills[SKILL.LEATHERWORKING] = 50
             master._skills[SKILL.CORDWAINING] = 100
@@ -360,8 +372,8 @@ export namespace Template {
             return master
         }
 
-        export function WeaponMasterWood(faction: string) {
-            let master = GenericHuman('Weapons maker', faction)
+        export function WeaponMasterWood(name: string, faction: string) {
+            let master = GenericHuman(name, faction)
 
             master._skills[SKILL.WOODWORKING] = 100
             master.savings.inc(TONS_OF_MONEY)
@@ -369,8 +381,8 @@ export namespace Template {
             return master
         }
 
-        export function WeaponMasterBone(faction: string) {
-            let master = GenericHuman('Weapons maker', faction)
+        export function WeaponMasterBone(name: string, faction: string) {
+            let master = GenericHuman(name, faction)
 
             master._skills[SKILL.BONE_CARVING] = 100
             master._perks[PERK.PRO_BONEWORK] = 1
@@ -379,8 +391,8 @@ export namespace Template {
             return master
         }
 
-        export function MasterUnarmed(faction: string) {
-            let master = GenericHuman('Monk', faction)
+        export function MasterUnarmed(name: string, faction: string) {
+            let master = GenericHuman(name, faction)
 
             master._skills[SKILL.UNARMED] = 100
             master._perks[PERK.BATTLE_DODGE] = 1

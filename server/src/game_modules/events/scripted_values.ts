@@ -68,7 +68,7 @@ export namespace ScriptedValue {
      * @return {number} The target fatigue.
      */
     export function target_fatigue(character: Character, location: LocationInterface): number {
-        const skill = CharacterValues.skill(character, SKILL.TRAVELLING)
+        const skill = CharacterValues.pure_skill(character, SKILL.TRAVELLING)
 
         return rest_target_fatigue(
             rest_tier(character, location),

@@ -42,7 +42,8 @@ export function decide() {
 
         if (best) {
             best.action(character, best.target)
-            character.current_ai_action = best.tag
+
+            character.current_ai_action = best.tag + " " +  best.target.id
         }
     })
 }

@@ -217,7 +217,12 @@ AIActionsStorage.register_action_material({
                 already_trying_to_buy += order.amount
             }
         }
-        return (actor.ai_desired_stash.get(target.id) - actor.stash.get(target.id) - already_trying_to_buy) / 50
+
+        const desired = actor.ai_desired_stash.get(target.id)
+        const have = actor.ai_desired_stash.get(target.id)
+        const can_buy = actor.savings.get() / actor.ai_price_buy_expectation[target.id]
+
+        return (Math.min(desired, can_buy) - have - already_trying_to_buy) / 50
     },
     potential_targets(actor) {
         return MaterialConfiguration.MATERIAL.map(MaterialStorage.get)

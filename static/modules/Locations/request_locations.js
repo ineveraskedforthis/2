@@ -90,7 +90,7 @@ const columns = [
         header_text: "Owner",
         type: "string",
         value: (item) => item.owner_name,
-        custom_style: ["flex-1-0-5"]
+        custom_style: ["flex-3"]
     },
 ];
 const lists = [];

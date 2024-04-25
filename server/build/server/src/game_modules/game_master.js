@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GameMaster = void 0;
+exports.GameMaster = exports.generate_human_name = exports.generate_human_given_name = void 0;
 const templates_1 = require("./templates");
 const data_objects_1 = require("./data/data_objects");
 const data_id_1 = require("./data/data_id");
+const content_1 = require("../.././../game_content/src/content");
 // steppe_humans 9 9
 // city 2 6
 // rats 12 16
@@ -12,6 +13,61 @@ const data_id_1 = require("./data/data_id");
 // big_humans 10 28
 const LUMP_OF_MONEY = 1000;
 const TONS_OF_MONEY = 30000;
+const GREAT_CITIES = ["ITH", "URB", "URBA", "LAURB", "SUB", "GIR", "ZIR", "FAOG", "IRB", "MHA", "TRE"];
+const allowed_prefix = ["", "", "", "q", "z", "s"];
+const allowed_start = ["Al", "Ol", "Us", "Es", "Ul"];
+const allowed_center = ["o", "ou", "eu", "ae"];
+const allowed_end = ["", "p", "kep", "sep", "rup"];
+function generate_human_given_name() {
+    const dices = [
+        Math.floor(Math.random() * allowed_prefix.length),
+        Math.floor(Math.random() * allowed_start.length),
+        Math.floor(Math.random() * allowed_center.length),
+        Math.floor(Math.random() * allowed_end.length),
+    ];
+    return allowed_prefix[dices[0]] + allowed_start[dices[1]] + allowed_center[dices[2]] + allowed_end[dices[3]];
+}
+exports.generate_human_given_name = generate_human_given_name;
+function generate_human_name(citizen_flag, occupation, home_city) {
+    let result = "";
+    if (citizen_flag)
+        result += "G'";
+    if (home_city)
+        result += home_city + "'";
+    else {
+        const dice = Math.floor(Math.random() * GREAT_CITIES.length);
+        result += GREAT_CITIES[dice] + "'";
+    }
+    switch (occupation) {
+        case "ruler": {
+            result += "AEU";
+            break;
+        }
+        case "warrior": {
+            result += "Ar'";
+            break;
+        }
+        case "merchant": {
+            result += "Ub'";
+            break;
+        }
+        case "artisan": {
+            result += "Ab'";
+            break;
+        }
+        case "peasant": {
+            result += "Om'";
+            break;
+        }
+        case "mage": {
+            result += "Og'";
+            break;
+        }
+    }
+    result += " " + generate_human_given_name();
+    return result;
+}
+exports.generate_human_name = generate_human_name;
 var GameMaster;
 (function (GameMaster) {
     function spawn_faction(cell_id, faction) {
@@ -37,7 +93,7 @@ var GameMaster;
             });
             data_id_1.DataID.Connection.set_spawn('city', inn.id);
             // creation of mayor
-            const mayor = templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.HumanCity('Mayor'));
+            const mayor = templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.HumanCity(generate_human_name(true, "ruler")));
             mayor.savings.inc(TONS_OF_MONEY);
             data_objects_1.Data.Factions.set_faction_leader(faction, mayor.id);
             const mayor_house = data_objects_1.Data.Locations.create(cell_id, {
@@ -59,32 +115,22 @@ var GameMaster;
             });
             data_id_1.DataID.Connection.set_location_owner(mayor.id, mayor_house.id);
             data_id_1.DataID.Connection.set_character_home(mayor.id, mayor_house.id);
-            // creation of first colonists
-            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.HumanCook("Cook", 'city'));
-            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.Shoemaker());
-            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.HumanFletcher("Fletcher", 'city'));
-            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.ArmourMaster());
-            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.WeaponMasterWood('city'));
-            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.HumanLocalTrader("Local Trader", 'city'));
-            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.Tanner('Tanner'));
-            templates_1.Template.Character.Fisherman("Fisherman 1");
-            templates_1.Template.Character.Fisherman("Fisherman 2");
-            templates_1.Template.Character.Fisherman("Fisherman 3");
-            // colony mages
-            templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.Alchemist('city'));
-            templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.Mage('city'));
-            //hunters
-            for (let i = 0; i <= 10; i++) {
-                const hunter = templates_1.Template.Character.HumanRatHunter("Hunter " + i);
-                hunter.savings.inc(500);
+            // creation of remaining colonists
+            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.HumanLocalTrader(generate_human_name(true, "merchant", "ITH"), 'city'));
+            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.Tanner(generate_human_name(true, "artisan")));
+            for (let i = 1; i < 4; i++) {
+                templates_1.Template.Character.Fisherman(generate_human_name(false, "peasant"));
             }
+            // colony mages
+            templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.Alchemist(generate_human_name(true, "mage"), 'city'));
+            templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.Mage(generate_human_name(true, "mage"), 'city'));
             //guards
             for (let i = 0; i <= 5; i++) {
-                const guard = templates_1.Template.Character.HumanCityGuard("Guard " + i);
+                const guard = templates_1.Template.Character.HumanCityGuard(generate_human_name(true, "warrior"));
                 guard.savings.inc(500);
             }
             // innkeeper
-            const innkeeper = templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.HumanCity("Innkeeper"));
+            const innkeeper = templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.HumanCity(generate_human_name(true, "merchant")));
             data_id_1.DataID.Connection.set_location_owner(innkeeper.id, inn.id);
             data_id_1.DataID.Connection.set_character_home(innkeeper.id, inn.id);
         }
@@ -108,16 +154,21 @@ var GameMaster;
                 has_house_level: 3
             });
             data_id_1.DataID.Connection.set_spawn('steppe_humans', inn.id);
-            const innkeeper = templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.HumanSteppe("Innkeeper"));
+            const innkeeper = templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.HumanSteppe(generate_human_name(true, "merchant")));
             data_id_1.DataID.Connection.set_location_owner(innkeeper.id, inn.id);
             data_id_1.DataID.Connection.set_character_home(innkeeper.id, inn.id);
             // creation of local colonists
-            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.HumanCook("Cook", 'steppe'));
-            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.WeaponMasterBone(faction));
-            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.BloodMage(faction));
-            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.MasterUnarmed(faction));
-            templates_1.Template.Character.Lumberjack("Lumberjack 1");
-            templates_1.Template.Character.Lumberjack("Lumberjack 2");
+            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.HumanCook(generate_human_name(false, "artisan"), 'steppe'));
+            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.WeaponMasterBone(generate_human_name(false, "artisan"), faction));
+            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.BloodMage(generate_human_name(false, "mage"), faction));
+            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.MasterUnarmed(generate_human_name(false, "warrior"), faction));
+            templates_1.Template.Character.Lumberjack(generate_human_name(false, "peasant"));
+            templates_1.Template.Character.Lumberjack(generate_human_name(false, "peasant"));
+            //hunters
+            for (let i = 0; i <= 10; i++) {
+                const hunter = templates_1.Template.Character.HumanRatHunter(generate_human_name(false, "peasant"));
+                hunter.savings.inc(500);
+            }
         }
         if (faction == 'rats') {
             const rat_lair = data_objects_1.Data.Locations.create(cell_id, {
@@ -171,8 +222,7 @@ var GameMaster;
         let num_rats = 0;
         let num_elos = 0;
         let num_balls = 0;
-        let num_hunters = 0;
-        let num_guards = 0;
+        let num_humans = 0;
         data_objects_1.Data.Characters.for_each(character => {
             if ((character.race == 'rat') && (!character.dead())) {
                 num_rats += 1;
@@ -183,18 +233,39 @@ var GameMaster;
             if ((character.race == 'ball') && (!character.dead())) {
                 num_balls += 1;
             }
-            if ((character.ai_map == 'rat_hunter') && (!character.dead())) {
-                num_hunters += 1;
-            }
-            if ((character.ai_map == 'urban_guard' && (!character.dead()))) {
-                num_guards++;
+            if ((character.race == 'human' && (!character.dead()))) {
+                num_humans++;
             }
         });
-        if (num_hunters < 4) {
-            templates_1.Template.Character.HumanRatHunter("Hunter");
-        }
-        if (num_guards < 15) {
-            templates_1.Template.Character.HumanCityGuard("Guard");
+        // migration to the city
+        const speed = (10 / (1 + num_humans) / (1 + num_humans));
+        if (Math.random() < speed * dt) {
+            const occupation_dice = Math.random();
+            if (occupation_dice < 0.01) {
+                templates_1.Template.Character.HumanLocalTrader(generate_human_name(false, "merchant"), "city");
+            }
+            else if (occupation_dice < 0.7) {
+                templates_1.Template.Character.HumanCity(generate_human_name(false, "peasant"));
+            }
+            else if (occupation_dice < 0.9) {
+                const master = templates_1.Template.Character.HumanCity(generate_human_name(true, "artisan"));
+                for (const skill of content_1.SkillConfiguration.SKILL) {
+                    if (content_1.SkillStorage.get(skill).crafting) {
+                        if (Math.random() < 0.05) {
+                            master._skills[skill] = 90;
+                        }
+                        else if (Math.random() < 0.1) {
+                            master._skills[skill] = 50;
+                        }
+                        else if (Math.random() < 0.2) {
+                            master._skills[skill] = 10;
+                        }
+                    }
+                }
+            }
+            else {
+                templates_1.Template.Character.HumanCityGuard(generate_human_name(false, "warrior"));
+            }
         }
         // console.log('Game master update')
         data_objects_1.Data.Locations.for_each(location => {
@@ -249,3 +320,4 @@ var GameMaster;
     }
     GameMaster.spawn_ball = spawn_ball;
 })(GameMaster || (exports.GameMaster = GameMaster = {}));
+
