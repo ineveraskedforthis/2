@@ -6,7 +6,8 @@ require("../Actions/_loader");
 function decide(character) {
     if (character.dead())
         return;
-    // if (character.is_player()) return;
+    if (character.is_player())
+        return;
     if (character.in_battle())
         return;
     if (character.action != undefined)
@@ -27,9 +28,6 @@ function decide(character) {
         }
     }
     if (best) {
-        // if (character.user_id !== undefined) {
-        //     console.log(best.tag, best.utility)
-        // }
         best.action(character, best.target);
         character.current_ai_action = best.tag + " " + best.target.id;
     }

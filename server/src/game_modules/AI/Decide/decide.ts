@@ -15,7 +15,7 @@ interface ActionCalculation<Target> {
 
 export function decide(character: Character) {
     if (character.dead()) return;
-    // if (character.is_player()) return;
+    if (character.is_player()) return;
     if (character.in_battle()) return;
     if (character.action != undefined) return;
 
@@ -39,9 +39,6 @@ export function decide(character: Character) {
     }
 
     if (best) {
-        // if (character.user_id !== undefined) {
-        //     console.log(best.tag, best.utility)
-        // }
         best.action(character, best.target)
         character.current_ai_action = best.tag + " " +  best.target.id
     }
