@@ -16,11 +16,10 @@ var Effect;
     let Update;
     (function (Update) {
         function cell_market(cell) {
-            const locals = data_id_1.DataID.Cells.local_character_id_list(cell);
-            for (let item of locals) {
+            data_id_1.DataID.Cells.for_each_guest(cell, (item) => {
                 const local_character = data_objects_1.Data.Characters.from_id(item);
                 user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 22 /* UI_Part.MARKET */);
-            }
+            });
         }
         Update.cell_market = cell_market;
     })(Update = Effect.Update || (Effect.Update = {}));

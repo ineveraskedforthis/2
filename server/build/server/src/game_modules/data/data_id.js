@@ -17,11 +17,14 @@ var item_id_list = [];
 var character_chunks = [[]];
 var character_chunks_time_since_last_update = [0];
 var character_chunk_to_update = 0;
+var character_chunks_time_since_last_update2 = [0];
+var character_chunk_to_update2 = 0;
 var character_chunk_to_put_id_in = 0;
 var character_id_list = [];
 var character_id_location = [];
 var character_id_owned_location_set = [];
 var character_id_owned_market_order_set = [];
+var character_id_owned_market_order_list = [];
 var character_id_faction_id_reputation = [];
 var character_id_leader_of = [];
 var character_id_battle = [];
@@ -39,6 +42,7 @@ var location_id_list = [];
 var location_id_cell = [];
 var location_id_owner = [];
 var location_id_guests = [];
+var location_id_guests_list = [];
 var market_order_id_list = [];
 var market_order_id_owner = [];
 const empty_set_orders_bulk = new Set();
@@ -50,11 +54,16 @@ var DataID;
             cell_id_location_main[cell] = location;
         }
         Connection.set_main_location = set_main_location;
+        function update_guest_lists(location) {
+            location_id_guests_list[location] = Array.from(location_id_guests[location]);
+        }
         function set_character_location(character, location) {
             let old_location = character_id_location[character];
             character_id_location[character] = location;
             location_id_guests[old_location].delete(character);
             location_id_guests[location].add(character);
+            update_guest_lists(old_location);
+            update_guest_lists(location);
             return old_location;
         }
         Connection.set_character_location = set_character_location;
@@ -181,30 +190,32 @@ var DataID;
             return cell_id_location_id_list[cell];
         }
         Cells.locations = locations;
-        function local_character_id_list(cell) {
-            let result = [];
-            locations(cell).forEach((location) => {
-                result = result.concat(Location.guest_list(location));
-            });
-            return result;
-        }
-        Cells.local_character_id_list = local_character_id_list;
         function for_each_guest(cell, callback) {
-            cell_id_location_id_list[cell].forEach((location, index) => {
-                Location.for_each_guest(location, (guest) => {
+            for (const location of locations(cell)) {
+                for (const guest of Location.guest_list(location)) {
                     callback(guest);
-                });
-            });
+                }
+            }
         }
         Cells.for_each_guest = for_each_guest;
-        function market_order_id_list(cell) {
-            let result = [];
-            local_character_id_list(cell).forEach((character) => {
-                result = result.concat(Array.from(character_id_owned_market_order_set[character]));
-            });
-            return result;
+        function guests_amount(cell) {
+            let total = 0;
+            for (const location of locations(cell)) {
+                total += Location.guest_list(location).length;
+            }
+            return total;
         }
-        Cells.market_order_id_list = market_order_id_list;
+        Cells.guests_amount = guests_amount;
+        function for_each_market_order(cell, callback) {
+            for (const location of locations(cell)) {
+                for (const guest of Location.guest_list(location)) {
+                    for (const order of character_id_owned_market_order_list[guest]) {
+                        callback(order);
+                    }
+                }
+            }
+        }
+        Cells.for_each_market_order = for_each_market_order;
         function main_location(cell) {
             return cell_id_location_main[cell];
         }
@@ -219,6 +230,7 @@ var DataID;
         function set_up(location) {
             location_id_list.push(location);
             location_id_guests[location] = new Set();
+            location_id_guests_list[location] = [];
             update_last_id(location);
         }
         Location.set_up = set_up;
@@ -244,11 +256,11 @@ var DataID;
         }
         Location.owner_id = owner_id;
         function guest_list(location) {
-            return Array.from(location_id_guests[location]);
+            return location_id_guests_list[location];
         }
         Location.guest_list = guest_list;
         function for_each_guest(location, callback) {
-            location_id_guests[location].forEach((guest, index) => {
+            location_id_guests_list[location].forEach((guest, index) => {
                 callback(guest);
             });
         }
@@ -403,6 +415,19 @@ var DataID;
             character_chunk_to_update = (character_chunk_to_update + 1) % character_chunks.length;
         }
         Character.update = update;
+        function update2(dt_ms, time_between_updates, callback) {
+            for (let i = 0; i < character_chunks_time_since_last_update2.length; i++) {
+                character_chunks_time_since_last_update2[i] += dt_ms;
+            }
+            while (character_chunks_time_since_last_update2[character_chunk_to_update2] >= time_between_updates) {
+                for (const item of character_chunks[character_chunk_to_update2]) {
+                    callback(item);
+                }
+                character_chunks_time_since_last_update2[character_chunk_to_update2] -= time_between_updates;
+            }
+            character_chunk_to_update2 = (character_chunk_to_update2 + 1) % character_chunks.length;
+        }
+        Character.update2 = update2;
         function add_id_to_chunk(id) {
             character_chunks[character_chunk_to_put_id_in].push(id);
             character_chunk_to_put_id_in = (character_chunk_to_put_id_in + 1) % character_chunks.length;
@@ -411,11 +436,14 @@ var DataID;
         function set_amount_of_chunks(N) {
             character_chunks = [];
             character_chunks_time_since_last_update = [];
+            character_chunks_time_since_last_update2 = [];
             character_chunk_to_update = 0;
+            character_chunk_to_update2 = 0;
             character_chunk_to_put_id_in = 0;
             for (let i = 0; i < N; i++) {
                 character_chunks.push([]);
                 character_chunks_time_since_last_update.push(0);
+                character_chunks_time_since_last_update2.push(0);
             }
             for_each((id) => add_id_to_chunk(id));
         }
@@ -425,6 +453,7 @@ var DataID;
             character_id_faction_id_reputation[id] = {};
             character_id_owned_location_set[id] = new Set();
             character_id_owned_market_order_set[id] = new Set();
+            character_id_owned_market_order_list[id] = [];
             character_id_leader_of[id] = new Set();
             character_id_location[id] = location;
             location_id_guests[location].add(id);
@@ -486,7 +515,7 @@ var DataID;
         }
         Character.user_id = user_id;
         function market_orders_list(character) {
-            return Array.from(character_id_owned_market_order_set[character]);
+            return character_id_owned_market_order_list[character];
         }
         Character.market_orders_list = market_orders_list;
         function for_each(callback) {
@@ -496,12 +525,16 @@ var DataID;
     })(Character = DataID.Character || (DataID.Character = {}));
     let MarketOrders;
     (function (MarketOrders) {
+        function update_character_id_owned_market_order_list(owner) {
+            character_id_owned_market_order_list[owner] = Array.from(character_id_owned_market_order_set[owner]);
+        }
         function new_id(owner) {
             last_id_market_order++;
             const id = last_id_market_order;
             market_order_id_list.push(id);
             market_order_id_owner[id] = owner;
             character_id_owned_market_order_set[owner].add(id);
+            update_character_id_owned_market_order_list(owner);
             return id;
         }
         MarketOrders.new_id = new_id;
@@ -510,6 +543,7 @@ var DataID;
             market_order_id_owner[order] = owner;
             DataID.MarketOrders.update_last_id(order);
             character_id_owned_market_order_set[owner].add(order);
+            update_character_id_owned_market_order_list(owner);
         }
         MarketOrders.register = register;
         function for_each(callback) {

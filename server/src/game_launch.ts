@@ -16,13 +16,10 @@ import { UserManagement } from "./game_modules/client_communication/user_manager
 import { ActionManager } from "./game_modules/actions/manager";
 import { Auth } from "./game_modules/client_communication/network_actions/auth";
 import { Event } from "./game_modules/events/events";
-import { Convert, Link } from "./game_modules/systems_communication";
+import { Convert } from "./game_modules/systems_communication";
 import { BattleSystem } from "./game_modules/battle/system";
-import { MarketOrders, ItemOrders } from "./game_modules/market/system";
 import { Server } from "./server";
-import { EventMarket } from "./game_modules/events/market";
 import { BattleEvent } from "./game_modules/battle/events";
-import { convertTypeAcquisitionFromJson } from "typescript";
 
 import "./game_modules/craft/craft"
 import * as path from "path";
@@ -52,8 +49,22 @@ function get_version():number {
     return data
 }
 
-const gameloop = require('node-gameloop');
 var shutdown = false
+
+var BEFORE = Date.now()
+var NOW = Date.now()
+var TICK_LENGTH = 1000 / 15
+var DELTA = 0
+
+
+function main_loop(http_server : Server) {
+    ((server) => (setTimeout(() => main_loop(server), TICK_LENGTH)))(http_server)
+    NOW = Date.now()
+    DELTA = NOW - BEFORE
+    // console.log('delta', DELTA)
+    update(DELTA as ms, http_server)
+    BEFORE = NOW
+}
 
 export function launch(http_server: Server) {
     try {
@@ -76,8 +87,8 @@ export function launch(http_server: Server) {
         load()
         console.log('systems are ready');
         MapSystem.initial_update()
-        gameloop.setGameLoop( (delta: number) => update(delta * 1000 as ms, http_server), 1000 / 15 );
 
+        main_loop(http_server)
     } catch (e) {
         console.log(e);
     }

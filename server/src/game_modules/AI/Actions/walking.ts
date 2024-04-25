@@ -158,6 +158,9 @@ function locations_nearby(actor: Character, predicate: (item : LocationInterface
         .map(Data.Locations.from_id)
         .filter(predicate)
         .filter(MapSystem.can_move_location)
+    if (result.length > 0) {
+        return result
+    }
     for (const neighbour of Data.World.neighbours(actor.cell_id)) {
         result = result
         .concat(DataID.Cells.locations(neighbour)
@@ -180,8 +183,8 @@ function for_sale_desire(actor: Character, material: MATERIAL) {
         modifier = 1 / 100
     return (actor.ai_gathering_target.get(material)
         - actor.stash.get(material)
-        + AIfunctions.check_local_demand_for_material(actor, material)
-        - AIfunctions.check_local_supply_for_material(actor, material)) / 50 * modifier
+        + MapSystem.demand(actor.cell_id, material)
+        - MapSystem.supply(actor.cell_id, material)) / 50 * modifier
 }
 
 
@@ -212,7 +215,7 @@ AIActionsStorage.register_action_location({
 
     action(actor, target) {
         AIfunctions.update_price_beliefs(actor)
-        actor.ai_gathering_target.set(MATERIAL.BERRY_FIE, AIfunctions.check_local_demand_for_material(actor, MATERIAL.BERRY_FIE))
+        actor.ai_gathering_target.set(MATERIAL.BERRY_FIE, MapSystem.demand(actor.cell_id, MATERIAL.BERRY_FIE))
         toward_action(actor, target, CharacterAction.GATHER_BERRIES)
     }
 })
@@ -256,7 +259,7 @@ AIActionsStorage.register_action_location({
 
     action(actor, target) {
         AIfunctions.update_price_beliefs(actor)
-        actor.ai_gathering_target.set(MATERIAL.BERRY_ZAZ, AIfunctions.check_local_demand_for_material(actor, MATERIAL.BERRY_FIE))
+        actor.ai_gathering_target.set(MATERIAL.BERRY_ZAZ, MapSystem.demand(actor.cell_id, MATERIAL.BERRY_FIE))
         toward_action(actor, target, CharacterAction.GATHER_BERRIES)
     }
 })
@@ -302,7 +305,7 @@ AIActionsStorage.register_action_location({
 
     action(actor, target) {
         AIfunctions.update_price_beliefs(actor)
-        actor.ai_gathering_target.set(MATERIAL.WOOD_RED, AIfunctions.check_local_demand_for_material(actor, MATERIAL.WOOD_RED))
+        actor.ai_gathering_target.set(MATERIAL.WOOD_RED, MapSystem.demand(actor.cell_id, MATERIAL.WOOD_RED))
 
         if (target.cell_id == actor.cell_id) {
             Effect.enter_location(actor.id, target.id)
@@ -359,7 +362,7 @@ AIActionsStorage.register_action_location({
 
     action(actor, target) {
         AIfunctions.update_price_beliefs(actor)
-        actor.ai_gathering_target.set(MATERIAL.COTTON, AIfunctions.check_local_demand_for_material(actor, MATERIAL.COTTON))
+        actor.ai_gathering_target.set(MATERIAL.COTTON, MapSystem.demand(actor.cell_id, MATERIAL.COTTON))
         if (target.cell_id == actor.cell_id) {
             Effect.enter_location(actor.id, target.id)
             ActionManager.start_action(CharacterAction.GATHER_COTTON, actor, actor.cell_id)
@@ -413,7 +416,7 @@ AIActionsStorage.register_action_location({
 
     action(actor, target) {
         AIfunctions.update_price_beliefs(actor)
-        actor.ai_gathering_target.set(MATERIAL.FISH_OKU, AIfunctions.check_local_demand_for_material(actor, MATERIAL.FISH_OKU))
+        actor.ai_gathering_target.set(MATERIAL.FISH_OKU, MapSystem.demand(actor.cell_id, MATERIAL.FISH_OKU))
 
         if (target.cell_id == actor.cell_id) {
             Effect.enter_location(actor.id, target.id)

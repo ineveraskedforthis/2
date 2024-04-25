@@ -63,8 +63,19 @@ function get_version() {
     let data = Number(get_version_raw());
     return data;
 }
-const gameloop = require('node-gameloop');
 var shutdown = false;
+var BEFORE = Date.now();
+var NOW = Date.now();
+var TICK_LENGTH = 1000 / 15;
+var DELTA = 0;
+function main_loop(http_server) {
+    ((server) => (setTimeout(() => main_loop(server), TICK_LENGTH)))(http_server);
+    NOW = Date.now();
+    DELTA = NOW - BEFORE;
+    // console.log('delta', DELTA)
+    update(DELTA, http_server);
+    BEFORE = NOW;
+}
 function launch(http_server) {
     try {
         process.on('SIGTERM', () => {
@@ -84,7 +95,7 @@ function launch(http_server) {
         load();
         console.log('systems are ready');
         system_2.MapSystem.initial_update();
-        gameloop.setGameLoop((delta) => update(delta * 1000, http_server), 1000 / 15);
+        main_loop(http_server);
     }
     catch (e) {
         console.log(e);

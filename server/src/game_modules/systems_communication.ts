@@ -70,12 +70,8 @@ export namespace Convert {
     }
 
     export function cell_id_to_item_orders_socket(cell_id: cell_id): ItemOrderData[] {
-        const chars = DataID.Cells.local_character_id_list(cell_id)
         const result:ItemOrderData[] = []
-        if (chars == undefined) {
-            return result
-        }
-        for (let character_id of chars) {
+        DataID.Cells.for_each_guest(cell_id, (character_id) => {
             const items = Data.Characters.from_id(character_id).equip.data.backpack.items
             for (let order_id = 0; order_id < items.length; order_id++) {
                 const order = Data.Items.from_id(items[order_id])
@@ -84,7 +80,7 @@ export namespace Convert {
                 let character = Data.Characters.from_id(character_id)
                 result.push(order_to_socket_data(order_id, order, character))
             }
-        }
+        })
         return result
     }
 

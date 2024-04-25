@@ -264,14 +264,12 @@ export namespace Alerts {
     }
 
     export function cell_locals(cell: cell_id) {
-        const locals = DataID.Cells.local_character_id_list(cell)
-        for (let item of locals) {
-            // const id = item.id
-            const local_character = Data.Characters.from_id(item)
-            const local_user = Convert.character_to_user(local_character)
-            if (local_user == undefined) {continue}
-            UserManagement.add_user_to_update_queue(local_user.data.id, UI_Part.LOCAL_CHARACTERS)
-        }
+        DataID.Cells.for_each_guest(cell, (item) => {
+            const local_character = Data.Characters.from_id(item);
+            const local_user = Convert.character_to_user(local_character);
+            if (local_user == undefined) return;
+            UserManagement.add_user_to_update_queue(local_user.data.id, UI_Part.LOCAL_CHARACTERS);
+        })
     }
 
     export function action_ping(character: Character, duration: number, is_move:boolean) {

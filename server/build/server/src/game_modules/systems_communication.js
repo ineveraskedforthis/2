@@ -57,12 +57,8 @@ var Convert;
     }
     Convert.order_to_socket_data = order_to_socket_data;
     function cell_id_to_item_orders_socket(cell_id) {
-        const chars = data_id_1.DataID.Cells.local_character_id_list(cell_id);
         const result = [];
-        if (chars == undefined) {
-            return result;
-        }
-        for (let character_id of chars) {
+        data_id_1.DataID.Cells.for_each_guest(cell_id, (character_id) => {
             const items = data_objects_1.Data.Characters.from_id(character_id).equip.data.backpack.items;
             for (let order_id = 0; order_id < items.length; order_id++) {
                 const order = data_objects_1.Data.Items.from_id(items[order_id]);
@@ -73,7 +69,7 @@ var Convert;
                 let character = data_objects_1.Data.Characters.from_id(character_id);
                 result.push(order_to_socket_data(order_id, order, character));
             }
-        }
+        });
         return result;
     }
     Convert.cell_id_to_item_orders_socket = cell_id_to_item_orders_socket;

@@ -281,48 +281,9 @@ export namespace AIfunctions {
         }
     }
 
-    export function check_local_demand_for_material(actor: Character, material: MATERIAL) {
-        let demanded = 0
-
-        const demand = DataID.Cells.market_order_id_list(actor.cell_id).map(Data.MarketOrders.from_id)
-        for (const item of demand) {
-            if (
-                (item.material == material)
-                && (item.typ == "buy")
-                // || (item.price >= AIfunctions.sell_price(actor, material))
-            ) {
-                demanded += item.amount
-            }
-        }
-
-        return demanded
-    }
-
-    export function check_local_supply_for_material(actor: Character, material: MATERIAL) {
-        let supplied = 0
-
-        const demand = DataID.Cells.market_order_id_list(actor.cell_id).map(Data.MarketOrders.from_id)
-        for (const item of demand) {
-            if (
-                (item.material == material)
-                && (item.typ == "sell")
-                // || (item.price >= AIfunctions.buy_price(actor, material))
-            ) {
-                supplied += item.amount
-            }
-        }
-
-        return supplied
-    }
-
-
     export function update_price_beliefs(character: Character) {
-        let orders = DataID.Cells.market_order_id_list(character.cell_id)
-        // initialisation
-
-        // updating price beliefs as you go
-        for (let item of orders) {
-            let order = Data.MarketOrders.from_id(item)
+        DataID.Cells.for_each_market_order(character.cell_id, (item) => {
+            let order = Data.MarketOrders.from_id(item);
             if (order.owner_id == character.id) {
                 if (order.typ == "buy") {
                     unbought_price_update(character, order.material, order.amount)
@@ -338,7 +299,7 @@ export namespace AIfunctions {
                     seen_sell_order_price_update(character, order.material, order.amount, order.price)
                 }
             }
-        }
+        })
 
         for (const material of MaterialConfiguration.MATERIAL) {
             character.ai_price_buy_log_precision[material] -= 0.001

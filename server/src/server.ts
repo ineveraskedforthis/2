@@ -109,10 +109,15 @@ app.get('/api/:API_KEY/cell/:cellID', (req: Request, res: Response) => {
         return
     }
 
+    const local_characters : character_id[] = []
+    DataID.Cells.for_each_guest(cell.id, (id) => {
+        local_characters.push(id)
+    })
+
     const response = {
         valid: true,
         scent: cell.rat_scent,
-        local_characters: DataID.Cells.local_character_id_list(cell.id).map(Convert.character_id_to_character_view)
+        local_characters: local_characters.map(Convert.character_id_to_character_view)
     }
     res.json(response)
 })
@@ -131,7 +136,7 @@ app.get('/api/:API_KEY/map', (req: Request, res: Response) => {
             index: cell.id,
             terrain: Data.World.id_to_terrain(cell.id),
             scent: cell.rat_scent,
-            population: DataID.Cells.local_character_id_list(cell.id).length
+            population: DataID.Cells.guests_amount(cell.id)
         }
     })
 
@@ -158,7 +163,7 @@ import { DataID } from './game_modules/data/data_id.js';
 import { Data } from './game_modules/data/data_objects.js';
 import { SocketManager } from "./game_modules/client_communication/socket_manager.js";
 import { CellView } from '@custom_types/common.js';
-import { cell_id } from "@custom_types/ids.js";
+import { cell_id, character_id } from "@custom_types/ids.js";
 import { Convert } from './game_modules/systems_communication.js';
 import { Extract } from './game_modules/data-extraction/extract-data.js';
 

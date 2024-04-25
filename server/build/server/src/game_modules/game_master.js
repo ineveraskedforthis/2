@@ -238,14 +238,15 @@ var GameMaster;
             }
         });
         // migration to the city
-        const speed = (10 / (1 + num_humans) / (1 + num_humans));
+        const speed = (1 / (1 + num_humans) / (1 + num_humans));
         if (Math.random() < speed * dt) {
             const occupation_dice = Math.random();
             if (occupation_dice < 0.01) {
                 templates_1.Template.Character.HumanLocalTrader(generate_human_name(false, "merchant"), "city");
             }
             else if (occupation_dice < 0.7) {
-                templates_1.Template.Character.HumanCity(generate_human_name(false, "peasant"));
+                const character = templates_1.Template.Character.HumanCity(generate_human_name(false, "peasant"));
+                character.savings.inc(50);
             }
             else if (occupation_dice < 0.9) {
                 const master = templates_1.Template.Character.HumanCity(generate_human_name(true, "artisan"));
@@ -262,9 +263,11 @@ var GameMaster;
                         }
                     }
                 }
+                master.savings.inc(4000);
             }
             else {
-                templates_1.Template.Character.HumanCityGuard(generate_human_name(false, "warrior"));
+                const guard = templates_1.Template.Character.HumanCityGuard(generate_human_name(false, "warrior"));
+                guard.savings.inc(250);
             }
         }
         // console.log('Game master update')

@@ -243,16 +243,13 @@ var Alerts;
     }
     Alerts.remove_unit = remove_unit;
     function cell_locals(cell) {
-        const locals = data_id_1.DataID.Cells.local_character_id_list(cell);
-        for (let item of locals) {
-            // const id = item.id
+        data_id_1.DataID.Cells.for_each_guest(cell, (item) => {
             const local_character = data_objects_1.Data.Characters.from_id(item);
             const local_user = systems_communication_1.Convert.character_to_user(local_character);
-            if (local_user == undefined) {
-                continue;
-            }
+            if (local_user == undefined)
+                return;
             user_manager_1.UserManagement.add_user_to_update_queue(local_user.data.id, 13 /* UI_Part.LOCAL_CHARACTERS */);
-        }
+        });
     }
     Alerts.cell_locals = cell_locals;
     function action_ping(character, duration, is_move) {

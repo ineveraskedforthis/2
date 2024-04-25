@@ -127,6 +127,8 @@ storage_1.AIActionsStorage.register_action_self({
 storage_1.AIActionsStorage.register_action_material({
     tag: "eat",
     utility(actor, target) {
+        if (actor.stash.get(target.id) == 0)
+            return 0;
         if (character_conditions_1.CharacterCondition.can_eat(actor, target)) {
             return common_1.AIfunctions.lack_of_hp(actor) * 2 + actor.fatigue / 200 + actor.stress / 200;
         }

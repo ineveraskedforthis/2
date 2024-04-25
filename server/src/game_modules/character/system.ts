@@ -64,7 +64,7 @@ export namespace CharacterSystem {
     }
 
     export function update(dt: ms) {
-        DataID.Character.update(dt, 1000, (id) => {
+        DataID.Character.update(dt, 5000, (id) => {
             const character = Data.Characters.from_id(id);
             if (character.dead()) return;
             if (!character.in_battle()) Effect.Change.rage(character, -2, CHANGE_REASON.REST);
@@ -83,7 +83,10 @@ export namespace CharacterSystem {
                     Effect.Change.fatigue(character, 1, CHANGE_REASON.HUNGER)
                 }
             }
+        })
 
+        DataID.Character.update2(dt, 10000, (id) => {
+            const character = Data.Characters.from_id(id);
             decide(character)
         })
     }

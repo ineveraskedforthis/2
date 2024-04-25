@@ -6,6 +6,11 @@ const terrain_1 = require("./terrain");
 const geom_1 = require("../geom");
 const data_objects_1 = require("../data/data_objects");
 const data_id_1 = require("../data/data_id");
+const content_1 = require("../../.././../game_content/src/content");
+var update_timer = 0;
+var update_timer_2 = 0;
+var demand_data = [];
+var supply_data = [];
 var MapSystem;
 (function (MapSystem) {
     function sea_nearby(cell) {
@@ -127,17 +132,61 @@ var MapSystem;
             location.small_game = location.small_game + 1;
         }
     }
-    function update(dt) {
-        data_objects_1.Data.Cells.for_each((cell) => {
-            update_rat_scent(dt, cell);
+    function check_local_demand_for_material(cell_id, material) {
+        let demanded = 0;
+        data_id_1.DataID.Cells.for_each_market_order(cell_id, (item_id) => {
+            const item = data_objects_1.Data.MarketOrders.from_id(item_id);
+            if ((item.material == material)
+                && (item.typ == "buy")) {
+                demanded += item.amount;
+            }
         });
-        data_objects_1.Data.Locations.for_each((location) => {
-            if (Math.random() < 0.001) {
+        return demanded;
+    }
+    MapSystem.check_local_demand_for_material = check_local_demand_for_material;
+    function check_local_supply_for_material(cell_id, material) {
+        let supplied = 0;
+        data_id_1.DataID.Cells.for_each_market_order(cell_id, (item_id) => {
+            const item = data_objects_1.Data.MarketOrders.from_id(item_id);
+            if ((item.material == material)
+                && (item.typ == "sell")) {
+                supplied += item.amount;
+            }
+        });
+        return supplied;
+    }
+    MapSystem.check_local_supply_for_material = check_local_supply_for_material;
+    function supply(cell_id, material) {
+        return supply_data[cell_id] ? supply_data[cell_id][material] : 0;
+    }
+    MapSystem.supply = supply;
+    function demand(cell_id, material) {
+        return demand_data[cell_id] ? demand_data[cell_id][material] : 0;
+    }
+    MapSystem.demand = demand;
+    function update(dt) {
+        update_timer += dt;
+        update_timer_2 += dt;
+        if (update_timer_2 > 10000) {
+            data_objects_1.Data.Cells.for_each((cell) => {
+                update_rat_scent(dt, cell);
+                supply_data[cell.id] = content_1.MaterialConfiguration.zero_record;
+                demand_data[cell.id] = content_1.MaterialConfiguration.zero_record;
+                for (const material of content_1.MaterialConfiguration.MATERIAL) {
+                    supply_data[cell.id][material] = check_local_supply_for_material(cell.id, material);
+                    demand_data[cell.id][material] = check_local_demand_for_material(cell.id, material);
+                }
+            });
+            update_timer_2 -= 10000;
+        }
+        if (update_timer > 100000) {
+            data_objects_1.Data.Locations.for_each((location) => {
                 update_cotton(location);
                 update_game(location);
                 update_fish(location);
-            }
-        });
+            });
+            update_timer -= 100000;
+        }
     }
     MapSystem.update = update;
     function initial_update() {
@@ -255,3 +304,4 @@ var MapSystem;
         return { x: tx, y: ty };
     }
 })(MapSystem || (exports.MapSystem = MapSystem = {}));
+

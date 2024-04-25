@@ -132,20 +132,19 @@ var EventMarket;
     }
     EventMarket.buy_smart_with_limits = buy_smart_with_limits;
     function sell_with_limits(character, material, min_price, max_amount) {
-        let orders = data_id_1.DataID.Cells.market_order_id_list(character.cell_id);
         let best_order = undefined;
         let best_price = min_price;
-        for (let item of orders) {
+        data_id_1.DataID.Cells.for_each_market_order(character.cell_id, (item) => {
             let order = data_objects_1.Data.MarketOrders.from_id(item);
             if (order.typ == 'buy')
-                continue;
+                return;
             if (order.material != material)
-                continue;
+                return;
             if ((best_price <= order.price) && (order.amount > 0)) {
                 best_price = order.price;
                 best_order = order;
             }
-        }
+        });
         if (best_order == undefined)
             return 0;
         if (character.savings.get() >= best_price) {
@@ -155,20 +154,19 @@ var EventMarket;
     }
     EventMarket.sell_with_limits = sell_with_limits;
     function buy_with_limits(character, material, max_price, max_amount) {
-        let orders = data_id_1.DataID.Cells.market_order_id_list(character.cell_id);
         let best_order = undefined;
         let best_price = max_price;
-        for (let item of orders) {
+        data_id_1.DataID.Cells.for_each_market_order(character.cell_id, (item) => {
             let order = data_objects_1.Data.MarketOrders.from_id(item);
             if (order.typ == 'buy')
-                continue;
+                return;
             if (order.material != material)
-                continue;
+                return;
             if ((best_price >= order.price) && (order.amount > 0)) {
                 best_price = order.price;
                 best_order = order;
             }
-        }
+        });
         if (best_order == undefined)
             return 0;
         if (character.savings.get() >= best_price) {

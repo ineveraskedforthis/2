@@ -26,11 +26,14 @@ var item_id_list                            : item_id[]                         
 var character_chunks                        : character_id[][]                                                  = [[]]
 var character_chunks_time_since_last_update : number[]                                                          = [0]
 var character_chunk_to_update               : number                                                            = 0
-var character_chunk_to_put_id_in               : number                                                            = 0
+var character_chunks_time_since_last_update2: number[]                                                          = [0]
+var character_chunk_to_update2              : number                                                            = 0
+var character_chunk_to_put_id_in            : number                                                            = 0
 var character_id_list                       : character_id[]                                                    = []
 var character_id_location                   : Record<character_id, location_id>                                 = []
 var character_id_owned_location_set         : Record<character_id, Set<location_id>>                            = []
 var character_id_owned_market_order_set     : Record<character_id, Set<market_order_id>>                        = []
+var character_id_owned_market_order_list    : Record<character_id, market_order_id[]>                           = []
 var character_id_faction_id_reputation      : Record<character_id, Partial<Record<string, reputation_level>>>   = []
 var character_id_leader_of                  : Record<character_id, Set<string>>                                 = []
 var character_id_battle                     : Partial<Record<character_id, battle_id>>                          = []
@@ -52,6 +55,7 @@ var location_id_list                        : location_id[]                     
 var location_id_cell                        : Record<location_id, cell_id>                                      = []
 var location_id_owner                       : Partial<Record<location_id, character_id>>                        = []
 var location_id_guests                      : Record<location_id, Set<character_id>>                            = []
+var location_id_guests_list                 : Record<location_id, character_id[]>                               = []
 
 var market_order_id_list                    : market_order_id[]                                                 = []
 var market_order_id_owner                   : Record<market_order_id, character_id>                             = []
@@ -65,11 +69,18 @@ export namespace DataID {
             cell_id_location_main[cell] = location
         }
 
+        function update_guest_lists(location: location_id) {
+            location_id_guests_list[location] = Array.from(location_id_guests[location])
+        }
+
         export function set_character_location(character: character_id, location: location_id): location_id {
             let old_location = character_id_location[character]
             character_id_location[character] = location
             location_id_guests[old_location].delete(character)
             location_id_guests[location].add(character)
+
+            update_guest_lists(old_location)
+            update_guest_lists(location)
 
             return old_location
         }
@@ -199,34 +210,31 @@ export namespace DataID {
             return cell_id_location_id_list[cell]
         }
 
-        export function local_character_id_list(cell: cell_id) {
-            let result: character_id[] = []
-
-            locations(cell).forEach((location) => {
-                result = result.concat(Location.guest_list(location))
-            })
-
-            return result
-        }
-
-
         export function for_each_guest(cell: cell_id, callback: (guest: character_id) => void) {
-            cell_id_location_id_list[cell].forEach((location, index) => {
-                Location.for_each_guest(location, (guest) => {
+            for (const location of locations(cell)) {
+                for (const guest of Location.guest_list(location)) {
                     callback(guest)
-                })
-            })
+                }
+            }
         }
 
-        export function market_order_id_list(cell: cell_id) {
-            let result: market_order_id[] = []
-
-            local_character_id_list(cell).forEach((character) => {
-                result = result.concat(Array.from(character_id_owned_market_order_set[character]))
-            })
-            return result
+        export function guests_amount(cell: cell_id) {
+            let total = 0
+            for (const location of locations(cell)) {
+                total += Location.guest_list(location).length
+            }
+            return total
         }
 
+        export function for_each_market_order(cell: cell_id, callback: (market_order: market_order_id) => void) {
+            for (const location of locations(cell)) {
+                for (const guest of Location.guest_list(location)) {
+                    for (const order of character_id_owned_market_order_list[guest]) {
+                        callback(order)
+                    }
+                }
+            }
+        }
 
         export function main_location(cell: cell_id) {
             return cell_id_location_main[cell]
@@ -241,6 +249,7 @@ export namespace DataID {
         export function set_up(location: location_id) {
             location_id_list.push(location)
             location_id_guests[location] = new Set()
+            location_id_guests_list[location] = []
             update_last_id(location)
         }
 
@@ -266,11 +275,11 @@ export namespace DataID {
         }
 
         export function guest_list(location: location_id): character_id[] {
-            return Array.from(location_id_guests[location])
+            return location_id_guests_list[location]
         }
 
         export function for_each_guest(location: location_id, callback: (guest: character_id) => void) {
-            location_id_guests[location].forEach((guest, index) => {
+            location_id_guests_list[location].forEach((guest, index) => {
                 callback(guest)
             })
         }
@@ -430,6 +439,21 @@ export namespace DataID {
             character_chunk_to_update = (character_chunk_to_update + 1) % character_chunks.length;
         }
 
+        export function update2(dt_ms: number, time_between_updates: number, callback: (id: character_id) => void) {
+            for (let i = 0; i < character_chunks_time_since_last_update2.length; i++) {
+                character_chunks_time_since_last_update2[i] += dt_ms
+            }
+
+            while (character_chunks_time_since_last_update2[character_chunk_to_update2] >= time_between_updates) {
+                for (const item of character_chunks[character_chunk_to_update2]) {
+                    callback(item)
+                }
+                character_chunks_time_since_last_update2[character_chunk_to_update2] -= time_between_updates
+            }
+
+            character_chunk_to_update2 = (character_chunk_to_update2 + 1) % character_chunks.length;
+        }
+
         export function add_id_to_chunk(id: character_id) {
             character_chunks[character_chunk_to_put_id_in].push(id);
             character_chunk_to_put_id_in = (character_chunk_to_put_id_in + 1) % character_chunks.length;
@@ -438,12 +462,15 @@ export namespace DataID {
         export function set_amount_of_chunks(N: number) {
             character_chunks = []
             character_chunks_time_since_last_update = []
+            character_chunks_time_since_last_update2 = []
             character_chunk_to_update = 0
+            character_chunk_to_update2 = 0
             character_chunk_to_put_id_in = 0
 
             for (let i = 0; i < N; i++) {
                 character_chunks.push([])
                 character_chunks_time_since_last_update.push(0)
+                character_chunks_time_since_last_update2.push(0)
             }
 
             for_each((id) => add_id_to_chunk(id));
@@ -455,6 +482,7 @@ export namespace DataID {
 
             character_id_owned_location_set[id] = new Set()
             character_id_owned_market_order_set[id] = new Set()
+            character_id_owned_market_order_list[id] = []
             character_id_leader_of[id] = new Set()
 
             character_id_location[id] = location
@@ -518,7 +546,7 @@ export namespace DataID {
         }
 
         export function market_orders_list(character: character_id) {
-            return Array.from(character_id_owned_market_order_set[character])
+            return character_id_owned_market_order_list[character]
         }
 
         export function for_each(callback: (character: character_id) => void) {
@@ -527,6 +555,10 @@ export namespace DataID {
     }
 
     export namespace MarketOrders {
+        function update_character_id_owned_market_order_list(owner: character_id) {
+            character_id_owned_market_order_list[owner] = Array.from(character_id_owned_market_order_set[owner])
+        }
+
         export function new_id(owner: character_id) {
             last_id_market_order++;
             const id = last_id_market_order;
@@ -535,6 +567,8 @@ export namespace DataID {
             market_order_id_owner[id] = owner
 
             character_id_owned_market_order_set[owner].add(id)
+
+            update_character_id_owned_market_order_list(owner)
 
             return id
         }
@@ -545,6 +579,8 @@ export namespace DataID {
             DataID.MarketOrders.update_last_id(order)
 
             character_id_owned_market_order_set[owner].add(order)
+
+            update_character_id_owned_market_order_list(owner)
         }
 
         export function for_each(callback: (order: market_order_id) => void) {

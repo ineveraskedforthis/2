@@ -10,6 +10,7 @@ import { Data } from "../data/data_objects"
 import { Character } from "../data/entities/character"
 import { Effect } from "../effects/effects"
 import { ItemOrders, MarketOrders } from "../market/system"
+import { MarketOrder } from "../market/classes"
 
 export namespace EventMarket {
     export function buy(character: Character, material:MATERIAL, amount: number, price: money) {
@@ -146,20 +147,20 @@ export namespace EventMarket {
     }
 
     export function sell_with_limits(character: Character, material: MATERIAL, min_price: money, max_amount: number) : number {
-        let orders = DataID.Cells.market_order_id_list(character.cell_id);
-        let best_order = undefined;
+        let best_order : (MarketOrder|undefined) = undefined;
         let best_price = min_price;
-        for (let item of orders) {
+
+        DataID.Cells.for_each_market_order(character.cell_id, (item) => {
             let order = Data.MarketOrders.from_id(item);
             if (order.typ == 'buy')
-                continue;
+                return;
             if (order.material != material)
-                continue;
+                return;
             if ((best_price <= order.price) && (order.amount > 0)) {
                 best_price = order.price;
                 best_order = order;
             }
-        }
+        })
 
         if (best_order == undefined)
             return 0;
@@ -167,7 +168,7 @@ export namespace EventMarket {
         if (character.savings.get() >= best_price) {
             return execute_buy_order(
                 character,
-                best_order.id,
+                (best_order as MarketOrder).id,
                 Math.min(
                     Math.floor(character.savings.get() / best_price),
                     max_amount
@@ -178,20 +179,19 @@ export namespace EventMarket {
     }
 
     export function buy_with_limits(character: Character, material: MATERIAL, max_price: money, max_amount: number) : number {
-        let orders = DataID.Cells.market_order_id_list(character.cell_id);
         let best_order = undefined;
         let best_price = max_price;
-        for (let item of orders) {
+        DataID.Cells.for_each_market_order(character.cell_id, (item) => {
             let order = Data.MarketOrders.from_id(item);
             if (order.typ == 'buy')
-                continue;
+                return;
             if (order.material != material)
-                continue;
+                return;
             if ((best_price >= order.price) && (order.amount > 0)) {
                 best_price = order.price;
                 best_order = order;
             }
-        }
+        })
 
         if (best_order == undefined)
             return 0;
@@ -199,7 +199,7 @@ export namespace EventMarket {
         if (character.savings.get() >= best_price) {
             return execute_sell_order(
                 character,
-                best_order.id,
+                (best_order as MarketOrder).id,
                 Math.min(
                     Math.floor(character.savings.get() / best_price),
                     max_amount

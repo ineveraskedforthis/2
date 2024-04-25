@@ -48,11 +48,10 @@ export const enum CHANGE_REASON {
 export namespace Effect {
     export namespace Update {
         export function cell_market(cell: cell_id) {
-            const locals = DataID.Cells.local_character_id_list(cell)
-            for (let item of locals) {
+            DataID.Cells.for_each_guest(cell, (item) => {
                 const local_character = Data.Characters.from_id(item)
                 UserManagement.add_user_to_update_queue(local_character.user_id, UI_Part.MARKET)
-            }
+            })
         }
     }
 

@@ -262,39 +262,8 @@ var AIfunctions;
         }
     }
     AIfunctions.go_to_location = go_to_location;
-    function check_local_demand_for_material(actor, material) {
-        let demanded = 0;
-        const demand = data_id_1.DataID.Cells.market_order_id_list(actor.cell_id).map(data_objects_1.Data.MarketOrders.from_id);
-        for (const item of demand) {
-            if ((item.material == material)
-                && (item.typ == "buy")
-            // || (item.price >= AIfunctions.sell_price(actor, material))
-            ) {
-                demanded += item.amount;
-            }
-        }
-        return demanded;
-    }
-    AIfunctions.check_local_demand_for_material = check_local_demand_for_material;
-    function check_local_supply_for_material(actor, material) {
-        let supplied = 0;
-        const demand = data_id_1.DataID.Cells.market_order_id_list(actor.cell_id).map(data_objects_1.Data.MarketOrders.from_id);
-        for (const item of demand) {
-            if ((item.material == material)
-                && (item.typ == "sell")
-            // || (item.price >= AIfunctions.buy_price(actor, material))
-            ) {
-                supplied += item.amount;
-            }
-        }
-        return supplied;
-    }
-    AIfunctions.check_local_supply_for_material = check_local_supply_for_material;
     function update_price_beliefs(character) {
-        let orders = data_id_1.DataID.Cells.market_order_id_list(character.cell_id);
-        // initialisation
-        // updating price beliefs as you go
-        for (let item of orders) {
+        data_id_1.DataID.Cells.for_each_market_order(character.cell_id, (item) => {
             let order = data_objects_1.Data.MarketOrders.from_id(item);
             if (order.owner_id == character.id) {
                 if (order.typ == "buy") {
@@ -312,7 +281,7 @@ var AIfunctions;
                     seen_sell_order_price_update(character, order.material, order.amount, order.price);
                 }
             }
-        }
+        });
         for (const material of content_1.MaterialConfiguration.MATERIAL) {
             character.ai_price_buy_log_precision[material] -= 0.001;
             character.ai_price_sell_log_precision[material] -= 0.001;

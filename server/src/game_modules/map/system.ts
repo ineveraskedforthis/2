@@ -9,6 +9,14 @@ import { CellData } from "./cell_interface";
 import { DataID } from "../data/data_id";
 import { Location } from "../location/location_class";
 import { LocationInterface } from "../location/location_interface";
+import { MATERIAL, MaterialConfiguration } from "@content/content";
+import { ms } from "@custom_types/battle_data";
+
+var update_timer = 0
+var update_timer_2 = 0
+
+var demand_data: Record<cell_id, Record<MATERIAL, number>> = []
+var supply_data: Record<cell_id, Record<MATERIAL, number>> = []
 
 export namespace MapSystem {
     export function sea_nearby(cell: cell_id) {
@@ -139,18 +147,74 @@ export namespace MapSystem {
         }
     }
 
-    export function update(dt: number) {
-        Data.Cells.for_each((cell) => {
-            update_rat_scent(dt, cell)
+
+    export function check_local_demand_for_material(cell_id: cell_id, material: MATERIAL) {
+        let demanded = 0
+
+        DataID.Cells.for_each_market_order(cell_id, (item_id) => {
+            const item = Data.MarketOrders.from_id(item_id)
+            if (
+                (item.material == material)
+                && (item.typ == "buy")
+            ) {
+                demanded += item.amount
+            }
         })
 
-        Data.Locations.for_each((location) => {
-            if (Math.random() < 0.001) {
+        return demanded
+    }
+
+    export function check_local_supply_for_material(cell_id: cell_id, material: MATERIAL) {
+        let supplied = 0
+
+        DataID.Cells.for_each_market_order(cell_id, (item_id) => {
+            const item = Data.MarketOrders.from_id(item_id)
+            if (
+                (item.material == material)
+                && (item.typ == "sell")
+            ) {
+                supplied += item.amount
+            }
+        })
+
+        return supplied
+    }
+
+    export function supply(cell_id: cell_id, material: MATERIAL) {
+        return supply_data[cell_id] ? supply_data[cell_id][material] : 0
+    }
+
+    export function demand(cell_id: cell_id, material: MATERIAL) {
+        return demand_data[cell_id] ? demand_data[cell_id][material] : 0
+    }
+
+    export function update(dt: ms) {
+        update_timer += dt
+        update_timer_2 += dt
+
+        if (update_timer_2 > 10000) {
+            Data.Cells.for_each((cell) => {
+                update_rat_scent(dt, cell)
+                supply_data[cell.id] = MaterialConfiguration.zero_record
+                demand_data[cell.id] = MaterialConfiguration.zero_record
+
+                for (const material of MaterialConfiguration.MATERIAL) {
+                    supply_data[cell.id][material] = check_local_supply_for_material(cell.id, material)
+                    demand_data[cell.id][material] = check_local_demand_for_material(cell.id, material)
+                }
+            })
+            update_timer_2 -= 10000
+
+        }
+
+        if (update_timer > 100000) {
+            Data.Locations.for_each((location) => {
                 update_cotton(location)
                 update_game(location)
                 update_fish(location)
-            }
-        })
+            })
+            update_timer -= 100000
+        }
     }
 
     export function initial_update() {

@@ -110,10 +110,14 @@ app.get('/api/:API_KEY/cell/:cellID', (req, res) => {
         res.json({ valid: false });
         return;
     }
+    const local_characters = [];
+    data_id_js_1.DataID.Cells.for_each_guest(cell.id, (id) => {
+        local_characters.push(id);
+    });
     const response = {
         valid: true,
         scent: cell.rat_scent,
-        local_characters: data_id_js_1.DataID.Cells.local_character_id_list(cell.id).map(systems_communication_js_1.Convert.character_id_to_character_view)
+        local_characters: local_characters.map(systems_communication_js_1.Convert.character_id_to_character_view)
     };
     res.json(response);
 });
@@ -129,7 +133,7 @@ app.get('/api/:API_KEY/map', (req, res) => {
             index: cell.id,
             terrain: data_objects_js_1.Data.World.id_to_terrain(cell.id),
             scent: cell.rat_scent,
-            population: data_id_js_1.DataID.Cells.local_character_id_list(cell.id).length
+            population: data_id_js_1.DataID.Cells.guests_amount(cell.id)
         };
     });
     res.json({

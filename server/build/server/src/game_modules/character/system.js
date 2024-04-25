@@ -57,7 +57,7 @@ var CharacterSystem;
     }
     CharacterSystem.rgo_check = rgo_check;
     function update(dt) {
-        data_id_1.DataID.Character.update(dt, 1000, (id) => {
+        data_id_1.DataID.Character.update(dt, 5000, (id) => {
             const character = data_objects_1.Data.Characters.from_id(id);
             if (character.dead())
                 return;
@@ -82,6 +82,9 @@ var CharacterSystem;
                     effects_1.Effect.Change.fatigue(character, 1, "Hunger" /* CHANGE_REASON.HUNGER */);
                 }
             }
+        });
+        data_id_1.DataID.Character.update2(dt, 10000, (id) => {
+            const character = data_objects_1.Data.Characters.from_id(id);
             (0, decide_1.decide)(character);
         });
     }

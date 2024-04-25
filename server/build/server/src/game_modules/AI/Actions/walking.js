@@ -123,6 +123,9 @@ function locations_nearby(actor, predicate) {
         .map(data_objects_1.Data.Locations.from_id)
         .filter(predicate)
         .filter(system_1.MapSystem.can_move_location);
+    if (result.length > 0) {
+        return result;
+    }
     for (const neighbour of data_objects_1.Data.World.neighbours(actor.cell_id)) {
         result = result
             .concat(data_id_1.DataID.Cells.locations(neighbour)
@@ -142,8 +145,8 @@ function for_sale_desire(actor, material) {
         modifier = 1 / 100;
     return (actor.ai_gathering_target.get(material)
         - actor.stash.get(material)
-        + common_1.AIfunctions.check_local_demand_for_material(actor, material)
-        - common_1.AIfunctions.check_local_supply_for_material(actor, material)) / 50 * modifier;
+        + system_1.MapSystem.demand(actor.cell_id, material)
+        - system_1.MapSystem.supply(actor.cell_id, material)) / 50 * modifier;
 }
 function toward_action(actor, target, action) {
     if (target.cell_id == actor.cell_id) {
@@ -169,7 +172,7 @@ storage_1.AIActionsStorage.register_action_location({
     },
     action(actor, target) {
         common_1.AIfunctions.update_price_beliefs(actor);
-        actor.ai_gathering_target.set(28 /* MATERIAL.BERRY_FIE */, common_1.AIfunctions.check_local_demand_for_material(actor, 28 /* MATERIAL.BERRY_FIE */));
+        actor.ai_gathering_target.set(28 /* MATERIAL.BERRY_FIE */, system_1.MapSystem.demand(actor.cell_id, 28 /* MATERIAL.BERRY_FIE */));
         toward_action(actor, target, actions_00_1.CharacterAction.GATHER_BERRIES);
     }
 });
@@ -205,7 +208,7 @@ storage_1.AIActionsStorage.register_action_location({
     },
     action(actor, target) {
         common_1.AIfunctions.update_price_beliefs(actor);
-        actor.ai_gathering_target.set(29 /* MATERIAL.BERRY_ZAZ */, common_1.AIfunctions.check_local_demand_for_material(actor, 28 /* MATERIAL.BERRY_FIE */));
+        actor.ai_gathering_target.set(29 /* MATERIAL.BERRY_ZAZ */, system_1.MapSystem.demand(actor.cell_id, 28 /* MATERIAL.BERRY_FIE */));
         toward_action(actor, target, actions_00_1.CharacterAction.GATHER_BERRIES);
     }
 });
@@ -242,7 +245,7 @@ storage_1.AIActionsStorage.register_action_location({
     },
     action(actor, target) {
         common_1.AIfunctions.update_price_beliefs(actor);
-        actor.ai_gathering_target.set(31 /* MATERIAL.WOOD_RED */, common_1.AIfunctions.check_local_demand_for_material(actor, 31 /* MATERIAL.WOOD_RED */));
+        actor.ai_gathering_target.set(31 /* MATERIAL.WOOD_RED */, system_1.MapSystem.demand(actor.cell_id, 31 /* MATERIAL.WOOD_RED */));
         if (target.cell_id == actor.cell_id) {
             effects_1.Effect.enter_location(actor.id, target.id);
             manager_1.ActionManager.start_action(actions_00_1.CharacterAction.GATHER_WOOD, actor, actor.cell_id);
@@ -292,7 +295,7 @@ storage_1.AIActionsStorage.register_action_location({
     },
     action(actor, target) {
         common_1.AIfunctions.update_price_beliefs(actor);
-        actor.ai_gathering_target.set(2 /* MATERIAL.COTTON */, common_1.AIfunctions.check_local_demand_for_material(actor, 2 /* MATERIAL.COTTON */));
+        actor.ai_gathering_target.set(2 /* MATERIAL.COTTON */, system_1.MapSystem.demand(actor.cell_id, 2 /* MATERIAL.COTTON */));
         if (target.cell_id == actor.cell_id) {
             effects_1.Effect.enter_location(actor.id, target.id);
             manager_1.ActionManager.start_action(actions_00_1.CharacterAction.GATHER_COTTON, actor, actor.cell_id);
@@ -342,7 +345,7 @@ storage_1.AIActionsStorage.register_action_location({
     },
     action(actor, target) {
         common_1.AIfunctions.update_price_beliefs(actor);
-        actor.ai_gathering_target.set(26 /* MATERIAL.FISH_OKU */, common_1.AIfunctions.check_local_demand_for_material(actor, 26 /* MATERIAL.FISH_OKU */));
+        actor.ai_gathering_target.set(26 /* MATERIAL.FISH_OKU */, system_1.MapSystem.demand(actor.cell_id, 26 /* MATERIAL.FISH_OKU */));
         if (target.cell_id == actor.cell_id) {
             effects_1.Effect.enter_location(actor.id, target.id);
             manager_1.ActionManager.start_action(actions_00_1.CharacterAction.FISH, actor, actor.cell_id);
