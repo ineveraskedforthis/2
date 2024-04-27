@@ -1,4 +1,5 @@
 import { ARMOUR, EQUIP_SLOT, MATERIAL, SKILL, WEAPON, armour_string_id, equip_slot_string_id, weapon_string_id } from "../game_content/src/content.js"
+import { character_id } from "./ids.js"
 
 export interface damageSocket {
     fire: number
@@ -14,6 +15,7 @@ export type backpack = {
 export type equip = Partial<Record<equip_slot_string_id, ItemData>>
 
 export interface CharacterImageData {
+    id: character_id
     equip: equip,
     body: string
 }

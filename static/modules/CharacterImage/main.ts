@@ -25,33 +25,57 @@ export function set_up_character_model(socket: Socket) {
     flag_init = true;
 }
 
+export function number_to_depth(id: number) {
+    return -Math.floor(-id / 6) * 20
+}
 
-export function draw_npc_by_index(data: CharacterImageData[], step: number, index: number, canvas_context: CanvasRenderingContext2D, height: number) {
-    let x_pos = (step * ((index * 5) % 7))
-    const orientation = (((index % 2) - 0.5) * 2)
+export function number_to_position(id: number, step: number) : {x: number, y: number, orientation: number, scale: number} {
+    let x_pos = (step * ((id * 5) % 7))
+    const orientation = (((id % 2) - 0.5) * 2)
     if (orientation == -1) {
         x_pos += 1920;
     }
-    x_pos *= 0.7
-    const y_pos = -Math.floor(- index / 6) * 20
+    // x_pos -= 200;
+    x_pos *= 0.5
+    const y_pos = number_to_depth(id)
     const scale = ((800 + y_pos) / (800))
 
-    console.log(step.toFixed(1), x_pos, y_pos, orientation, scale)
+    return {
+        x: x_pos,
+        y: y_pos,
+        orientation: orientation,
+        scale: scale
+    }
+}
+
+
+export function draw_npc_by_index(data: CharacterImageData[], step: number, indices: number[], index_of_index: number, canvas_context: CanvasRenderingContext2D, height: number) {
+
+    if (indices[index_of_index] == undefined) return;
+
+    const transform = number_to_position(data[indices[index_of_index]].id, step)
+    console.log(transform)
 
     canvas_context.setTransform(
-        orientation * scale, 0, 0, scale,
-        x_pos, y_pos
+        transform.orientation * transform.scale, 0,
+        0, transform.scale,
+        transform.x, transform.y
     )
 
-    if (data[index] == undefined) return;
+    for (let i = -10; i <= 10; i++) {
+        for (let j = -10; j <= 10; j++) {
+            canvas_context.strokeText(`${i} ${j}`, i * 50, j * 50)
+        }
+    }
+
     ImageComposer.update_equip_image(
         canvas_context,
-        data[index].body,
-        data[index].equip,
+        data[indices[index_of_index]].body,
+        data[indices[index_of_index]].equip,
         0,
         height,
         () => {
-            setTimeout(() => draw_npc_by_index(data, step, index + 1, canvas_context, height), 25)
+            setTimeout(() => draw_npc_by_index(data, step, indices, index_of_index + 1, canvas_context, height), 25)
         }
     )
 }
@@ -61,5 +85,8 @@ export function update_local_npc_images(data: CharacterImageData[]) {
     const context = canvas.getContext("2d")!;
     context.resetTransform()
     context.clearRect(0, 0, canvas.width, canvas.height)
-    draw_npc_by_index(data, (window.screen.width - 400) / 7, 0, context, canvas.height)
+    const indices = data.map((value, index) => index)
+    indices.sort((a, b) => number_to_depth(data[a].id) - number_to_depth(data[b].id))
+
+    draw_npc_by_index(data, (window.screen.width - 400) / 7, indices, 0, context, canvas.height)
 }
