@@ -9,51 +9,42 @@ import { LocationView } from "@custom_types/responses.js";
 export function image_url(terrain: Terrain, forest: number, house_level: number, urbanisation: number): string {
     if (house_level == 0) {
         if (forest > 40) {
-            return 'url("/static/img/bg_forest.png")';
+            return 'url("/static/img/bg/forest.png")';
         }
 
         if (urbanisation > 6) {
-            return 'url("/static/img/bg_colony.png")';
+            return 'url("/static/img/bg/urban_3.png")';
         }
 
         if (urbanisation > 3) {
-            return 'url("/static/img/bg_urban_1.png")';
+            return 'url("/static/img/bg/urban_2.png")';
         }
 
         switch (terrain) {
             case Terrain.void: {
-                return 'url("/static/img/bg_forest.png")';
+                return 'url("/static/img/bg/forest.png")';
             }
             case Terrain.steppe: {
                 if (urbanisation == 0) {
-                    return 'url("/static/img/bg_red_steppe.png")';
+                    return 'url("/static/img/bg/red_steppe.png")';
                 }
-                return 'url("/static/img/bg_rural_1.png")';
+                return 'url("/static/img/bg/urban_1.png")';
             }
             case Terrain.sea: {
-                return 'url("/static/img/bg_red_steppe.png")';
+                return 'url("/static/img/bg/red_steppe.png")';
             }
             case Terrain.coast: {
-                if (urbanisation == 0) {
-                    return 'url("/static/img/bg_coast.png")';
-                }
-                return 'url("/static/img/bg_coast_rural.png")';
+                return 'url("/static/img/bg/coast.png")';
             }
             case Terrain.rupture: {
-                if (urbanisation == 0) {
-                    return 'url("/static/img/bg_red_steppe.png")';
-                }
-                return 'url("/static/img/bg_rural_1.png")';
+                return 'url("/static/img/bg/red_steppe.png")';
             }
             case Terrain.ashlands: {
-                if (urbanisation == 0) {
-                    return 'url("/static/img/bg_red_steppe.png")';
-                }
-                return 'url("/static/img/bg_rural_1.png")';
+                return 'url("/static/img/bg/red_steppe.png")';
             }
         }
     }
-    return 'url("/static/img/bg_house_inside.png")';
+    return 'url("/static/img/bg/house.png")';
 }
 
 export class BackgroundImage implements DependencyUI {
