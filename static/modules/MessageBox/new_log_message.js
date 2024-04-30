@@ -2,7 +2,7 @@ import { set_up_header_with_strings } from '../../headers.js';
 import { elementById, inputById, select } from '../HTMLwrappers/common.js';
 import { globals } from '../globals.js';
 import { socket } from "../Socket/socket.js";
-import { my_alert } from './my_alert.js';
+import { my_alert, notification } from './my_alert.js';
 // MESSAGES STUFF
 const message_boxes = ['log', 'log-attack', 'chat'];
 export function init_messages_interactions() {
@@ -53,6 +53,7 @@ export function init_messages_interactions() {
     socket.on('log-attack', msg => { new_log_attack_message(msg); });
     socket.on('new-message', msg => new_message(msg));
     socket.on('alert', msg => { my_alert(msg); new_log_message(msg); });
+    socket.on('notification', msg => notification(msg));
     socket.on('is-reg-valid', msg => my_alert(msg));
     socket.on('is-login-valid', msg => my_alert(msg));
     socket.on('not_enough', msg => {

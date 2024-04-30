@@ -16,11 +16,13 @@ var NotificationResponse;
 (function (NotificationResponse) {
     NotificationResponse.InBattle = {
         response: "Notification:",
-        value: "You are in battle."
+        value: "You are in battle.",
+        tag: "condition_failed"
     };
     NotificationResponse.ShopOpened = {
         response: "Notification:",
-        value: "Can't move with shop"
+        value: "Can't move with shop",
+        tag: "condition_failed"
     };
 })(NotificationResponse || (exports.NotificationResponse = NotificationResponse = {}));
 class Character {

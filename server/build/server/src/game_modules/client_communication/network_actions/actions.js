@@ -15,9 +15,9 @@ var HandleAction;
     function response_to_alert(user, response) {
         // console.log(response.response)
         switch (response.response) {
-            case "Notification:": alerts_1.Alerts.generic_user_alert(user, "alert", response.value);
+            case "Notification:": alerts_1.Alerts.generic_user_alert(user, "notification", response);
             case "OK": return;
-            case "Not enough resources": alerts_1.Alerts.generic_user_alert(user, "alert", "Not enough: " + JSON.stringify(response.value));
+            case "Not enough resources": alerts_1.Alerts.generic_user_alert(user, "notification", { response: "Notification:", value: "Not enough: " + JSON.stringify(response.value), tag: "condition_failed" });
         }
     }
     function move(sw, data) {

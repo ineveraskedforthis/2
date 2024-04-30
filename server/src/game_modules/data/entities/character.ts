@@ -39,6 +39,7 @@ interface ActionIsPossible {
 interface Notification {
     response: "Notification:"
     value: string
+    tag: "condition_failed"|"success"|"information"
 }
 
 export type TriggerResponse = Notification | ActionIsPossible | LackOfResource
@@ -50,11 +51,13 @@ export const ResponseOK : TriggerResponse = {
 export namespace NotificationResponse {
     export const InBattle : Notification = {
         response: "Notification:",
-        value: "You are in battle."
+        value: "You are in battle.",
+        tag: "condition_failed"
     }
     export const ShopOpened : Notification = {
         response: "Notification:",
-        value: "Can't move with shop"
+        value: "Can't move with shop",
+        tag: "condition_failed"
     }
 }
 

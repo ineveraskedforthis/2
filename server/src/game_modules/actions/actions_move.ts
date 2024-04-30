@@ -28,11 +28,11 @@ export const move:CharacterMapAction ={
                 return { response: 'OK' }
             }
             if ((dx == 0 && dy == 0)) {
-                return { response: 'Notification:', value: "You have to select another tile" }
+                return { response: 'Notification:', value: "You have to select another tile", tag: "condition_failed" }
             }
-            return { response: 'Notification:', value: "You can travel only to neighbouring tiles" }
+            return { response: 'Notification:', value: "You can travel only to neighbouring tiles", tag: "condition_failed"  }
         }
-        return { response: 'Notification:', value: "You can't travel to this cell due to terrain" }
+        return { response: 'Notification:', value: "You can't travel to this cell due to terrain", tag: "condition_failed"  }
     },
 
     start: function (char: Character, data: cell_id) {

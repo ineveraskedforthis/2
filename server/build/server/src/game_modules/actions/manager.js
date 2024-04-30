@@ -7,7 +7,7 @@ var ActionManager;
 (function (ActionManager) {
     function start_action(action, char, cell) {
         if (char.action != undefined) {
-            return { response: 'Notification:', value: "You are already doing something" };
+            return { response: 'Notification:', value: "You are already doing something", tag: "condition_failed" };
         }
         let check = action.check(char, cell);
         if (check.response != "OK") {

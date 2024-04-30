@@ -9,7 +9,7 @@ import { ms } from "@custom_types/battle_data"
 export namespace ActionManager {
     export function start_action(action: CharacterMapAction, char: Character, cell: cell_id): TriggerResponse {
         if (char.action != undefined) {
-            return { response: 'Notification:', value: "You are already doing something" }
+            return { response: 'Notification:', value: "You are already doing something", tag: "condition_failed"}
         }
 
         let check = action.check(char, cell)

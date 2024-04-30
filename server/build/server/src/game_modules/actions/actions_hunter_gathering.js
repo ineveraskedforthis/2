@@ -36,7 +36,11 @@ function gather_wood_trigger(character) {
         return { response: "OK" };
     }
     else {
-        return { response: "Notification:", value: "There is no more trees in the location. Check other locations in map window." };
+        return {
+            response: "Notification:",
+            value: "There is no more trees in the location. Check other locations in map window.",
+            tag: "condition_failed"
+        };
     }
 }
 function gather_cotton_trigger(character) {
@@ -45,7 +49,11 @@ function gather_cotton_trigger(character) {
         return { response: "OK" };
     }
     else {
-        return { response: "Notification:", value: "There is no more cotton in the location. Check other locations in map window." };
+        return {
+            response: "Notification:",
+            value: "There is no more cotton in the location. Check other locations in map window.",
+            tag: "condition_failed"
+        };
     }
 }
 function hunt_trigger(character) {
@@ -54,7 +62,11 @@ function hunt_trigger(character) {
         return { response: "OK" };
     }
     else {
-        return { response: "Notification:", value: "There is no more prey in the location. Check other locations in map window." };
+        return {
+            response: "Notification:",
+            value: "There is no more prey in the location. Check other locations in map window.",
+            tag: "condition_failed"
+        };
     }
 }
 function fishing_trigger(character) {
@@ -63,7 +75,11 @@ function fishing_trigger(character) {
         return { response: "OK" };
     }
     else {
-        return { response: "Notification:", value: "There is no more fish in the location. Check other locations in map window." };
+        return {
+            response: "Notification:",
+            value: "There is no more fish in the location. Check other locations in map window.",
+            tag: "condition_failed"
+        };
     }
 }
 function berry_trigger(character) {
@@ -72,7 +88,11 @@ function berry_trigger(character) {
         return { response: "OK" };
     }
     else {
-        return { response: "Notification:", value: "There are no berries in the location. Check other locations in map window." };
+        return {
+            response: "Notification:",
+            value: "There are no berries in the location. Check other locations in map window.",
+            tag: "condition_failed"
+        };
     }
 }
 function roll_gathering_skill_increase(character, skill_id) {

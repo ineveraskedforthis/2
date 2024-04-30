@@ -15,11 +15,11 @@ function clean_duration_modifier(character) {
 }
 function clean_trigger(character) {
     if (character.status.blood == 0)
-        return { response: "Notification:", value: "You are already clean" };
+        return { response: "Notification:", value: "You are already clean", tag: "condition_failed" };
     if (system_1.MapSystem.can_clean(character.location_id)) {
         return { response: "OK" };
     }
-    return { response: "Notification:", value: "Lack of water in this location" };
+    return { response: "Notification:", value: "Lack of water in this location", tag: "condition_failed" };
 }
 function clean_effect(character, cell) {
     effects_1.Effect.Change.blood(character, -100, "Cleaning" /* CHANGE_REASON.CLEANING */);
@@ -50,7 +50,7 @@ exports.rest = {
         const target_fatigue = scripted_values_1.ScriptedValue.target_fatigue(char, location);
         const target_stress = scripted_values_1.ScriptedValue.target_stress(char, location);
         if ((char.get_fatigue() <= target_fatigue) && (char.get_stress() <= target_stress)) {
-            return { response: 'Notification:', value: `You can't rest further in this location: Only ${target_fatigue} fatigue and ${target_stress} stress is achievable ` };
+            return { response: 'Notification:', value: `You can't rest further in this location: Only ${target_fatigue} fatigue and ${target_stress} stress is achievable `, tag: "condition_failed" };
         }
         return { response: 'OK' };
     },

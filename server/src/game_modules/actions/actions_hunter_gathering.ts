@@ -40,7 +40,11 @@ function gather_wood_trigger(character: Character): TriggerResponse {
     if (data.forest > 0) {
         return { response: "OK" }
     } else {
-        return { response: "Notification:", value: "There is no more trees in the location. Check other locations in map window."}
+        return {
+            response: "Notification:",
+            value: "There is no more trees in the location. Check other locations in map window.",
+            tag: "condition_failed"
+        }
     }
 }
 function gather_cotton_trigger(character: Character): TriggerResponse {
@@ -48,7 +52,11 @@ function gather_cotton_trigger(character: Character): TriggerResponse {
     if (data.cotton > 0) {
         return { response: "OK" }
     } else {
-        return { response: "Notification:", value: "There is no more cotton in the location. Check other locations in map window."}
+        return {
+            response: "Notification:",
+            value: "There is no more cotton in the location. Check other locations in map window.",
+            tag: "condition_failed"
+        }
     }
 }
 function hunt_trigger(character: Character) : TriggerResponse {
@@ -56,7 +64,11 @@ function hunt_trigger(character: Character) : TriggerResponse {
     if (data.small_game > 0) {
         return { response: "OK" }
     } else {
-        return { response: "Notification:", value: "There is no more prey in the location. Check other locations in map window."}
+        return {
+            response: "Notification:",
+            value: "There is no more prey in the location. Check other locations in map window.",
+            tag: "condition_failed"
+        }
     }
 }
 function fishing_trigger(character: Character) : TriggerResponse {
@@ -64,7 +76,11 @@ function fishing_trigger(character: Character) : TriggerResponse {
     if (data.fish > 0) {
         return { response: "OK" }
     } else {
-        return { response: "Notification:", value: "There is no more fish in the location. Check other locations in map window."}
+        return {
+            response: "Notification:",
+            value: "There is no more fish in the location. Check other locations in map window.",
+            tag: "condition_failed"
+        }
     }
 }
 function berry_trigger(character: Character) : TriggerResponse {
@@ -72,7 +88,11 @@ function berry_trigger(character: Character) : TriggerResponse {
     if (data.berries > 0) {
         return { response: "OK" }
     } else {
-        return { response: "Notification:", value: "There are no berries in the location. Check other locations in map window."}
+        return {
+            response: "Notification:",
+            value: "There are no berries in the location. Check other locations in map window.",
+            tag: "condition_failed"
+        }
     }
 }
 

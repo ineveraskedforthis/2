@@ -15,11 +15,11 @@ function clean_duration_modifier(character: Character) {
     return 1 + character.get_blood() / 50
 }
 function clean_trigger(character: Character): TriggerResponse {
-    if (character.status.blood == 0) return { response: "Notification:", value: "You are already clean"}
+    if (character.status.blood == 0) return { response: "Notification:", value: "You are already clean", tag: "condition_failed" }
     if (MapSystem.can_clean(character.location_id)) {
         return { response: "OK" }
     }
-    return { response: "Notification:", value: "Lack of water in this location"}
+    return { response: "Notification:", value: "Lack of water in this location", tag: "condition_failed" }
 }
 function clean_effect(character: Character, cell: cell_id) {
     Effect.Change.blood(character, -100, CHANGE_REASON.CLEANING)
@@ -60,7 +60,7 @@ export const rest: CharacterMapAction = {
         const target_fatigue = ScriptedValue.target_fatigue(char, location);
         const target_stress = ScriptedValue.target_stress(char, location)
         if ((char.get_fatigue() <= target_fatigue) && (char.get_stress() <= target_stress)) {
-            return { response : 'Notification:', value: `You can't rest further in this location: Only ${target_fatigue} fatigue and ${target_stress} stress is achievable `}
+            return { response : 'Notification:', value: `You can't rest further in this location: Only ${target_fatigue} fatigue and ${target_stress} stress is achievable `, tag: "condition_failed" }
         }
         return { response: 'OK' }
     },
