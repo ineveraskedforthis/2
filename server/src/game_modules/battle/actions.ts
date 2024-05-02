@@ -312,7 +312,7 @@ export const ActionsUnit: Record<ActionUnitKeys, ActionUnit> = {
             const delta = geom.minus(target_character.position, character.position);
             const dist = geom.norm(delta)
             const range = CharacterValues.range(character)
-            const max_move = character.action_points_left / BattleValues.move_cost(character) - 0.01 // potential movement
+            const max_move = character.action_points_left / BattleValues.move_cost(character) // potential movement
 
             if (dist < range) {
                 return 0 as action_points
@@ -367,8 +367,9 @@ export const ActionsUnit: Record<ActionUnitKeys, ActionUnit> = {
 
 export const ActionsPosition: { [key in ActionPositionKeys]: ActionPosition} = {
     'Move': {
-        ap_cost: (battle: Battle, character: Character,  target: battle_position) => {
+        ap_cost: (battle: Battle, character: Character, target: battle_position) => {
             const distance = geom.dist(character.position, target)
+            // console.log(target, distance, BattleValues.move_cost(character))
             return Math.min(distance * BattleValues.move_cost(character), character.action_points_left) as action_points
         },
         execute: (battle: Battle, character: Character,  target: battle_position, available_points: action_points) => {

@@ -267,7 +267,7 @@ exports.ActionsUnit = {
             const delta = geom_1.geom.minus(target_character.position, character.position);
             const dist = geom_1.geom.norm(delta);
             const range = character_1.CharacterValues.range(character);
-            const max_move = character.action_points_left / VALUES_1.BattleValues.move_cost(character) - 0.01; // potential movement
+            const max_move = character.action_points_left / VALUES_1.BattleValues.move_cost(character); // potential movement
             if (dist < range) {
                 return 0;
             }
@@ -318,6 +318,7 @@ exports.ActionsPosition = {
     'Move': {
         ap_cost: (battle, character, target) => {
             const distance = geom_1.geom.dist(character.position, target);
+            // console.log(target, distance, BattleValues.move_cost(character))
             return Math.min(distance * VALUES_1.BattleValues.move_cost(character), character.action_points_left);
         },
         execute: (battle, character, target, available_points) => {

@@ -53,11 +53,11 @@ export namespace BattleImage {
         console.log('request actions');
         socket.emit('req-battle-actions-self');
         if (BattleView.selected)
-            socket.emit('req-battle-actions-unit', BattleView.selected);
+            socket.emit('req-battle-actions-unit', BattleView.selected.id);
         else
             socket.emit('req-battle-actions-unit-unselected');
         if (BattleView.anchor_position)
-            socket.emit('req-battle-actions-position', BattleView.anchor_position);
+            socket.emit('req-battle-actions-position', BattleView.canvas_to_battle(BattleView.anchor_position));
         else
             socket.emit('req-battle-actions-position-unselected');
     }
