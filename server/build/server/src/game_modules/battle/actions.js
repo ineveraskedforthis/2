@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.battle_action_position = exports.battle_action_character = exports.battle_action_self = exports.battle_action_position_check = exports.battle_action_character_check = exports.battle_action_self_check = exports.ActionsPosition = exports.ActionsUnit = exports.ActionsSelf = void 0;
+exports.battle_action_position = exports.battle_action_character = exports.battle_action_self = exports.battle_action_position_check = exports.battle_action_unit_check = exports.battle_action_self_check = exports.is_action_unit_key = exports.is_action_position_key = exports.is_action_self_key = exports.ActionsPosition = exports.ActionsUnit = exports.ActionsSelf = void 0;
 const system_1 = require("../attack/system");
 const checks_1 = require("../character/checks");
 const alerts_1 = require("../client_communication/network_actions/alerts");
@@ -327,91 +327,103 @@ exports.ActionsPosition = {
 };
 const action_currrent = exports.ActionsSelf.Flee;
 function response_to_alert(character, response) {
-    switch (response.response) {
-        case "NOT_ENOUGH_AP": {
+    switch (response) {
+        case 0 /* BattleActionPossibilityReason.Okay */: return;
+        case 1 /* BattleActionPossibilityReason.NotEnoughAP */: {
             alerts_1.Alerts.alert(character, "Not enough action points.");
             return;
         }
-        case "INVALID_ACTION": {
-            alerts_1.Alerts.alert(character, "You are trying to do an undefined action.");
-            return;
-        }
-        case "OK": {
-            return;
-        }
-        case "NOT_ENOUGH_RANGE": {
+        case 2 /* BattleActionPossibilityReason.FarAway */: {
             alerts_1.Alerts.alert(character, "You are too far away.");
             return;
         }
-        case "ATTEMPT_IS_INVALID":
+        case 3 /* BattleActionPossibilityReason.NoResource */:
             {
-                alerts_1.Alerts.alert(character, "You can't do this action.");
+                alerts_1.Alerts.alert(character, "You don't have enough resources.");
                 return;
             }
             ;
+        case 4 /* BattleActionPossibilityReason.InvalidAction */: {
+            alerts_1.Alerts.alert(character, "You are trying to do an undefined action.");
+            return;
+        }
     }
 }
-function battle_action_self_check(tag, battle, character, d_ap) {
-    const action = exports.ActionsSelf[tag];
-    if (action == undefined) {
-        return { response: "INVALID_ACTION" };
-    }
+function is_action_self_key(s) {
+    if (s in exports.ActionsSelf)
+        return true;
+    return false;
+}
+exports.is_action_self_key = is_action_self_key;
+function is_action_position_key(s) {
+    if (s in exports.ActionsPosition)
+        return true;
+    return false;
+}
+exports.is_action_position_key = is_action_position_key;
+function is_action_unit_key(s) {
+    if (s in exports.ActionsUnit)
+        return true;
+    return false;
+}
+exports.is_action_unit_key = is_action_unit_key;
+function battle_action_self_check(action, battle, character, d_ap) {
     const ap_cost = action.ap_cost(battle, character);
     if (character.action_points_left + d_ap < ap_cost) {
-        return { response: "NOT_ENOUGH_AP", needed: ap_cost, current: character.action_points_left };
+        return 1 /* BattleActionPossibilityReason.NotEnoughAP */;
     }
-    return { response: "OK", ap_cost: ap_cost, action: action };
+    return 0 /* BattleActionPossibilityReason.Okay */;
 }
 exports.battle_action_self_check = battle_action_self_check;
-function battle_action_character_check(tag, battle, character, target_character, d_distance, d_ap) {
-    const action = exports.ActionsUnit[tag];
-    if (action == undefined) {
-        return { response: "INVALID_ACTION" };
-    }
+function battle_action_unit_check(action, battle, character, target_character, d_distance, d_ap) {
     const ap_cost = action.ap_cost(battle, character, target_character);
     if (character.action_points_left + d_ap < ap_cost) {
-        return { response: "NOT_ENOUGH_AP", needed: ap_cost, current: character.action_points_left };
+        return 1 /* BattleActionPossibilityReason.NotEnoughAP */;
     }
     const range = action.range(battle, character);
     const dist = geom_1.geom.dist(character.position, target_character.position);
     if (range + d_distance < dist) {
-        return { response: "NOT_ENOUGH_RANGE" };
+        return 2 /* BattleActionPossibilityReason.FarAway */;
     }
     if (!action.valid(character)) {
-        return { response: "ATTEMPT_IS_INVALID" };
+        return 4 /* BattleActionPossibilityReason.InvalidAction */;
     }
-    return { response: "OK", ap_cost: ap_cost, action: action };
+    return 0 /* BattleActionPossibilityReason.Okay */;
 }
-exports.battle_action_character_check = battle_action_character_check;
-function battle_action_position_check(tag, battle, character, target) {
-    const action = exports.ActionsPosition[tag];
-    if (action == undefined) {
-        return { response: "INVALID_ACTION" };
-    }
+exports.battle_action_unit_check = battle_action_unit_check;
+function battle_action_position_check(action, battle, character, target) {
     const ap_cost = action.ap_cost(battle, character, target);
     if ((character.action_points_left < ap_cost - 0.01) || (character.action_points_left == 0)) {
-        return { response: "NOT_ENOUGH_AP", needed: ap_cost, current: character.action_points_left };
+        return 1 /* BattleActionPossibilityReason.NotEnoughAP */;
     }
-    return { response: "OK", ap_cost: ap_cost, action: action };
+    return 0 /* BattleActionPossibilityReason.Okay */;
 }
 exports.battle_action_position_check = battle_action_position_check;
 function battle_action_self(tag, battle, character) {
-    let result = battle_action_self_check(tag, battle, character, 0);
-    if (result.response == "OK") {
-        character.action_points_left = character.action_points_left - result.ap_cost;
-        result.action.execute(battle, character, result.ap_cost);
+    if (!is_action_self_key(tag))
+        return 4 /* BattleActionPossibilityReason.InvalidAction */;
+    const action = exports.ActionsSelf[tag];
+    let result = battle_action_self_check(action, battle, character, 0);
+    if (result == 0 /* BattleActionPossibilityReason.Okay */) {
+        const ap_cost = action.ap_cost(battle, character);
+        character.action_points_left = character.action_points_left - ap_cost;
+        action.execute(battle, character, ap_cost);
     }
     response_to_alert(character, result);
     return result;
 }
 exports.battle_action_self = battle_action_self;
 function battle_action_character(tag, battle, character, target_character) {
-    let result = battle_action_character_check(tag, battle, character, target_character, 0, 0);
+    if (!is_action_unit_key(tag))
+        return 4 /* BattleActionPossibilityReason.InvalidAction */;
+    const action = exports.ActionsUnit[tag];
+    let result = battle_action_unit_check(action, battle, character, target_character, 0, 0);
     console.log(character.get_name(), 'attempts to ', tag, 'to', target_character.get_name());
-    console.log(result.response);
-    if (result.response == "OK") {
-        character.action_points_left = character.action_points_left - result.ap_cost;
-        result.action.execute(battle, character, target_character, result.ap_cost);
+    console.log(result);
+    if (result == 0 /* BattleActionPossibilityReason.Okay */) {
+        const ap_cost = action.ap_cost(battle, character, target_character);
+        character.action_points_left = character.action_points_left - ap_cost;
+        action.execute(battle, character, target_character, ap_cost);
         alerts_1.Alerts.battle_update_unit(battle, character);
         alerts_1.Alerts.battle_update_unit(battle, target_character);
     }
@@ -420,12 +432,16 @@ function battle_action_character(tag, battle, character, target_character) {
 }
 exports.battle_action_character = battle_action_character;
 function battle_action_position(tag, battle, character, target) {
-    let result = battle_action_position_check(tag, battle, character, target);
+    if (!is_action_position_key(tag))
+        return 4 /* BattleActionPossibilityReason.InvalidAction */;
+    const action = exports.ActionsPosition[tag];
+    let result = battle_action_position_check(action, battle, character, target);
     console.log(character.get_name(), 'attempts to ', tag);
-    console.log(result.response);
-    if (result.response == "OK") {
-        character.action_points_left = character.action_points_left - result.ap_cost;
-        result.action.execute(battle, character, target, result.ap_cost);
+    console.log(result);
+    if (result == 0 /* BattleActionPossibilityReason.Okay */) {
+        const ap_cost = action.ap_cost(battle, character, target);
+        character.action_points_left = character.action_points_left - ap_cost;
+        action.execute(battle, character, target, ap_cost);
         if (character.action_points_left < 0) {
             character.action_points_left = 0;
         }

@@ -104,7 +104,7 @@ var Request;
                 damage: 0,
                 probability: 0,
                 target: 'self',
-                possible: false
+                possible: 4 /* BattleActionPossibilityReason.InvalidAction */
             };
             sw.socket.emit('battle-action-update', result);
         }
@@ -116,7 +116,7 @@ var Request;
                 damage: 0,
                 probability: 0,
                 target: 'unit',
-                possible: false
+                possible: 4 /* BattleActionPossibilityReason.InvalidAction */
             };
             sw.socket.emit('battle-action-update', result);
         }
@@ -128,7 +128,7 @@ var Request;
                 damage: 0,
                 probability: 0,
                 target: 'position',
-                possible: false
+                possible: 4 /* BattleActionPossibilityReason.InvalidAction */
             };
             sw.socket.emit('battle-action-update', result);
         }
@@ -153,7 +153,7 @@ var Request;
                 damage: 0,
                 probability: item.chance(battle, character),
                 target: 'self',
-                possible: (0, actions_1.battle_action_self_check)(key, battle, character, 0).response == 'OK'
+                possible: (0, actions_1.battle_action_self_check)(item, battle, character, 0)
             };
             sw.socket.emit('battle-action-update', result);
         }
@@ -185,12 +185,37 @@ var Request;
                 damage: item.damage(battle, character, target_character),
                 probability: item.chance(battle, character, target_character),
                 target: 'unit',
-                possible: (0, actions_1.battle_action_character_check)(key, battle, character, target_character, 0, 0).response == 'OK'
+                possible: (0, actions_1.battle_action_unit_check)(item, battle, character, target_character, 0, 0)
             };
             sw.socket.emit('battle-action-update', result);
         }
     }
     Request.battle_actions_unit = battle_actions_unit;
+    function battle_actions_unit_unselected(sw) {
+        // console.log('requested unit actions')
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist');
+            return;
+        }
+        const battle_id = character.battle_id;
+        if (battle_id == undefined)
+            return;
+        const battle = data_objects_1.Data.Battles.from_id(battle_id);
+        for (let [key, item] of Object.entries(actions_1.ActionsUnit)) {
+            const result = {
+                name: key,
+                tag: key,
+                cost: 0,
+                damage: 0,
+                probability: 0,
+                target: 'unit',
+                possible: 4 /* BattleActionPossibilityReason.InvalidAction */
+            };
+            sw.socket.emit('battle-action-update', result);
+        }
+    }
+    Request.battle_actions_unit_unselected = battle_actions_unit_unselected;
     function battle(sw) {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined) {
@@ -223,12 +248,36 @@ var Request;
                 damage: 0,
                 probability: 1, //item.chance(battle, character, target),
                 target: 'position',
-                possible: (0, actions_1.battle_action_position_check)(key, battle, character, target).response == 'OK'
+                possible: (0, actions_1.battle_action_position_check)(item, battle, character, target)
             };
             sw.socket.emit('battle-action-update', result);
         }
     }
     Request.battle_actions_position = battle_actions_position;
+    function battle_actions_position_unselected(sw) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist');
+            return;
+        }
+        const battle_id = character.battle_id;
+        if (battle_id == undefined)
+            return;
+        const battle = data_objects_1.Data.Battles.from_id(battle_id);
+        for (let [key, item] of Object.entries(actions_1.ActionsPosition)) {
+            const result = {
+                name: key,
+                tag: key,
+                cost: 0,
+                damage: 0,
+                probability: 0, //item.chance(battle, character, target),
+                target: 'position',
+                possible: 4 /* BattleActionPossibilityReason.InvalidAction */
+            };
+            sw.socket.emit('battle-action-update', result);
+        }
+    }
+    Request.battle_actions_position_unselected = battle_actions_position_unselected;
     function craft_data(sw) {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (user == undefined) {

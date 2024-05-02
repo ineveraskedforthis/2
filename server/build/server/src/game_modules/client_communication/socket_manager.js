@@ -80,7 +80,9 @@ class SocketManager {
             socket.on('req-battle-actions-all', () => request_1.Request.battle_actions_all(user));
             socket.on('req-battle-actions-self', () => request_1.Request.battle_actions_self(user));
             socket.on('req-battle-actions-unit', (data) => request_1.Request.battle_actions_unit(user, data));
+            socket.on('req-battle-actions-unit-unselected', () => request_1.Request.battle_actions_unit_unselected(user));
             socket.on('req-battle-actions-position', (data) => request_1.Request.battle_actions_position(user, data));
+            socket.on('req-battle-actions-position-unselected', () => request_1.Request.battle_actions_position_unselected(user));
             socket.on('request-battle-data', (data) => request_1.Request.battle(user));
             socket.on('battle-action-self', (msg) => actions_1.HandleAction.battle_self(user, msg));
             socket.on('battle-action-unit', (msg) => actions_1.HandleAction.battle_unit(user, msg));

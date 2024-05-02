@@ -1,9 +1,9 @@
-import { ActionSelfKeys, ActionUnitKeys, action_points } from "@custom_types/battle_data";
+import { ActionSelfKeys, ActionUnitKeys, BattleActionPossibilityReason, action_points } from "@custom_types/battle_data";
 import { Character } from "../data/entities/character";
 import { EventInventory } from "../events/inventory_events";
 import { geom } from "../geom";
 import { BattleTriggers } from "./TRIGGERS";
-import { ActionUnit, ActionsSelf, ActionsUnit, battle_action_character, battle_action_character_check, battle_action_self, battle_action_self_check} from "./actions";
+import { ActionUnit, ActionsSelf, ActionsUnit, battle_action_character, battle_action_self, battle_action_self_check, battle_action_unit_check} from "./actions";
 import { Battle } from "./classes/battle";
 import { Data } from "../data/data_objects";
 import { CharacterValues } from "../scripted-values/character";
@@ -38,7 +38,7 @@ function generic_utility_unit(
     d_ap: number) : UtilityObjectTargeted
 {
     if (target_character.dead()) return {action_key: key, utility: 0, ap_cost: 0, target: target_character}
-    if (battle_action_character_check(key, battle, character, target_character, d_distance, d_ap).response != 'OK') return {action_key: key, utility: 0, ap_cost: 0, target: target_character}
+    if (battle_action_unit_check(action, battle, character, target_character, d_distance, d_ap) != BattleActionPossibilityReason.Okay) return {action_key: key, utility: 0, ap_cost: 0, target: target_character}
     if (action.move_closer) return {action_key: key, utility: 0, ap_cost: 0, target: target_character}
     if (action.switch_weapon) return {action_key: key, utility: 0, ap_cost: 0, target: target_character}
 
@@ -130,7 +130,7 @@ function calculate_utility_end_turn(battle: Battle, character: Character, list_o
 }
 
 function calculate_utility_flee(battle: Battle, character: Character, d_ap: action_points): UtilityObjectTargeted {
-    if (battle_action_self_check('Flee', battle, character, d_ap).response != 'OK') return {action_key: 'Flee', utility: 0, ap_cost: 0, target: character}
+    if (battle_action_self_check(ActionsSelf.Flee, battle, character, d_ap) != BattleActionPossibilityReason.Okay) return {action_key: 'Flee', utility: 0, ap_cost: 0, target: character}
 
     let utility = (character.get_hp()) / character.get_max_hp()
     utility = 0.5 - Math.sqrt(utility)
@@ -148,7 +148,7 @@ function calculate_utility_flee(battle: Battle, character: Character, d_ap: acti
 }
 
 function calculate_utility_random_step(battle: Battle, character: Character, d_ap: action_points): UtilityObjectTargeted {
-    if (battle_action_self_check('RandomStep', battle, character, d_ap).response != 'OK') return {action_key: 'RandomStep', utility: 0, ap_cost: 0, target: character}
+    if (battle_action_self_check(ActionsSelf['RandomStep'], battle, character, d_ap) != BattleActionPossibilityReason.Okay) return {action_key: 'RandomStep', utility: 0, ap_cost: 0, target: character}
     let total_utility = 0
     for (const item of battle.heap) {
         if (item == undefined) continue;

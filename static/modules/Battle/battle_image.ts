@@ -54,8 +54,12 @@ export namespace BattleImage {
         socket.emit('req-battle-actions-self');
         if (BattleView.selected)
             socket.emit('req-battle-actions-unit', BattleView.selected);
+        else
+            socket.emit('req-battle-actions-unit-unselected');
         if (BattleView.anchor_position)
             socket.emit('req-battle-actions-position', BattleView.anchor_position);
+        else
+            socket.emit('req-battle-actions-position-unselected');
     }
 
     export function request_actions_self() {
@@ -207,7 +211,8 @@ export namespace BattleImage {
         unselect()
         BattleView.selected = fatten_battle_character(index)
         UnitsListWidget.selected = index
-        request_actions_unit(index)
+        request_actions()
+        // request_actions_unit(index)
         update_selection_data()
     }
 
@@ -261,7 +266,8 @@ export namespace BattleImage {
 
         unselect()
         BattleView.anchor_position = pos
-        request_actions_position(BattleView.canvas_to_battle(pos))
+        request_actions()
+        // request_actions_position(BattleView.canvas_to_battle(pos))
     }
 
     export function add_action(action_type:BattleActionData, hotkey: string|undefined) {

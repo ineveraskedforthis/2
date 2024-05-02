@@ -5,8 +5,8 @@ import { Alerts } from "./alerts";
 import { SendUpdate } from "./updates";
 import { ScriptedValue } from "../../events/scripted_values";
 import { BattleValues } from "../../battle/VALUES";
-import { ActionsPosition, ActionsSelf, ActionsUnit, battle_action_position_check, battle_action_self_check, battle_action_character_check } from "../../battle/actions";
-import { BattleActionData, action_points, battle_position } from "@custom_types/battle_data";
+import { ActionsPosition, ActionsSelf, ActionsUnit, battle_action_position_check, battle_action_self_check, battle_action_unit_check} from "../../battle/actions";
+import { ActionPositionKeys, BattleActionData, BattleActionPossibilityReason, action_points, battle_position } from "@custom_types/battle_data";
 import { Validator } from "./common_validations";
 import { DataID } from "../../data/data_id";
 import { Data } from "../../data/data_objects";
@@ -116,7 +116,7 @@ export namespace Request {
                 damage: 0,
                 probability: 0,
                 target: 'self',
-                possible: false
+                possible: BattleActionPossibilityReason.InvalidAction
             }
             sw.socket.emit('battle-action-update', result)
         }
@@ -129,7 +129,7 @@ export namespace Request {
                 damage: 0,
                 probability: 0,
                 target: 'unit',
-                possible: false
+                possible: BattleActionPossibilityReason.InvalidAction
             }
             sw.socket.emit('battle-action-update', result)
         }
@@ -142,7 +142,7 @@ export namespace Request {
                 damage: 0,
                 probability: 0,
                 target: 'position',
-                possible: false
+                possible: BattleActionPossibilityReason.InvalidAction
             }
             sw.socket.emit('battle-action-update', result)
         }
@@ -167,7 +167,7 @@ export namespace Request {
                 damage: 0,
                 probability: item.chance(battle, character),
                 target: 'self',
-                possible: battle_action_self_check(key, battle, character, 0 as action_points).response == 'OK'
+                possible: battle_action_self_check(item, battle, character, 0 as action_points)
             }
             sw.socket.emit('battle-action-update', result)
         }
@@ -197,7 +197,32 @@ export namespace Request {
                 damage: item.damage(battle, character, target_character),
                 probability: item.chance(battle, character, target_character),
                 target: 'unit',
-                possible: battle_action_character_check(key, battle, character, target_character, 0, 0).response == 'OK'
+                possible: battle_action_unit_check(item, battle, character, target_character, 0, 0)
+            }
+            sw.socket.emit('battle-action-update', result)
+        }
+    }
+
+    export function battle_actions_unit_unselected(sw: SocketWrapper) {
+        // console.log('requested unit actions')
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist')
+            return
+        }
+        const battle_id = character.battle_id
+        if (battle_id == undefined) return
+        const battle = Data.Battles.from_id(battle_id);
+
+        for (let [key, item] of Object.entries(ActionsUnit)) {
+            const result: BattleActionData = {
+                name: key,
+                tag: key,
+                cost: 0,
+                damage: 0,
+                probability: 0,
+                target: 'unit',
+                possible: BattleActionPossibilityReason.InvalidAction
             }
             sw.socket.emit('battle-action-update', result)
         }
@@ -234,7 +259,31 @@ export namespace Request {
                 damage: 0,
                 probability: 1, //item.chance(battle, character, target),
                 target: 'position',
-                possible: battle_action_position_check(key, battle, character, target as battle_position).response == 'OK'
+                possible: battle_action_position_check(item, battle, character, target as battle_position)
+            }
+            sw.socket.emit('battle-action-update', result)
+        }
+    }
+
+    export function battle_actions_position_unselected(sw: SocketWrapper) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist')
+            return
+        }
+        const battle_id = character.battle_id
+        if (battle_id == undefined) return
+        const battle = Data.Battles.from_id(battle_id);
+
+        for (let [key, item] of Object.entries(ActionsPosition)) {
+            const result: BattleActionData = {
+                name: key,
+                tag: key,
+                cost: 0,
+                damage: 0,
+                probability: 0, //item.chance(battle, character, target),
+                target: 'position',
+                possible: BattleActionPossibilityReason.InvalidAction
             }
             sw.socket.emit('battle-action-update', result)
         }

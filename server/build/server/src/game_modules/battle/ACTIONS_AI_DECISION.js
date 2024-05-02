@@ -21,7 +21,7 @@ function utility_unit_damage(key, action, battle, character, target_character) {
 function generic_utility_unit(key, action, battle, character, target_character, d_distance, d_ap) {
     if (target_character.dead())
         return { action_key: key, utility: 0, ap_cost: 0, target: target_character };
-    if ((0, actions_1.battle_action_character_check)(key, battle, character, target_character, d_distance, d_ap).response != 'OK')
+    if ((0, actions_1.battle_action_unit_check)(action, battle, character, target_character, d_distance, d_ap) != 0 /* BattleActionPossibilityReason.Okay */)
         return { action_key: key, utility: 0, ap_cost: 0, target: target_character };
     if (action.move_closer)
         return { action_key: key, utility: 0, ap_cost: 0, target: target_character };
@@ -100,7 +100,7 @@ function calculate_utility_end_turn(battle, character, list_of_utility) {
     }
 }
 function calculate_utility_flee(battle, character, d_ap) {
-    if ((0, actions_1.battle_action_self_check)('Flee', battle, character, d_ap).response != 'OK')
+    if ((0, actions_1.battle_action_self_check)(actions_1.ActionsSelf.Flee, battle, character, d_ap) != 0 /* BattleActionPossibilityReason.Okay */)
         return { action_key: 'Flee', utility: 0, ap_cost: 0, target: character };
     let utility = (character.get_hp()) / character.get_max_hp();
     utility = 0.5 - Math.sqrt(utility);
@@ -116,7 +116,7 @@ function calculate_utility_flee(battle, character, d_ap) {
     return { action_key: 'Flee', utility: utility, ap_cost: actions_1.ActionsSelf.Flee.ap_cost(battle, character), target: character };
 }
 function calculate_utility_random_step(battle, character, d_ap) {
-    if ((0, actions_1.battle_action_self_check)('RandomStep', battle, character, d_ap).response != 'OK')
+    if ((0, actions_1.battle_action_self_check)(actions_1.ActionsSelf['RandomStep'], battle, character, d_ap) != 0 /* BattleActionPossibilityReason.Okay */)
         return { action_key: 'RandomStep', utility: 0, ap_cost: 0, target: character };
     let total_utility = 0;
     for (const item of battle.heap) {

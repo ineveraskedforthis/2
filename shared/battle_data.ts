@@ -66,6 +66,15 @@ export type action_points = number & { __brand: "action_point"}
 export type ms = number & { __brand: "ms" }
 export type seconds = number & { __brand: "seconds" }
 
+
+export const enum BattleActionPossibilityReason {
+    Okay,
+    NotEnoughAP,
+    FarAway,
+    NoResource,
+    InvalidAction,
+}
+
 export interface BattleActionData {
     name: string,
     tag: string,
@@ -73,7 +82,7 @@ export interface BattleActionData {
     probability: number,
     damage: number,
     target: 'self'|'unit'|'position',
-    possible: boolean
+    possible: BattleActionPossibilityReason
 }
 
 export type ActionSelfKeys = 'Flee'|'EndTurn'|'RandomStep'

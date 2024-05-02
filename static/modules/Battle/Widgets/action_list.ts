@@ -1,4 +1,4 @@
-import { BattleActionData } from "../../../../shared/battle_data.js"
+import { BattleActionData, BattleActionPossibilityReason } from "../../../../shared/battle_data.js"
 import { Column, List } from "../../../widgets/List/list.js";
 import { selectOne } from "../../HTMLwrappers/common.js";
 import { BattleImage } from "../battle_image.js";
@@ -61,7 +61,15 @@ export class ActionsListWidget {
     static list = new List<BattleActionData>(selectOne(".battle_control"))
     static {
         this.list.columns = columns
-        this.list.per_line_class_by_item = (item) => {if (!item.possible) return ['disabled', 'battle_action']; return ['battle_action']}
+        this.list.per_line_class_by_item = (item) => {
+            switch(item.possible) {
+                case BattleActionPossibilityReason.Okay: return ['battle_action'];
+                case BattleActionPossibilityReason.NotEnoughAP: return ['disabled_ap', 'battle_action']
+                case BattleActionPossibilityReason.FarAway: return ['disabled_far_away', 'battle_action']
+                case BattleActionPossibilityReason.NoResource: return ['disabled_lack', 'battle_action']
+                case BattleActionPossibilityReason.InvalidAction: return ['disabled_invalid', 'battle_action']
+            }
+        }
         this.list.onclick = (unit) => {BattleImage.send_action(unit.tag, unit.target)};
     }
 

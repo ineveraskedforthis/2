@@ -110,7 +110,9 @@ export class SocketManager {
             socket.on('req-battle-actions-all', () => Request.battle_actions_all(user))
             socket.on('req-battle-actions-self', ()=> Request.battle_actions_self(user))
             socket.on('req-battle-actions-unit', (data) => Request.battle_actions_unit(user, data))
+            socket.on('req-battle-actions-unit-unselected', () => Request.battle_actions_unit_unselected(user))
             socket.on('req-battle-actions-position', (data) => Request.battle_actions_position(user, data))
+            socket.on('req-battle-actions-position-unselected', () => Request.battle_actions_position_unselected(user))
             socket.on('request-battle-data', (data) => Request.battle(user))
 
             socket.on('battle-action-self',  (msg: any) => HandleAction.battle_self(user, msg))

@@ -14,7 +14,7 @@ import { BattleEvent } from "./events"
 import { BattleTriggers } from "./TRIGGERS"
 import { BattleActionExecution, BattleActionExecutionPosition, BattleActionExecutionTarget, BattleApCost, BattleApCostPosition, BattleApCostTarget, BattleNumber, BattleNumberTarget } from "./TYPES"
 import { BattleValues } from "./VALUES"
-import { action_points, ActionPositionKeys, ActionSelfKeys, ActionUnitKeys, battle_position } from "@custom_types/battle_data"
+import { action_points, ActionPositionKeys, ActionSelfKeys, ActionUnitKeys, battle_position, BattleActionPossibilityReason } from "@custom_types/battle_data"
 import { EquipmentValues } from "../scripted-values/equipment-values"
 import { CharacterValues } from "../scripted-values/character"
 
@@ -398,91 +398,104 @@ type BattleActionPositionResponse =
     | {response: "INVALID_ACTION"}
     | {response: "OK", ap_cost: action_points, action: ActionPosition};
 
-function response_to_alert(character: Character, response: BattleActionResponse | BattleActionUnitResponse | BattleActionPositionResponse) {
-    switch(response.response) {
-        case "NOT_ENOUGH_AP":{Alerts.alert(character, "Not enough action points."); return}
-        case "INVALID_ACTION":{Alerts.alert(character, "You are trying to do an undefined action."); return}
-        case "OK":{return}
-        case "NOT_ENOUGH_RANGE":{Alerts.alert(character, "You are too far away."); return}
-        case "ATTEMPT_IS_INVALID":{Alerts.alert(character, "You can't do this action."); return};
+function response_to_alert(character: Character, response: BattleActionPossibilityReason) {
+    switch(response) {
+        case BattleActionPossibilityReason.Okay:return;
+        case BattleActionPossibilityReason.NotEnoughAP:{Alerts.alert(character, "Not enough action points."); return}
+        case BattleActionPossibilityReason.FarAway:{Alerts.alert(character, "You are too far away."); return}
+        case BattleActionPossibilityReason.NoResource:{Alerts.alert(character, "You don't have enough resources."); return};
+        case BattleActionPossibilityReason.InvalidAction:{Alerts.alert(character, "You are trying to do an undefined action."); return}
     }
 }
 
-export function battle_action_self_check(tag: string, battle: Battle, character: Character,  d_ap: action_points):BattleActionResponse {
-    const action = ActionsSelf[tag as ActionSelfKeys]
-    if (action == undefined) {
-        return {response: "INVALID_ACTION"}
-    }
+export function is_action_self_key(s: string): s is ActionSelfKeys {
+    if (s in ActionsSelf) return true
+    return false
+}
+export function is_action_position_key(s: string): s is ActionPositionKeys {
+    if (s in ActionsPosition) return true
+    return false
+}
+export function is_action_unit_key(s: string): s is ActionUnitKeys {
+    if (s in ActionsUnit) return true
+    return false
+}
 
+export function battle_action_self_check(
+    action: ActionSelf,
+    battle: Battle,
+    character: Character,
+    d_ap: action_points
+) : BattleActionPossibilityReason
+{
     const ap_cost = action.ap_cost(battle, character)
     if (character.action_points_left + d_ap < ap_cost) {
-        return {response: "NOT_ENOUGH_AP", needed: ap_cost, current: character.action_points_left}
+        return BattleActionPossibilityReason.NotEnoughAP
     }
-
-    return {response: "OK", ap_cost: ap_cost, action: action}
+    return BattleActionPossibilityReason.Okay
 }
 
-export function battle_action_character_check(
-    tag: string,
+export function battle_action_unit_check(
+    action: ActionUnit,
     battle: Battle,
     character: Character,
     target_character: Character,
-    d_distance: number, d_ap: number) : BattleActionUnitResponse
+    d_distance: number, d_ap: number
+) : BattleActionPossibilityReason
 {
-    const action = ActionsUnit[tag as ActionUnitKeys]
-    if (action == undefined) {
-        return {response: "INVALID_ACTION"}
-    }
-
     const ap_cost = action.ap_cost(battle, character, target_character)
     if (character.action_points_left + d_ap < ap_cost) {
-        return {response: "NOT_ENOUGH_AP", needed: ap_cost, current: character.action_points_left}
+        return BattleActionPossibilityReason.NotEnoughAP
     }
-
     const range = action.range(battle, character)
     const dist = geom.dist(character.position, target_character.position)
     if (range + d_distance < dist) {
-        return {response: "NOT_ENOUGH_RANGE"}
+        return BattleActionPossibilityReason.FarAway
     }
-
     if (!action.valid(character)) {
-        return {response: "ATTEMPT_IS_INVALID"}
+        return BattleActionPossibilityReason.InvalidAction
     }
-
-    return {response: "OK", ap_cost: ap_cost, action: action}
+    return BattleActionPossibilityReason.Okay
 }
 
-export function battle_action_position_check(tag: string, battle: Battle, character: Character,  target: battle_position): BattleActionPositionResponse {
-    const action = ActionsPosition[tag as ActionPositionKeys]
-    if (action == undefined) {
-        return {response: "INVALID_ACTION"}
-    }
-
+export function battle_action_position_check(
+    action: ActionPosition,
+    battle: Battle,
+    character: Character,
+    target: battle_position
+): BattleActionPossibilityReason {
     const ap_cost = action.ap_cost(battle, character, target)
     if ((character.action_points_left < ap_cost - 0.01) || (character.action_points_left == 0)) {
-        return {response: "NOT_ENOUGH_AP", needed: ap_cost, current: character.action_points_left}
+        return BattleActionPossibilityReason.NotEnoughAP
     }
-
-    return {response: "OK", ap_cost: ap_cost, action: action}
+    return BattleActionPossibilityReason.Okay
 }
 
-export function battle_action_self(tag: string, battle: Battle, character: Character, ): BattleActionResponse {
-    let result = battle_action_self_check(tag, battle, character, 0 as action_points)
-    if (result.response == "OK") {
-        character.action_points_left = character.action_points_left - result.ap_cost as action_points
-        result.action.execute(battle, character, result.ap_cost)
+export function battle_action_self(tag: string, battle: Battle, character: Character, ): BattleActionPossibilityReason {
+    if(!is_action_self_key(tag)) return BattleActionPossibilityReason.InvalidAction
+    const action = ActionsSelf[tag]
+
+    let result = battle_action_self_check(action, battle, character, 0 as action_points)
+    if (result == BattleActionPossibilityReason.Okay) {
+        const ap_cost = action.ap_cost(battle, character)
+        character.action_points_left = character.action_points_left - ap_cost as action_points
+        action.execute(battle, character, ap_cost)
     }
     response_to_alert(character, result)
     return result
 }
 
 export function battle_action_character(tag: ActionUnitKeys, battle: Battle, character: Character,  target_character: Character, ) {
-    let result = battle_action_character_check(tag, battle, character, target_character, 0, 0)
+    if(!is_action_unit_key(tag)) return BattleActionPossibilityReason.InvalidAction
+    const action = ActionsUnit[tag]
+
+    let result = battle_action_unit_check(action, battle, character, target_character, 0, 0)
     console.log(character.get_name(), 'attempts to ', tag, 'to', target_character.get_name())
-    console.log(result.response)
-    if (result.response == "OK") {
-        character.action_points_left = character.action_points_left - result.ap_cost as action_points
-        result.action.execute(battle, character, target_character, result.ap_cost)
+    console.log(result)
+    if (result == BattleActionPossibilityReason.Okay) {
+        const ap_cost = action.ap_cost(battle, character, target_character)
+        character.action_points_left = character.action_points_left - ap_cost as action_points
+        action.execute(battle, character, target_character, ap_cost)
         Alerts.battle_update_unit(battle, character)
         Alerts.battle_update_unit(battle, target_character)
     }
@@ -491,12 +504,16 @@ export function battle_action_character(tag: ActionUnitKeys, battle: Battle, cha
 }
 
 export function battle_action_position(tag: ActionPositionKeys, battle: Battle, character: Character,  target: battle_position) {
-    let result = battle_action_position_check(tag, battle, character, target)
+    if(!is_action_position_key(tag)) return BattleActionPossibilityReason.InvalidAction
+    const action = ActionsPosition[tag]
+
+    let result = battle_action_position_check(action, battle, character, target)
     console.log(character.get_name(), 'attempts to ', tag)
-    console.log(result.response)
-    if (result.response == "OK") {
-        character.action_points_left = character.action_points_left - result.ap_cost as action_points
-        result.action.execute(battle, character, target, result.ap_cost)
+    console.log(result)
+    if (result == BattleActionPossibilityReason.Okay) {
+        const ap_cost = action.ap_cost(battle, character, target)
+        character.action_points_left = character.action_points_left - ap_cost as action_points
+        action.execute(battle, character, target, ap_cost)
 
         if (character.action_points_left < 0) {
             character.action_points_left = 0 as action_points

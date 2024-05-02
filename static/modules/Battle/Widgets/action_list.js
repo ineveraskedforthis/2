@@ -76,7 +76,14 @@ _a = ActionsListWidget;
 ActionsListWidget.list = new List(selectOne(".battle_control"));
 (() => {
     _a.list.columns = columns;
-    _a.list.per_line_class_by_item = (item) => { if (!item.possible)
-        return ['disabled', 'battle_action']; return ['battle_action']; };
+    _a.list.per_line_class_by_item = (item) => {
+        switch (item.possible) {
+            case 0 /* BattleActionPossibilityReason.Okay */: return ['battle_action'];
+            case 1 /* BattleActionPossibilityReason.NotEnoughAP */: return ['disabled_ap', 'battle_action'];
+            case 2 /* BattleActionPossibilityReason.FarAway */: return ['disabled_far_away', 'battle_action'];
+            case 3 /* BattleActionPossibilityReason.NoResource */: return ['disabled_lack', 'battle_action'];
+            case 4 /* BattleActionPossibilityReason.InvalidAction */: return ['disabled_invalid', 'battle_action'];
+        }
+    };
     _a.list.onclick = (unit) => { BattleImage.send_action(unit.tag, unit.target); };
 })();

@@ -58,12 +58,37 @@
     user-select: none;
 }
 
-.battle_action.disabled {
-    background-color: rgba(88, 88, 88, 0.5);
+
+
+.battle_action.disabled_invalid {
+    background-color: rgba(0, 0, 0, 0.5);
     color: rgb(135, 135, 135);
 }
+.battle_action.disabled_invalid:hover {
+    border: rgb(0, 0, 0) solid 2px;
+}
 
-.battle_action.disabled:hover {
+.battle_action.disabled_ap {
+    background-color: rgba(255, 0, 195, 0.5);
+    color: rgb(135, 135, 135);
+}
+.battle_action.disabled_ap:hover {
+    border: rgb(0, 0, 0) solid 2px;
+}
+
+.battle_action.disabled_far_away {
+    background-color: rgba(0, 255, 234, 0.5);
+    color: rgb(135, 135, 135);
+}
+.battle_action.disabled_far_away:hover {
+    border: rgb(0, 0, 0) solid 2px;
+}
+
+.battle_action.disabled_lack {
+    background-color: rgba(255, 0, 0, 0.5);
+    color: rgb(135, 135, 135);
+}
+.battle_action.disabled_lack:hover {
     border: rgb(0, 0, 0) solid 2px;
 }
 
