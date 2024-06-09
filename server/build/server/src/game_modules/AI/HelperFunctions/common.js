@@ -323,6 +323,8 @@ var AIfunctions;
             character.ai_price_sell_log_precision[material] -= sign;
             character.ai_price_sell_expectation[material] += sign;
         }
+        character.ai_price_sell_expectation[material] *= 0.99;
+        character.ai_price_sell_expectation[material] = Math.round(character.ai_price_sell_expectation[material]);
         validate_price(character, material);
     }
     AIfunctions.update_sell_price = update_sell_price;
@@ -333,6 +335,8 @@ var AIfunctions;
             character.ai_price_buy_log_precision[material] -= sign;
             character.ai_price_buy_expectation[material] -= sign;
         }
+        character.ai_price_buy_expectation[material] *= 0.99;
+        character.ai_price_buy_expectation[material] = Math.round(character.ai_price_buy_expectation[material]);
         validate_price(character, material);
     }
     AIfunctions.update_buy_price = update_buy_price;

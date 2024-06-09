@@ -344,6 +344,9 @@ export namespace AIfunctions {
             character.ai_price_sell_expectation[material] += sign
         }
 
+        character.ai_price_sell_expectation[material] *= 0.99
+        character.ai_price_sell_expectation[material] = Math.round(character.ai_price_sell_expectation[material])
+
         validate_price(character, material)
     }
 
@@ -355,6 +358,9 @@ export namespace AIfunctions {
             character.ai_price_buy_log_precision[material] -= sign
             character.ai_price_buy_expectation[material] -= sign
         }
+
+        character.ai_price_buy_expectation[material] *= 0.99
+        character.ai_price_buy_expectation[material] = Math.round(character.ai_price_buy_expectation[material])
 
         validate_price(character, material)
     }

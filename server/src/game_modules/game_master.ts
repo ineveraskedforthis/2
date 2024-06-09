@@ -286,7 +286,7 @@ export namespace GameMaster {
 
         // migration to the city
         const speed = (0.1 / (1 + num_humans) / (1 + num_humans) / (1 + num_humans))
-        if (Math.random() < speed * dt) {
+        if ((Math.random() < speed * dt) && (num_humans < 50)) {
             const occupation_dice = Math.random()
 
             if (occupation_dice < 0.01) {

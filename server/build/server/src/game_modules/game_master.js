@@ -239,7 +239,7 @@ var GameMaster;
         });
         // migration to the city
         const speed = (0.1 / (1 + num_humans) / (1 + num_humans) / (1 + num_humans));
-        if (Math.random() < speed * dt) {
+        if ((Math.random() < speed * dt) && (num_humans < 50)) {
             const occupation_dice = Math.random();
             if (occupation_dice < 0.01) {
                 templates_1.Template.Character.HumanLocalTrader(generate_human_name(false, "merchant"), "city");
