@@ -118,6 +118,12 @@ export namespace MapSystem {
         if (sea_nearby(cell.id)) {
             d_scent -= 10 / 100 * base_d_scent
         }
+        // dead rats
+        Data.Cells.for_each_guest(cell.id, character => {
+            if (character.dead() && (character.race == "rat")) {
+                d_scent -= 10 / 100 * base_d_scent
+            }
+        })
 
         // trim to avoid weirdness
         cell.rat_scent = trim(cell.rat_scent + d_scent * 20, -50, 50)

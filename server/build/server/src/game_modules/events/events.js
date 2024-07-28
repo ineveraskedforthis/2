@@ -328,18 +328,18 @@ var Event;
         }
         //fighting provides constant growth of this skill up to some level
         //for defender
-        for (const fighting_skill of character_1.CharacterValues.equiped_weapon_required_skill(defender)) {
+        for (const fighting_skill of character_1.CharacterValues.equipped_weapon_required_skill(defender)) {
             effects_1.Effect.roll_skill_improvement(defender, fighting_skill, 30, "Fighting" /* CHANGE_REASON.FIGHTING */);
         }
         //for attacker
-        for (const fighting_skill of character_1.CharacterValues.equiped_weapon_required_skill(attacker)) {
+        for (const fighting_skill of character_1.CharacterValues.equipped_weapon_required_skill(attacker)) {
             effects_1.Effect.roll_skill_improvement(attacker, fighting_skill, 30, "Fighting" /* CHANGE_REASON.FIGHTING */);
         }
         effects_1.Effect.roll_skill_improvement(defender, 25 /* SKILL.FIGHTING */, attack.attack_skill, "Fighting" /* CHANGE_REASON.FIGHTING */);
         effects_1.Effect.roll_skill_improvement(attacker, 25 /* SKILL.FIGHTING */, attack.defence_skill, "Fighting" /* CHANGE_REASON.FIGHTING */);
     }
     function parry(defender, attack) {
-        const weapon = character_1.CharacterValues.equiped_weapon_required_skill(defender);
+        const weapon = character_1.CharacterValues.equipped_weapon_required_skill(defender);
         const skill = character_1.CharacterValues.attack_skill(defender) + Math.round(Math.random() * 5);
         attack.defence_skill += skill;
         attack.defence_skill += character_1.CharacterValues.skill(defender, 25 /* SKILL.FIGHTING */);

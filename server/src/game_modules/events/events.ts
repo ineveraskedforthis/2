@@ -354,11 +354,11 @@ export namespace Event {
 
         //fighting provides constant growth of this skill up to some level
         //for defender
-        for (const fighting_skill of CharacterValues.equiped_weapon_required_skill(defender)) {
+        for (const fighting_skill of CharacterValues.equipped_weapon_required_skill(defender)) {
             Effect.roll_skill_improvement(defender, fighting_skill, 30, CHANGE_REASON.FIGHTING)
         }
         //for attacker
-        for (const fighting_skill of CharacterValues.equiped_weapon_required_skill(attacker)) {
+        for (const fighting_skill of CharacterValues.equipped_weapon_required_skill(attacker)) {
             Effect.roll_skill_improvement(attacker, fighting_skill, 30, CHANGE_REASON.FIGHTING)
         }
 
@@ -367,7 +367,7 @@ export namespace Event {
     }
 
     function parry(defender: Character, attack: AttackObj) {
-        const weapon = CharacterValues.equiped_weapon_required_skill(defender);
+        const weapon = CharacterValues.equipped_weapon_required_skill(defender);
         const skill = CharacterValues.attack_skill(defender) + Math.round(Math.random() * 5);
         attack.defence_skill += skill;
 

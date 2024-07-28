@@ -115,7 +115,11 @@ AIActionsStorage.register_action_cell({
             return 0
         }
 
-        return 0.01 + (actor.race == "rat" ? 0.2 : 0)
+        if (actor.race == "rat") {
+            return 0.001 * target.rat_scent;
+        }
+
+        return 0.01
     },
 
     potential_targets(actor) {

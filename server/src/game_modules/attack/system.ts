@@ -8,7 +8,7 @@ import { PERK, SKILL } from "@content/content";
 
 export namespace Attack {
     export function generate_melee(character: Character, type: melee_attack_type): AttackObj {
-        const result = new AttackObj(CharacterValues.equiped_weapon_required_skill_melee(character))
+        const result = new AttackObj(CharacterValues.equipped_weapon_required_skill_melee(character))
         //add base item damage
         DmgOps.add_ip(result.damage, CharacterValues.melee_damage_raw(character, type))
         //account for strength

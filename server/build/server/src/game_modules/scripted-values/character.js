@@ -69,7 +69,7 @@ var CharacterValues;
         if ((weapon_damage !== undefined) && (weapon_data !== undefined)) {
             for (const skill of item_system_1.ItemSystem.related_skils(weapon_data, phys_power(character))) {
                 if ((skill == 23 /* SKILL.POLEARMS */) && (character._perks[8 /* PERK.PRO_FIGHTER_POLEARMS */])) {
-                    if (equiped_weapon_impact_type(character) == 0 /* IMPACT_TYPE.POINT */) {
+                    if (equipped_weapon_impact_type(character) == 0 /* IMPACT_TYPE.POINT */) {
                         damage_types_1.DmgOps.mult_ip(weapon_damage, 1.2);
                     }
                 }
@@ -186,7 +186,7 @@ var CharacterValues;
     CharacterValues.movement_duration_map = movement_duration_map;
     function attack_skill(character) {
         let max = 0;
-        const skills = equiped_weapon_required_skill(character);
+        const skills = equipped_weapon_required_skill(character);
         for (const skill_id of skills) {
             max = Math.max(max, skill(character, skill_id));
         }
@@ -199,23 +199,23 @@ var CharacterValues;
         return result;
     }
     CharacterValues.resistance = resistance;
-    function equiped_weapon_impact_type(character) {
+    function equipped_weapon_impact_type(character) {
         const weapon = equipment_values_1.EquipmentValues.weapon(character.equip);
         if (weapon == undefined) {
             return 3 /* IMPACT_TYPE.NONE */;
         }
         return weapon.prototype.impact;
     }
-    CharacterValues.equiped_weapon_impact_type = equiped_weapon_impact_type;
-    function equiped_weapon_required_skill_melee(character) {
+    CharacterValues.equipped_weapon_impact_type = equipped_weapon_impact_type;
+    function equipped_weapon_required_skill_melee(character) {
         const weapon = equipment_values_1.EquipmentValues.weapon(character.equip);
         if (weapon == undefined) {
             return [24 /* SKILL.UNARMED */];
         }
         return item_system_1.ItemSystem.related_skils(weapon, phys_power(character));
     }
-    CharacterValues.equiped_weapon_required_skill_melee = equiped_weapon_required_skill_melee;
-    function equiped_weapon_is_ranged(character) {
+    CharacterValues.equipped_weapon_required_skill_melee = equipped_weapon_required_skill_melee;
+    function equipped_weapon_is_ranged(character) {
         const weapon = equipment_values_1.EquipmentValues.weapon(character.equip);
         if (weapon == undefined) {
             return false;
@@ -225,8 +225,8 @@ var CharacterValues;
         }
         return false;
     }
-    CharacterValues.equiped_weapon_is_ranged = equiped_weapon_is_ranged;
-    function equiped_weapon_required_skill(character) {
+    CharacterValues.equipped_weapon_is_ranged = equipped_weapon_is_ranged;
+    function equipped_weapon_required_skill(character) {
         const weapon = equipment_values_1.EquipmentValues.weapon(character.equip);
         if (weapon == undefined) {
             return [24 /* SKILL.UNARMED */];
@@ -234,8 +234,8 @@ var CharacterValues;
         if (weapon.prototype.bow_power > 0) {
             return [18 /* SKILL.RANGED */];
         }
-        return equiped_weapon_required_skill_melee(character);
+        return equipped_weapon_required_skill_melee(character);
     }
-    CharacterValues.equiped_weapon_required_skill = equiped_weapon_required_skill;
+    CharacterValues.equipped_weapon_required_skill = equipped_weapon_required_skill;
 })(CharacterValues || (exports.CharacterValues = CharacterValues = {}));
 

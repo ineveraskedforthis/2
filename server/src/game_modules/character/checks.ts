@@ -26,7 +26,7 @@ export function has_zaz(character: Character): boolean {
 }
 
 export function can_shoot(character: Character): boolean {
-    if (!CharacterValues.equiped_weapon_is_ranged(character)) {
+    if (!CharacterValues.equipped_weapon_is_ranged(character)) {
         return false;
     }
     if (character.stash.get(character.equip.data.selected_ammo) >= 1) {

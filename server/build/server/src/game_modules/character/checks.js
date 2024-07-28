@@ -25,7 +25,7 @@ function has_zaz(character) {
 }
 exports.has_zaz = has_zaz;
 function can_shoot(character) {
-    if (!character_1.CharacterValues.equiped_weapon_is_ranged(character)) {
+    if (!character_1.CharacterValues.equipped_weapon_is_ranged(character)) {
         return false;
     }
     if (character.stash.get(character.equip.data.selected_ammo) >= 1) {

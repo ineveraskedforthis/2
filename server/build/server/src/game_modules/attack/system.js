@@ -8,7 +8,7 @@ const class_1 = require("./class");
 var Attack;
 (function (Attack) {
     function generate_melee(character, type) {
-        const result = new class_1.AttackObj(character_1.CharacterValues.equiped_weapon_required_skill_melee(character));
+        const result = new class_1.AttackObj(character_1.CharacterValues.equipped_weapon_required_skill_melee(character));
         //add base item damage
         damage_types_1.DmgOps.add_ip(result.damage, character_1.CharacterValues.melee_damage_raw(character, type));
         //account for strength

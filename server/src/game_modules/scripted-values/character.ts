@@ -75,7 +75,7 @@ export function pure_skill(character: Character, skill: SKILL) {
         if ((weapon_damage !== undefined) && (weapon_data !== undefined)) {
             for (const skill of ItemSystem.related_skils(weapon_data as Weapon, phys_power(character))) {
                 if ((skill == SKILL.POLEARMS) && (character._perks[PERK.PRO_FIGHTER_POLEARMS])) {
-                    if (equiped_weapon_impact_type(character) == IMPACT_TYPE.POINT) {
+                    if (equipped_weapon_impact_type(character) == IMPACT_TYPE.POINT) {
                         DmgOps.mult_ip(weapon_damage, 1.2)
                     }
                 }
@@ -192,7 +192,7 @@ export function pure_skill(character: Character, skill: SKILL) {
 
     export function attack_skill(character: Character) {
         let max = 0
-        const skills = equiped_weapon_required_skill(character)
+        const skills = equipped_weapon_required_skill(character)
         for (const skill_id of skills) {
             max = Math.max(max, skill(character, skill_id))
         }
@@ -205,7 +205,7 @@ export function pure_skill(character: Character, skill: SKILL) {
         return result
     }
 
-    export function equiped_weapon_impact_type(character: Character):IMPACT_TYPE {
+    export function equipped_weapon_impact_type(character: Character):IMPACT_TYPE {
         const weapon = EquipmentValues.weapon(character.equip)
         if (weapon == undefined) {
             return IMPACT_TYPE.NONE;
@@ -213,7 +213,7 @@ export function pure_skill(character: Character, skill: SKILL) {
         return weapon.prototype.impact;
     }
 
-    export function equiped_weapon_required_skill_melee(character: Character):SKILL[] {
+    export function equipped_weapon_required_skill_melee(character: Character):SKILL[] {
         const weapon = EquipmentValues.weapon(character.equip)
         if (weapon == undefined) {
             return [SKILL.UNARMED]
@@ -221,7 +221,7 @@ export function pure_skill(character: Character, skill: SKILL) {
         return ItemSystem.related_skils(weapon, phys_power(character))
     }
 
-    export function equiped_weapon_is_ranged(character: Character) : boolean {
+    export function equipped_weapon_is_ranged(character: Character) : boolean {
         const weapon = EquipmentValues.weapon(character.equip)
 
         if (weapon == undefined) {
@@ -235,7 +235,7 @@ export function pure_skill(character: Character, skill: SKILL) {
         return false
     }
 
-    export function equiped_weapon_required_skill(character: Character):SKILL[] {
+    export function equipped_weapon_required_skill(character: Character):SKILL[] {
         const weapon = EquipmentValues.weapon(character.equip)
 
         if (weapon == undefined) {
@@ -246,6 +246,6 @@ export function pure_skill(character: Character, skill: SKILL) {
             return [SKILL.RANGED]
         }
 
-        return equiped_weapon_required_skill_melee(character)
+        return equipped_weapon_required_skill_melee(character)
     }
 }

@@ -90,7 +90,10 @@ storage_1.AIActionsStorage.register_action_cell({
         if (actor.open_shop) {
             return 0;
         }
-        return 0.01 + (actor.race == "rat" ? 0.2 : 0);
+        if (actor.race == "rat") {
+            return 0.001 * target.rat_scent;
+        }
+        return 0.01;
     },
     potential_targets(actor) {
         const cell = data_objects_1.Data.Cells.from_id(actor.cell_id);
