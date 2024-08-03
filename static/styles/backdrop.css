@@ -7,3 +7,11 @@
     z-index: 999;
     backdrop-filter: blur(10px);
 }
+
+.over-backdrop {
+    z-index: 1000;
+}
+
+.over-over-backdrop {
+    z-index: 2000;
+}

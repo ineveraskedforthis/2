@@ -46,6 +46,8 @@ export namespace MarketOrders {
         if (order.amount < amount) amount = order.amount
         if (buyer.savings.get() < pay) return {tag: 'not_enough_money'}
 
+        amount = Math.floor(amount)
+
         const material = order.material
 
         // shadow operations with imaginary items
@@ -97,6 +99,8 @@ export namespace MarketOrders {
 
         if (order.amount < amount) amount = order.amount
         if (seller.stash.get(order.material) < amount) amount = seller.stash.get(order.material)
+
+        amount = Math.floor(amount)
 
         const pay = amount * order.price as money
         const material = order.material

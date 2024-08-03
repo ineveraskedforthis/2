@@ -445,6 +445,35 @@ div {
     flex-shrink: 0;
 }
 
+.highlight-animation {
+    animation-duration: 1s;
+    animation-name: highlight-keyframes;
+    animation-iteration-count: infinite;
+}
+
+@keyframes highlight-keyframes {
+    from {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    50% {
+        background-color: transparent;
+    }
+
+    to {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+}
+
+.font-size-large {
+    font-size: 2em;
+}
+
+.align-div-bottom {
+    position: absolute;
+    bottom: 0%;
+}
+
 .row {
     display: flex;
     flex-direction: row;
@@ -487,13 +516,17 @@ div {
 }
 
 .height-200 {
-    height: 50px;
+    height: 200px;
 }
 
 .height-auto {
     height: auto;
 }
 
+
+.height-20pc {
+    height: 20%;
+}
 .height-30pc {
     height: 30%;
 }
@@ -532,6 +565,10 @@ div {
 
 .align-center {
     text-align: center;
+}
+
+.text-black {
+    color: black;
 }
 
 .centered-box {
@@ -672,6 +709,15 @@ div {
     padding: 1%;
 }
 
+.padding-0200r {
+    padding: 20%;
+}
+
+.margin-horizontal-0300r {
+    margin-left: 30%;
+    margin-right: 30%;
+}
+
 .padding-20px-vertical {
     padding-top: 20px;
     padding-bottom: 20px;
@@ -803,4 +849,14 @@ div {
 
 #sauce_tab {
     background-color: transparent;
+}
+
+.tutorial-portrait {
+    position: relative;
+    background-image: url(/static/img/tutorial_portrait.png);
+    background-repeat: no-repeat;
+    width: 200px;
+    height: 270px;
+    overflow: visible;
+    text-align: center;
 }
