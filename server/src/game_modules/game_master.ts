@@ -6,6 +6,7 @@ import { DataID } from "./data/data_id";
 import { CellData } from "./map/cell_interface";
 import { SkillConfiguration, SkillStorage } from "@content/content";
 import { ms } from "@custom_types/battle_data";
+import { assert } from "console";
 
 // steppe_humans 9 9
 // city 2 6
@@ -73,60 +74,62 @@ export namespace GameMaster {
         console.log('spawn ' + faction)
         const [x, y] = Data.World.id_to_coordinate(cell_id)
         if (faction == 'city') {
-            const inn = Data.Locations.create(cell_id, {
-                fish: 0,
-                cotton: 0,
-                forest: 0,
-                berries: 0,
-                small_game: 0,
 
-                devastation: 0,
+            let main_location_id = DataID.Cells.main_location(cell_id);
 
-                has_bed: true,
+            DataID.Connection.set_spawn('city', main_location_id)
 
-                has_bowmaking_tools: false,
-                has_clothier_tools: false,
-                has_cooking_tools: true,
-                has_cordwainer_tools: false,
-                has_tanning_tools: false,
-                has_rat_lair: false,
+            let locations = DataID.Cells.locations(cell_id);
 
-                terrain: Terrain.steppe,
+            let inn_location = undefined;
 
-                has_house_level: 3
-            })
-            DataID.Connection.set_spawn('city', inn.id)
+            for (let item of locations) {
+                if (item == main_location_id) {
+                    continue;
+                }
+                inn_location = item;
+                break;
+            }
+
+            // innkeeper
+            const innkeeper = Template.Character.EquipClothesRich(Template.Character.HumanCity(generate_human_name(true, "merchant")))
+
+
+            if (inn_location !== undefined) {
+                Data.Locations.from_id(inn_location).has_bed = true;
+                Data.Locations.from_id(inn_location).has_cooking_tools = true;
+                Data.Locations.from_id(inn_location).has_house_level = 3
+
+                DataID.Connection.set_location_owner(innkeeper.id, inn_location)
+                DataID.Connection.set_character_home(innkeeper.id, inn_location)
+            }
+
+            let mayor_house_location = undefined;
+
+            for (let item of locations) {
+                if (item == main_location_id) {
+                    continue;
+                }
+                if (item == inn_location) {
+                    continue;
+                }
+                mayor_house_location = item;
+                break;
+            }
 
             // creation of mayor
             const mayor = Template.Character.EquipClothesRich(Template.Character.HumanCity(generate_human_name(true, "ruler")))
             mayor.savings.inc(TONS_OF_MONEY)
             Data.Factions.set_faction_leader(faction, mayor.id)
 
-            const mayor_house = Data.Locations.create(cell_id, {
-                fish: 0,
-                cotton: 0,
-                forest: 0,
-                berries: 0,
-                small_game: 0,
+            if (mayor_house_location !== undefined) {
+                Data.Locations.from_id(mayor_house_location).has_bed = true;
+                Data.Locations.from_id(mayor_house_location).has_cooking_tools = true;
+                Data.Locations.from_id(mayor_house_location).has_house_level = 5
 
-                devastation: 0,
-
-                has_bed: true,
-
-                has_bowmaking_tools: false,
-                has_clothier_tools: false,
-                has_cooking_tools: true,
-                has_cordwainer_tools: false,
-                has_tanning_tools: false,
-                has_rat_lair: false,
-
-                terrain: Terrain.steppe,
-
-                has_house_level: 5
-            })
-
-            DataID.Connection.set_location_owner(mayor.id, mayor_house.id)
-            DataID.Connection.set_character_home(mayor.id, mayor_house.id)
+                DataID.Connection.set_location_owner(mayor.id, mayor_house_location)
+                DataID.Connection.set_character_home(mayor.id, mayor_house_location)
+            }
 
             // creation of remaining colonists
             Template.Character.EquipClothesBasic(Template.Character.HumanLocalTrader(generate_human_name(true, "merchant", "ITH"), 'city'))
@@ -146,45 +149,37 @@ export namespace GameMaster {
                 const guard = Template.Character.HumanCityGuard(generate_human_name(true, "warrior"))
                 guard.savings.inc(500 as money)
             }
-
-            // innkeeper
-            const innkeeper = Template.Character.EquipClothesRich(Template.Character.HumanCity(generate_human_name(true, "merchant")))
-            DataID.Connection.set_location_owner(innkeeper.id, inn.id)
-            DataID.Connection.set_character_home(innkeeper.id, inn.id)
         }
 
 
         if (faction == 'steppe_humans') {
             // innkeeper
-            const inn = Data.Locations.create(cell_id, {
-                fish: 0,
-                cotton: 0,
-                forest: 0,
-                berries: 0,
-                small_game: 0,
+            let main_location_id = DataID.Cells.main_location(cell_id);
+            let locations = DataID.Cells.locations(cell_id);
 
-                devastation: 0,
+            let steppe_village = undefined;
 
-                has_bed: true,
+            for (let item of locations) {
+                if (item == main_location_id) {
+                    continue;
+                }
+                steppe_village = item;
+                break;
+            }
 
-                has_bowmaking_tools: false,
-                has_clothier_tools: false,
-                has_cooking_tools: true,
-                has_cordwainer_tools: false,
-                has_tanning_tools: false,
-                has_rat_lair: false,
+            if (steppe_village !== undefined) {
+                DataID.Connection.set_spawn('steppe_humans', steppe_village)
+                Data.Locations.from_id(steppe_village).has_bed = true;
+                Data.Locations.from_id(steppe_village).has_cooking_tools = true;
+                Data.Locations.from_id(steppe_village).has_house_level = 3
 
-                terrain: Terrain.steppe,
+                DataID.Connection.set_spawn('steppe_humans', steppe_village)
 
-                has_house_level: 3
-            })
+                const innkeeper = Template.Character.EquipClothesRich(Template.Character.HumanSteppe(generate_human_name(true, "merchant")))
 
-            DataID.Connection.set_spawn('steppe_humans', inn.id)
-
-            const innkeeper = Template.Character.EquipClothesRich(Template.Character.HumanSteppe(generate_human_name(true, "merchant")))
-
-            DataID.Connection.set_location_owner(innkeeper.id, inn.id)
-            DataID.Connection.set_character_home(innkeeper.id, inn.id)
+                DataID.Connection.set_location_owner(innkeeper.id, steppe_village)
+                DataID.Connection.set_character_home(innkeeper.id, steppe_village)
+            }
 
             // creation of local colonists
             Template.Character.EquipClothesBasic(Template.Character.HumanCook(generate_human_name(false, "artisan"), 'steppe'))
@@ -203,57 +198,29 @@ export namespace GameMaster {
         }
 
         if (faction == 'rats') {
-            const rat_lair = Data.Locations.create(cell_id, {
-                fish: 0,
-                cotton: 0,
-                forest: 0,
-                berries: 0,
-                small_game: 0,
-
-                devastation: 0,
-
-                has_bed: false,
-
-                has_bowmaking_tools: false,
-                has_clothier_tools: false,
-                has_cooking_tools: false,
-                has_cordwainer_tools: false,
-                has_tanning_tools: false,
-                has_rat_lair: true,
-
-                terrain: Terrain.steppe,
-
-                has_house_level: 0
-            })
-
-            DataID.Connection.set_spawn('rats', rat_lair.id)
+            let main_location_id = DataID.Cells.main_location(cell_id)
+            Data.Locations.from_id(main_location_id).has_rat_lair = true
+            DataID.Connection.set_spawn('rats', main_location_id)
         }
 
         if (faction == 'elodino_free') {
-            const elodino_city = Data.Locations.create(cell_id, {
-                fish: 0,
-                cotton: 0,
-                forest: 0,
-                berries: 0,
-                small_game: 0,
+            let main_location_id = DataID.Cells.main_location(cell_id);
+            let locations = DataID.Cells.locations(cell_id);
 
-                devastation: 0,
+            let elodino_city_id = undefined;
 
-                has_bed: true,
+            for (let item of locations) {
+                if (item == main_location_id) {
+                    continue;
+                }
+                Data.Locations.from_id(main_location_id).has_house_level = 8
+                Data.Locations.from_id(main_location_id).has_bed = true
+                elodino_city_id = item
+            }
 
-                has_bowmaking_tools: false,
-                has_clothier_tools: false,
-                has_cooking_tools: true,
-                has_cordwainer_tools: false,
-                has_tanning_tools: false,
-                has_rat_lair: false,
-
-                terrain: Terrain.steppe,
-
-                has_house_level: 8
-            })
-
-            DataID.Connection.set_spawn('elodino_free', elodino_city.id)
+            if (elodino_city_id !== undefined) {
+                DataID.Connection.set_spawn('elodino_free', elodino_city_id)
+            }
         }
 
         if (faction == 'graci') {

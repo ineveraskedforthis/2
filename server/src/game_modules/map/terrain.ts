@@ -29,3 +29,14 @@ export function terrain_can_move(terrain: Terrain) {
     if (terrain == Terrain.void) return false
     return true
 }
+
+export function terrain_available_space(terrain: Terrain): number {
+    switch(terrain) {
+        case Terrain.void:return 0
+        case Terrain.steppe:return 3
+        case Terrain.sea:return 0
+        case Terrain.coast:return 1
+        case Terrain.rupture:return 0
+        case Terrain.ashlands:return 3
+    }
+}

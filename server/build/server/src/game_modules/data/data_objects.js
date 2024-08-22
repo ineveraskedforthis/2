@@ -708,9 +708,11 @@ var Data;
                         if (terrain[neighbour_data.x][neighbour_data.y] == 2 /* Terrain.sea */)
                             coast_probability += 0.2;
                     }
+                    let available_space = (0, terrain_1.terrain_available_space)(terrain[x][y]);
                     if ((!cell.loaded_forest)) {
                         let counter = 0;
-                        while (forest_level > 0) {
+                        let forest_density = Math.max(1, forest_level / available_space);
+                        while ((forest_level > 0) && (counter < available_space)) {
                             let current_terrain = terrain[x][y];
                             if (Math.random() < coast_probability) {
                                 current_terrain = 3 /* Terrain.coast */;
@@ -721,7 +723,7 @@ var Data;
                                 small_game: 10,
                                 berries: 10,
                                 cotton: 2,
-                                forest: 100,
+                                forest: Math.floor(100 * forest_density),
                                 devastation: 0,
                                 has_house_level: 0,
                                 has_bed: false,
@@ -733,11 +735,11 @@ var Data;
                                 has_rat_lair: false,
                                 terrain: current_terrain
                             };
-                            forest_level -= 1;
+                            forest_level -= forest_density - 1;
                             counter++;
                             Locations.create(cell_id, forest);
                         }
-                        while (counter < 10) {
+                        while (counter < available_space) {
                             let current_terrain = terrain[x][y];
                             if (Math.random() < coast_probability) {
                                 current_terrain = 3 /* Terrain.coast */;

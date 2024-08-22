@@ -10,10 +10,14 @@ export class ImageComposer {
     private static w = 0
     private static h = 0
 
+    private static w_dead = 0
+    private static h_dead = 0
+
     private static loaded_images : Record<string, HTMLImageElement> = {}
     private static loaded_images_body : HTMLImageElement[] = []
+    private static loaded_images_dead : HTMLImageElement
 
-    static load(race_model: string, data : equip, onload : () => void) {
+    static load(race_model: string, data : equip, dead: boolean, onload : () => void) {
         this.loaded_images = {}
         this.loaded_images_body = []
         this.w = 0
@@ -25,24 +29,14 @@ export class ImageComposer {
             value: false
         }
 
-        const body_array = []
+        if (dead) {
+            // loading corpses
 
-        if (race_model != 'human') {
-            body_array.push(`../static/img/character_image/${race_model}/pose.png`)
-        } else {
-            body_array.push(`../static/img/character_image/${race_model}/empty.png`)
-            body_array.push('../static/img/character_image/human/left_arm.PNG')
-            body_array.push('../static/img/character_image/human/body.PNG')
-            body_array.push('../static/img/character_image/human/right_arm.PNG')
-        }
+            let link = `../static/img/character_image/${race_model}/corpse.png`
 
-        this.loaded = 0
-        this.to_load = 0
-
-        for (let item of body_array) {
             const image = new Image()
-            image.src = item;
-            this.loaded_images_body.push(image);
+            image.src = link;
+            this.loaded_images_dead = image;
             this.to_load++;
 
             ((composer, callback) => image.onload = () => {
@@ -54,39 +48,69 @@ export class ImageComposer {
                     callback()
                 }
             })(this, onload)
-        }
+        } else {
+            const body_array = []
 
-        for (const layer of display_layers){
-            if ((layer != 'on_top') && (race_model != 'human')) {continue}
+            if (race_model != 'human') {
+                body_array.push(`../static/img/character_image/${race_model}/pose.png`)
+            } else {
+                body_array.push(`../static/img/character_image/${race_model}/empty.png`)
+                body_array.push('../static/img/character_image/human/left_arm.PNG')
+                body_array.push('../static/img/character_image/human/body.PNG')
+                body_array.push('../static/img/character_image/human/right_arm.PNG')
+            }
 
-            for (const tag of EQUIPMENT_TAGS) {
-                let item_tag = data[tag]?.prototype_id||'empty';
-                if (tag == 'secondary') {
-                    continue
-                }
-
-                this.to_load++;
+            for (let item of body_array) {
                 const image = new Image()
-                if (item_tag == 'empty') {
-                    image.src = `../static/img/character_image/${race_model}/${item_tag}.png`
-                } else if (race_model == 'human') {
-                    image.src = `../static/img/character_image/${race_model}/${tag}/${item_tag}_${layer}.PNG`
-                } else {
-                    image.src = `../static/img/character_image/${race_model}/${item_tag}.png`
-                }
+                image.src = item;
+                this.loaded_images_body.push(image);
+                this.to_load++;
 
                 ((composer, callback) => image.onload = () => {
                     composer.w = Math.max(composer.w, image.width)
                     composer.h = Math.max(composer.h, image.height)
 
                     composer.loaded++
-                    composer.loaded_images[layer + "_" + tag] = image
                     if ((composer.loaded == composer.to_load) && preloading_status.value) {
                         callback()
                     }
                 })(this, onload)
             }
+
+            for (const layer of display_layers){
+                if ((layer != 'on_top') && (race_model != 'human')) {continue}
+
+                for (const tag of EQUIPMENT_TAGS) {
+                    let item_tag = data[tag]?.prototype_id||'empty';
+                    if (tag == 'secondary') {
+                        continue
+                    }
+
+                    this.to_load++;
+                    const image = new Image()
+                    if (item_tag == 'empty') {
+                        image.src = `../static/img/character_image/${race_model}/${item_tag}.png`
+                    } else if (race_model == 'human') {
+                        image.src = `../static/img/character_image/${race_model}/${tag}/${item_tag}_${layer}.PNG`
+                    } else {
+                        image.src = `../static/img/character_image/${race_model}/${item_tag}.png`
+                    }
+
+                    ((composer, callback) => image.onload = () => {
+                        composer.w = Math.max(composer.w, image.width)
+                        composer.h = Math.max(composer.h, image.height)
+
+                        composer.loaded++
+                        composer.loaded_images[layer + "_" + tag] = image
+                        if ((composer.loaded == composer.to_load) && preloading_status.value) {
+                            callback()
+                        }
+                    })(this, onload)
+                }
+            }
         }
+
+
 
         preloading_status.value = true
         if (this.loaded == this.to_load) {
@@ -96,6 +120,9 @@ export class ImageComposer {
 
     static compose() {
         this.context.clearRect(0, 0, 2048, 2048)
+
+        if (this.loaded_images_dead && this.loaded_images_dead.complete)
+            this.context.drawImage(this.loaded_images_dead, 0, 0)
 
         if (this.loaded_images_body[0] && this.loaded_images_body[0].complete)
             this.context.drawImage(this.loaded_images_body[0], 0, 0)
@@ -133,11 +160,12 @@ export class ImageComposer {
         target : CanvasRenderingContext2D,
         race_model: string,
         data : equip,
+        dead : boolean,
         x : number,
         y : number,
         on_draw : () => void
     ) {
-        this.load(race_model, data, () => {
+        this.load(race_model, data, dead, () => {
             setTimeout(() => {
                 ImageComposer.compose()
                 ImageComposer.draw_to(target, x, y)

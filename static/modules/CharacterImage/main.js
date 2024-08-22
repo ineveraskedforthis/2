@@ -52,7 +52,7 @@ export function draw_npc_by_index(data, step, indices, index_of_index, canvas_co
     //         canvas_context.strokeText(`${i} ${j}`, i * 50, j * 50)
     //     }
     // }
-    ImageComposer.update_equip_image(canvas_context, data[indices[index_of_index]].body, data[indices[index_of_index]].equip, 0, height, () => {
+    ImageComposer.update_equip_image(canvas_context, data[indices[index_of_index]].body, data[indices[index_of_index]].equip, data[indices[index_of_index]].dead, 0, height, () => {
         setTimeout(() => draw_npc_by_index(data, step, indices, index_of_index + 1, canvas_context, height), 25);
     });
 }

@@ -175,7 +175,6 @@ socket.on('market-data', data => {
             if (!elementById("tutorial_0").classList.contains("hidden")) {
                 elementById("tutorial_0").classList.add("hidden");
                 elementById("tutorial_1").classList.remove("hidden");
-                elementById("market_tab").style.zIndex = "";
                 // show_thing(elementById("market_tab"))
                 show_thing(elementById("goods_list_buy"));
                 show_thing(elementById("market_buy_header"));
@@ -210,6 +209,7 @@ socket.on('market-data', data => {
                 elementById("tutorial_3").classList.add("hidden");
                 elementById("tutorial_4").classList.remove("hidden");
                 hide_thing(elementById("auction_house_tab"));
+                elementById("market_tab").style.zIndex = "";
                 hide_thing(elementById("skilltree_button"));
                 unhighlight_thing(elementById("skilltree_button"));
                 elementById("skilltree_tab").style.zIndex = "";

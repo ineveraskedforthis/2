@@ -81,6 +81,7 @@ export function draw_npc_by_index(data: CharacterImageData[], step: number, indi
         canvas_context,
         data[indices[index_of_index]].body,
         data[indices[index_of_index]].equip,
+        data[indices[index_of_index]].dead,
         0,
         height,
         () => {

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.terrain_can_move = exports.terrain_to_string = exports.string_to_terrain = void 0;
+exports.terrain_available_space = exports.terrain_can_move = exports.terrain_to_string = exports.string_to_terrain = void 0;
 function string_to_terrain(string) {
     switch (string) {
         case 'void': return 0 /* Terrain.void */;
@@ -34,3 +34,14 @@ function terrain_can_move(terrain) {
     return true;
 }
 exports.terrain_can_move = terrain_can_move;
+function terrain_available_space(terrain) {
+    switch (terrain) {
+        case 0 /* Terrain.void */: return 0;
+        case 1 /* Terrain.steppe */: return 3;
+        case 2 /* Terrain.sea */: return 0;
+        case 3 /* Terrain.coast */: return 1;
+        case 4 /* Terrain.rupture */: return 0;
+        case 5 /* Terrain.ashlands */: return 3;
+    }
+}
+exports.terrain_available_space = terrain_available_space;

@@ -11,7 +11,7 @@ import { Battle } from "../battle/classes/battle";
 import { Location } from "../location/location_class";
 import { LocationData, LocationMinimal } from "../location/location_interface";
 import { CellData } from "../map/cell_interface";
-import { string_to_terrain } from "../map/terrain";
+import { string_to_terrain, terrain_available_space } from "../map/terrain";
 import { MarketOrder, MarketOrderInterface } from "../market/classes";
 import { CharacterTemplate } from "../types";
 import { DataID } from "./data_id";
@@ -796,22 +796,29 @@ export namespace Data {
                         if (terrain[neighbour_data.x][neighbour_data.y] == Terrain.sea) coast_probability += 0.2
                     }
 
+                    let available_space = terrain_available_space(terrain[x][y]);
+
+
                     if ((!cell.loaded_forest)) {
                         let counter = 0;
 
-                        while (forest_level > 0) {
+                        let forest_density = Math.max(1, forest_level / available_space);
+
+                        while ((forest_level > 0) && (counter < available_space)) {
                             let current_terrain = terrain[x][y];
                             if (Math.random() < coast_probability) {
                                 current_terrain = Terrain.coast
                                 coast_probability -= 0.11
                             }
 
+
+
                             let forest: LocationMinimal = {
                                 fish: 0,
                                 small_game: 10,
                                 berries: 10,
                                 cotton: 2,
-                                forest: 100,
+                                forest: Math.floor(100 * forest_density),
 
                                 devastation: 0,
 
@@ -827,13 +834,13 @@ export namespace Data {
                                 terrain: current_terrain
                             }
 
-                            forest_level -= 1
+                            forest_level -= forest_density - 1
                             counter++
 
                             Locations.create(cell_id, forest)
                         }
 
-                        while (counter < 10) {
+                        while (counter < available_space) {
                             let current_terrain = terrain[x][y];
                             if (Math.random() < coast_probability) {
                                 current_terrain = Terrain.coast

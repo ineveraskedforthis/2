@@ -17,6 +17,7 @@ export type equip = Partial<Record<equip_slot_string_id, ItemData>>
 export interface CharacterImageData {
     id: character_id
     equip: equip,
+    dead: boolean,
     body: string
 }
 

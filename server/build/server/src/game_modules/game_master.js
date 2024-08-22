@@ -74,47 +74,48 @@ var GameMaster;
         console.log('spawn ' + faction);
         const [x, y] = data_objects_1.Data.World.id_to_coordinate(cell_id);
         if (faction == 'city') {
-            const inn = data_objects_1.Data.Locations.create(cell_id, {
-                fish: 0,
-                cotton: 0,
-                forest: 0,
-                berries: 0,
-                small_game: 0,
-                devastation: 0,
-                has_bed: true,
-                has_bowmaking_tools: false,
-                has_clothier_tools: false,
-                has_cooking_tools: true,
-                has_cordwainer_tools: false,
-                has_tanning_tools: false,
-                has_rat_lair: false,
-                terrain: 1 /* Terrain.steppe */,
-                has_house_level: 3
-            });
-            data_id_1.DataID.Connection.set_spawn('city', inn.id);
+            let main_location_id = data_id_1.DataID.Cells.main_location(cell_id);
+            data_id_1.DataID.Connection.set_spawn('city', main_location_id);
+            let locations = data_id_1.DataID.Cells.locations(cell_id);
+            let inn_location = undefined;
+            for (let item of locations) {
+                if (item == main_location_id) {
+                    continue;
+                }
+                inn_location = item;
+                break;
+            }
+            // innkeeper
+            const innkeeper = templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.HumanCity(generate_human_name(true, "merchant")));
+            if (inn_location !== undefined) {
+                data_objects_1.Data.Locations.from_id(inn_location).has_bed = true;
+                data_objects_1.Data.Locations.from_id(inn_location).has_cooking_tools = true;
+                data_objects_1.Data.Locations.from_id(inn_location).has_house_level = 3;
+                data_id_1.DataID.Connection.set_location_owner(innkeeper.id, inn_location);
+                data_id_1.DataID.Connection.set_character_home(innkeeper.id, inn_location);
+            }
+            let mayor_house_location = undefined;
+            for (let item of locations) {
+                if (item == main_location_id) {
+                    continue;
+                }
+                if (item == inn_location) {
+                    continue;
+                }
+                mayor_house_location = item;
+                break;
+            }
             // creation of mayor
             const mayor = templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.HumanCity(generate_human_name(true, "ruler")));
             mayor.savings.inc(TONS_OF_MONEY);
             data_objects_1.Data.Factions.set_faction_leader(faction, mayor.id);
-            const mayor_house = data_objects_1.Data.Locations.create(cell_id, {
-                fish: 0,
-                cotton: 0,
-                forest: 0,
-                berries: 0,
-                small_game: 0,
-                devastation: 0,
-                has_bed: true,
-                has_bowmaking_tools: false,
-                has_clothier_tools: false,
-                has_cooking_tools: true,
-                has_cordwainer_tools: false,
-                has_tanning_tools: false,
-                has_rat_lair: false,
-                terrain: 1 /* Terrain.steppe */,
-                has_house_level: 5
-            });
-            data_id_1.DataID.Connection.set_location_owner(mayor.id, mayor_house.id);
-            data_id_1.DataID.Connection.set_character_home(mayor.id, mayor_house.id);
+            if (mayor_house_location !== undefined) {
+                data_objects_1.Data.Locations.from_id(mayor_house_location).has_bed = true;
+                data_objects_1.Data.Locations.from_id(mayor_house_location).has_cooking_tools = true;
+                data_objects_1.Data.Locations.from_id(mayor_house_location).has_house_level = 5;
+                data_id_1.DataID.Connection.set_location_owner(mayor.id, mayor_house_location);
+                data_id_1.DataID.Connection.set_character_home(mayor.id, mayor_house_location);
+            }
             // creation of remaining colonists
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.HumanLocalTrader(generate_human_name(true, "merchant", "ITH"), 'city'));
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.Tanner(generate_human_name(true, "artisan")));
@@ -129,34 +130,29 @@ var GameMaster;
                 const guard = templates_1.Template.Character.HumanCityGuard(generate_human_name(true, "warrior"));
                 guard.savings.inc(500);
             }
-            // innkeeper
-            const innkeeper = templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.HumanCity(generate_human_name(true, "merchant")));
-            data_id_1.DataID.Connection.set_location_owner(innkeeper.id, inn.id);
-            data_id_1.DataID.Connection.set_character_home(innkeeper.id, inn.id);
         }
         if (faction == 'steppe_humans') {
             // innkeeper
-            const inn = data_objects_1.Data.Locations.create(cell_id, {
-                fish: 0,
-                cotton: 0,
-                forest: 0,
-                berries: 0,
-                small_game: 0,
-                devastation: 0,
-                has_bed: true,
-                has_bowmaking_tools: false,
-                has_clothier_tools: false,
-                has_cooking_tools: true,
-                has_cordwainer_tools: false,
-                has_tanning_tools: false,
-                has_rat_lair: false,
-                terrain: 1 /* Terrain.steppe */,
-                has_house_level: 3
-            });
-            data_id_1.DataID.Connection.set_spawn('steppe_humans', inn.id);
-            const innkeeper = templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.HumanSteppe(generate_human_name(true, "merchant")));
-            data_id_1.DataID.Connection.set_location_owner(innkeeper.id, inn.id);
-            data_id_1.DataID.Connection.set_character_home(innkeeper.id, inn.id);
+            let main_location_id = data_id_1.DataID.Cells.main_location(cell_id);
+            let locations = data_id_1.DataID.Cells.locations(cell_id);
+            let steppe_village = undefined;
+            for (let item of locations) {
+                if (item == main_location_id) {
+                    continue;
+                }
+                steppe_village = item;
+                break;
+            }
+            if (steppe_village !== undefined) {
+                data_id_1.DataID.Connection.set_spawn('steppe_humans', steppe_village);
+                data_objects_1.Data.Locations.from_id(steppe_village).has_bed = true;
+                data_objects_1.Data.Locations.from_id(steppe_village).has_cooking_tools = true;
+                data_objects_1.Data.Locations.from_id(steppe_village).has_house_level = 3;
+                data_id_1.DataID.Connection.set_spawn('steppe_humans', steppe_village);
+                const innkeeper = templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.HumanSteppe(generate_human_name(true, "merchant")));
+                data_id_1.DataID.Connection.set_location_owner(innkeeper.id, steppe_village);
+                data_id_1.DataID.Connection.set_character_home(innkeeper.id, steppe_village);
+            }
             // creation of local colonists
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.HumanCook(generate_human_name(false, "artisan"), 'steppe'));
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.WeaponMasterBone(generate_human_name(false, "artisan"), faction));
@@ -171,44 +167,25 @@ var GameMaster;
             }
         }
         if (faction == 'rats') {
-            const rat_lair = data_objects_1.Data.Locations.create(cell_id, {
-                fish: 0,
-                cotton: 0,
-                forest: 0,
-                berries: 0,
-                small_game: 0,
-                devastation: 0,
-                has_bed: false,
-                has_bowmaking_tools: false,
-                has_clothier_tools: false,
-                has_cooking_tools: false,
-                has_cordwainer_tools: false,
-                has_tanning_tools: false,
-                has_rat_lair: true,
-                terrain: 1 /* Terrain.steppe */,
-                has_house_level: 0
-            });
-            data_id_1.DataID.Connection.set_spawn('rats', rat_lair.id);
+            let main_location_id = data_id_1.DataID.Cells.main_location(cell_id);
+            data_objects_1.Data.Locations.from_id(main_location_id).has_rat_lair = true;
+            data_id_1.DataID.Connection.set_spawn('rats', main_location_id);
         }
         if (faction == 'elodino_free') {
-            const elodino_city = data_objects_1.Data.Locations.create(cell_id, {
-                fish: 0,
-                cotton: 0,
-                forest: 0,
-                berries: 0,
-                small_game: 0,
-                devastation: 0,
-                has_bed: true,
-                has_bowmaking_tools: false,
-                has_clothier_tools: false,
-                has_cooking_tools: true,
-                has_cordwainer_tools: false,
-                has_tanning_tools: false,
-                has_rat_lair: false,
-                terrain: 1 /* Terrain.steppe */,
-                has_house_level: 8
-            });
-            data_id_1.DataID.Connection.set_spawn('elodino_free', elodino_city.id);
+            let main_location_id = data_id_1.DataID.Cells.main_location(cell_id);
+            let locations = data_id_1.DataID.Cells.locations(cell_id);
+            let elodino_city_id = undefined;
+            for (let item of locations) {
+                if (item == main_location_id) {
+                    continue;
+                }
+                data_objects_1.Data.Locations.from_id(main_location_id).has_house_level = 8;
+                data_objects_1.Data.Locations.from_id(main_location_id).has_bed = true;
+                elodino_city_id = item;
+            }
+            if (elodino_city_id !== undefined) {
+                data_id_1.DataID.Connection.set_spawn('elodino_free', elodino_city_id);
+            }
         }
         if (faction == 'graci') {
             for (let i = 1; i <= 30; i++) {

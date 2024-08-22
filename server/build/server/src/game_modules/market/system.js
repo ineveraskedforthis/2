@@ -26,6 +26,7 @@ var MarketOrders;
             amount = order.amount;
         if (buyer.savings.get() < pay)
             return { tag: 'not_enough_money' };
+        amount = Math.floor(amount);
         const material = order.material;
         // shadow operations with imaginary items
         order.amount -= amount;
@@ -73,6 +74,7 @@ var MarketOrders;
             amount = order.amount;
         if (seller.stash.get(order.material) < amount)
             amount = seller.stash.get(order.material);
+        amount = Math.floor(amount);
         const pay = amount * order.price;
         const material = order.material;
         // shadow operations
