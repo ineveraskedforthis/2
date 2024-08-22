@@ -40,8 +40,8 @@ export class ImageComposer {
             this.to_load++;
 
             ((composer, callback) => image.onload = () => {
-                composer.w = Math.max(composer.w, image.width)
-                composer.h = Math.max(composer.h, image.height)
+                composer.w_dead = Math.max(composer.w_dead, image.width)
+                composer.h_dead = Math.max(composer.h_dead, image.height)
 
                 composer.loaded++
                 if ((composer.loaded == composer.to_load) && preloading_status.value) {
@@ -118,11 +118,14 @@ export class ImageComposer {
         }
     }
 
-    static compose() {
+    static compose(dead: boolean) {
         this.context.clearRect(0, 0, 2048, 2048)
 
-        if (this.loaded_images_dead && this.loaded_images_dead.complete)
-            this.context.drawImage(this.loaded_images_dead, 0, 0)
+        if (dead) {
+            if (this.loaded_images_dead && this.loaded_images_dead.complete)
+                this.context.drawImage(this.loaded_images_dead, 0, 0)
+            return;
+        }
 
         if (this.loaded_images_body[0] && this.loaded_images_body[0].complete)
             this.context.drawImage(this.loaded_images_body[0], 0, 0)
@@ -151,9 +154,13 @@ export class ImageComposer {
         }
     }
 
-    static draw_to(target: CanvasRenderingContext2D, x : number, y : number) {
+    static draw_to(target: CanvasRenderingContext2D, x : number, y : number, dead: boolean) {
         console.log("!!!!!!!", this.w, this.h)
-        target.drawImage(this.canvas, 0, 0, this.w, this.h, x, y - this.h, this.w, this.h)
+        if (dead) {
+            target.drawImage(this.canvas, 0, 0, this.w_dead, this.h_dead, x, y - this.h_dead, this.w_dead, this.h_dead)
+        } else {
+            target.drawImage(this.canvas, 0, 0, this.w, this.h, x, y - this.h, this.w, this.h)
+        }
     }
 
     static update_equip_image(
@@ -167,8 +174,8 @@ export class ImageComposer {
     ) {
         this.load(race_model, data, dead, () => {
             setTimeout(() => {
-                ImageComposer.compose()
-                ImageComposer.draw_to(target, x, y)
+                ImageComposer.compose(dead)
+                ImageComposer.draw_to(target, x, y, dead)
                 on_draw()
             }, 25
         )})
