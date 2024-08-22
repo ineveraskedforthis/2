@@ -69,6 +69,12 @@ export namespace SendUpdate {
             } else {
                 owner = -1 as character_id
             }
+
+            let urbanisation = MapSystem.urbanisation(location.cell_id)
+            if (location.has_house_level > 0) {
+                urbanisation = 0
+            }
+
             return {
                 id: id,
                 room_cost: ScriptedValue.rest_price(character, location),
@@ -80,7 +86,7 @@ export namespace SendUpdate {
                 house_level: location.has_house_level,
                 forest: location.forest,
                 terrain: location.terrain,
-                urbanisation: MapSystem.urbanisation(location.cell_id)
+                urbanisation: urbanisation
             }
         })
 

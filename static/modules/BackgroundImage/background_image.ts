@@ -12,23 +12,12 @@ export function image_url(terrain: Terrain, forest: number, house_level: number,
             return 'url("/static/img/bg/forest.png")';
         }
 
-        if (urbanisation > 6) {
-            return 'url("/static/img/bg/urban_3.png")';
-        }
-
-        if (urbanisation > 3) {
-            return 'url("/static/img/bg/urban_2.png")';
-        }
-
         switch (terrain) {
             case Terrain.void: {
                 return 'url("/static/img/bg/forest.png")';
             }
             case Terrain.steppe: {
-                if (urbanisation == 0) {
-                    return 'url("/static/img/bg/red_steppe.png")';
-                }
-                return 'url("/static/img/bg/urban_1.png")';
+                return 'url("/static/img/bg/red_steppe.png")';
             }
             case Terrain.sea: {
                 return 'url("/static/img/bg/red_steppe.png")';
@@ -77,5 +66,27 @@ export class BackgroundImage implements DependencyUI {
             location_data.house_level,
             location_data.urbanisation
         )
+
+        let attachment_0 = elementById("background_attachment_0")
+        let attachment_1 = elementById("background_attachment_1")
+        let attachment_2 = elementById("background_attachment_2")
+
+        if (location_data.urbanisation > 0) {
+            attachment_0.style.backgroundImage = 'url("/static/img/bg/house_central.png")';
+        } else {
+            attachment_0.style.backgroundImage = '';
+        }
+
+        if (location_data.urbanisation > 1) {
+            attachment_1.style.backgroundImage = 'url("/static/img/bg/house_right.png")';
+        } else {
+            attachment_1.style.backgroundImage = '';
+        }
+
+        if (location_data.urbanisation > 2) {
+            attachment_2.style.backgroundImage = 'url("/static/img/bg/house_left.png")';
+        } else {
+            attachment_2.style.backgroundImage = '';
+        }
     }
 }

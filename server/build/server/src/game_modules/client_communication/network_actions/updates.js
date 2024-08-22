@@ -62,6 +62,10 @@ var SendUpdate;
             else {
                 owner = -1;
             }
+            let urbanisation = system_3.MapSystem.urbanisation(location.cell_id);
+            if (location.has_house_level > 0) {
+                urbanisation = 0;
+            }
             return {
                 id: id,
                 room_cost: scripted_values_1.ScriptedValue.rest_price(character, location),
@@ -73,7 +77,7 @@ var SendUpdate;
                 house_level: location.has_house_level,
                 forest: location.forest,
                 terrain: location.terrain,
-                urbanisation: system_3.MapSystem.urbanisation(location.cell_id)
+                urbanisation: urbanisation
             };
         });
         // console.log(locations)
