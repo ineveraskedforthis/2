@@ -1,1 +1,1 @@
-node ./server/build/server/srs/server.js
+node ./server/build/server/src/server.js

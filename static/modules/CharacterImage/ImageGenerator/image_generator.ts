@@ -32,7 +32,7 @@ export class ImageComposer {
         if (dead) {
             // loading corpses
 
-            let link = `../static/img/character_image/${race_model}/corpse.png`
+            let link = `../static/img/character_image/${race_model}/corpse.PNG`
 
             const image = new Image()
             image.src = link;
@@ -52,9 +52,9 @@ export class ImageComposer {
             const body_array = []
 
             if (race_model != 'human') {
-                body_array.push(`../static/img/character_image/${race_model}/pose.png`)
+                body_array.push(`../static/img/character_image/${race_model}/pose.PNG`)
             } else {
-                body_array.push(`../static/img/character_image/${race_model}/empty.png`)
+                body_array.push(`../static/img/character_image/${race_model}/empty.PNG`)
                 body_array.push('../static/img/character_image/human/left_arm.PNG')
                 body_array.push('../static/img/character_image/human/body.PNG')
                 body_array.push('../static/img/character_image/human/right_arm.PNG')
@@ -89,11 +89,11 @@ export class ImageComposer {
                     this.to_load++;
                     const image = new Image()
                     if (item_tag == 'empty') {
-                        image.src = `../static/img/character_image/${race_model}/${item_tag}.png`
+                        image.src = `../static/img/character_image/${race_model}/${item_tag}.PNG`
                     } else if (race_model == 'human') {
                         image.src = `../static/img/character_image/${race_model}/${tag}/${item_tag}_${layer}.PNG`
                     } else {
-                        image.src = `../static/img/character_image/${race_model}/${item_tag}.png`
+                        image.src = `../static/img/character_image/${race_model}/${item_tag}.PNG`
                     }
 
                     ((composer, callback) => image.onload = () => {
