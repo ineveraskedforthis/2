@@ -178,10 +178,14 @@ socket.on('market-data', data => {
         let saved_callback: null|((ev: MouseEvent) => any) = () => {return 0};
 
         function show_thing(element: HTMLElement) {
+            console.log("show")
+            console.log(element)
             element.classList.add("over-backdrop");
         }
 
         function highlight_thing(element: HTMLElement) {
+            console.log("highlight")
+            console.log(element)
             element.classList.add("border-yellow")
             element.classList.add("highlight-animation");
         }

@@ -144,9 +144,13 @@ socket.on('market-data', data => {
         // handle tutorial logic
         let saved_callback = () => { return 0; };
         function show_thing(element) {
+            console.log("show");
+            console.log(element);
             element.classList.add("over-backdrop");
         }
         function highlight_thing(element) {
+            console.log("highlight");
+            console.log(element);
             element.classList.add("border-yellow");
             element.classList.add("highlight-animation");
         }
