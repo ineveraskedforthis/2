@@ -1,9 +1,11 @@
 //CHARACTER 2D IMAGE DISPLAY
 import { elementById } from "../HTMLwrappers/common.js";
-import { ImageComposer } from "./ImageGenerator/image_generator.js";
-const HEIGHT = 1080;
-const WIDTH = 1920;
+import { load, render, update_rects } from "./render.js";
+import { EQUIPMENT_TAGS } from "./equip_strings.js";
+const HEIGHT = document.documentElement.clientHeight;
+const WIDTH = document.documentElement.clientWidth;
 var flag_init = false;
+var render_data = null;
 export function set_up_character_model(socket) {
     const canvas = document.createElement("canvas");
     canvas.width = WIDTH;
@@ -14,54 +16,107 @@ export function set_up_character_model(socket) {
     canvas.id = "super_cool_canvas";
     canvas.classList.add('character_image');
     elementById("character_image_display").appendChild(canvas);
+    let context = canvas.getContext("webgl");
+    if (context != null) {
+        render_data = load(context);
+    }
     flag_init = true;
 }
-const distance_to_camera = 3370 / 2;
+const near = 3370 / 2;
 const observer_height = 1147 / 2;
+const far = 10000;
 export function number_to_depth(id) {
-    return (Math.sin(Math.floor(id / 6)) + 1) * distance_to_camera / 4;
+    return (Math.sin(Math.floor(id / 6)) + 1) * near;
 }
 export function number_to_position(id, step) {
-    let x_pos = (step * ((id * 5) % 7)) * (1 + Math.sin(id)) / 2;
+    let x_pos = Math.cos(id * Math.E * 10) * WIDTH * 0.5;
     const orientation = (((id % 2) - 0.5) * 2);
-    if (orientation == -1) {
-        x_pos += 1920;
-    }
-    // x_pos -= 200;
-    x_pos *= 0.6;
-    x_pos += 100;
     const depth = number_to_depth(id);
-    const scale = ((distance_to_camera) / (distance_to_camera + depth));
-    const vertical_pp_shift = observer_height - observer_height * scale;
     return {
         x: x_pos,
-        y: -vertical_pp_shift + HEIGHT * (1 - scale),
         orientation: orientation,
-        scale: scale
+        distance: near + depth
     };
 }
-export function draw_npc_by_index(data, step, indices, index_of_index, canvas_context, height) {
-    if (indices[index_of_index] == undefined)
-        return;
-    const transform = number_to_position(data[indices[index_of_index]].id, step);
-    console.log("transform");
-    console.log(transform);
-    canvas_context.setTransform(transform.orientation * transform.scale, 0, 0, transform.scale, transform.x, transform.y);
-    // for (let i = -10; i <= 10; i++) {
-    //     for (let j = -10; j <= 10; j++) {
-    //         canvas_context.strokeText(`${i} ${j}`, i * 50, j * 50)
-    //     }
-    // }
-    ImageComposer.update_equip_image(canvas_context, data[indices[index_of_index]].body, data[indices[index_of_index]].equip, data[indices[index_of_index]].dead, 0, height, () => {
-        setTimeout(() => draw_npc_by_index(data, step, indices, index_of_index + 1, canvas_context, height), 25);
-    });
-}
+const epsilon_depth = -0.00001;
+let ratio = WIDTH / HEIGHT;
+const perspective_matrix = [
+    2 * near / WIDTH, 0, 0, 0,
+    0, 2 * near / HEIGHT, 0, 0,
+    0, 0, -(far + near) / (near - far), 1,
+    0, 0, near * far / (near - far) * 2, 0
+];
+const view_matrix = [
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    0, -observer_height * 2, 0, 1
+];
 export function update_local_npc_images(data) {
-    const canvas = elementById("super_cool_canvas");
-    const context = canvas.getContext("2d");
-    context.resetTransform();
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    const indices = data.map((value, index) => index);
-    indices.sort((a, b) => -number_to_depth(data[a].id) + number_to_depth(data[b].id));
-    draw_npc_by_index(data, (window.screen.width - 400) / 7, indices, 0, context, canvas.height);
+    if (render_data == null) {
+        return;
+    }
+    let objects = [];
+    for (let character of data) {
+        const transform = number_to_position(character.id, 25);
+        console.log("transform");
+        console.log(transform);
+        let w = 1;
+        let h = 1 * 1.42;
+        let d = transform.distance;
+        function name_to_rect(s) {
+            return {
+                x: transform.x,
+                w: w * transform.orientation,
+                h: h,
+                d: d,
+                texture_name: s
+            };
+        }
+        if (character.dead) {
+            objects.push(name_to_rect(`${character.body}_dead`));
+            continue;
+        }
+        for (let tag of EQUIPMENT_TAGS.slice().reverse()) {
+            let item = character.equip[tag]?.prototype_id;
+            if (item == undefined) {
+                continue;
+            }
+            d += epsilon_depth;
+            objects.push(name_to_rect(`${character.body}_behind_all_${item}`));
+        }
+        d += epsilon_depth;
+        objects.push(name_to_rect(`${character.body}_body_0`));
+        for (let tag of EQUIPMENT_TAGS) {
+            let item = character.equip[tag]?.prototype_id;
+            if (item == undefined) {
+                continue;
+            }
+            d += epsilon_depth;
+            objects.push(name_to_rect(`${character.body}_behind_body_${item}`));
+        }
+        d += epsilon_depth;
+        objects.push(name_to_rect(`${character.body}_body_1`));
+        for (let tag of EQUIPMENT_TAGS) {
+            let item = character.equip[tag]?.prototype_id;
+            if (item == undefined) {
+                continue;
+            }
+            d += epsilon_depth;
+            objects.push(name_to_rect(`${character.body}_behind_right_arm_${item}`));
+        }
+        d += epsilon_depth;
+        objects.push(name_to_rect(`${character.body}_body_2`));
+        for (let tag of EQUIPMENT_TAGS) {
+            let item = character.equip[tag]?.prototype_id;
+            if (item == undefined) {
+                continue;
+            }
+            d += epsilon_depth;
+            objects.push(name_to_rect(`${character.body}_on_top_${item}`));
+        }
+    }
+    update_rects(render_data);
+    objects.sort((a, b) => -a.d + b.d);
+    render(render_data, objects, perspective_matrix, view_matrix);
 }
