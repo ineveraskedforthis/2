@@ -1,6 +1,7 @@
 import { equip } from "@custom_types/inventory.js";
 import { EQUIPMENT_TAGS, display_layers } from "./equip_strings.js";
 import { WeaponConfiguration, ArmourConfiguration } from "@content/content.js";
+import { models_description } from "./models.js";
 
 // Vertex shader which is stupid simple as we use it for rendering textured rectangles
 const vs_source =
@@ -15,7 +16,7 @@ uniform mat4 view;
 varying highp vec2 vTextureCoord;
 
 void main() {
-    vec4 result = projection * view * (vec4(vec2(x, depth / 25.0) + vertex_position.xy * size * 1000.0, depth, 1));
+    vec4 result = projection * view * (vec4(vec2(x, depth / 25.0) + vertex_position.xy * size, depth, 1));
     gl_Position = result;
     vTextureCoord = vertex_position.xy;
 }
@@ -222,7 +223,10 @@ export function load(gl: WebGLRenderingContext): RenderingData|null {
     let texture_storage: Record<string, WebGLTexture> = {}
 
     for (let model of models) {
-        texture_storage[model + "_dead"] = loadTexture(gl, `../static/img/character_image/${model}/corpse.PNG`)
+
+        for (let dead_body_image of models_description[model].corpse_images) {
+            texture_storage[model + "_dead_" + dead_body_image] = loadTexture(gl, `../static/img/character_image/${model}/${dead_body_image}`)
+        }
 
         if (model != 'human') {
             texture_storage[model + "_body_0"] = (loadTexture(gl, `../static/img/character_image/${model}/pose.PNG`))

@@ -2,8 +2,9 @@
 import { elementById } from "../HTMLwrappers/common.js";
 import { load, render, update_rects } from "./render.js";
 import { EQUIPMENT_TAGS } from "./equip_strings.js";
-const HEIGHT = document.documentElement.clientHeight;
-const WIDTH = document.documentElement.clientWidth;
+import { models_description } from "./models.js";
+const HEIGHT = 1080;
+const WIDTH = 1920;
 var flag_init = false;
 var render_data = null;
 export function set_up_character_model(socket) {
@@ -25,11 +26,14 @@ export function set_up_character_model(socket) {
 const near = 3370 / 2;
 const observer_height = 1147 / 2;
 const far = 10000;
+function frac(x) {
+    return x - Math.floor(x);
+}
 export function number_to_depth(id) {
-    return (Math.sin(Math.floor(id / 6)) + 1) * near;
+    return frac(1000000 * id * Math.PI / 6 * Math.E + 1) * 800;
 }
 export function number_to_position(id, step) {
-    let x_pos = Math.cos(id * Math.E * 10) * WIDTH * 0.5;
+    let x_pos = (frac(id * Math.E * 434534834354 * Math.PI) - 0.5) * WIDTH * 0.5;
     const orientation = (((id % 2) - 0.5) * 2);
     const depth = number_to_depth(id);
     return {
@@ -50,7 +54,7 @@ const view_matrix = [
     1, 0, 0, 0,
     0, 1, 0, 0,
     0, 0, 1, 0,
-    0, -observer_height * 2, 0, 1
+    0, -observer_height, 0, 1
 ];
 export function update_local_npc_images(data) {
     if (render_data == null) {
@@ -61,8 +65,8 @@ export function update_local_npc_images(data) {
         const transform = number_to_position(character.id, 25);
         console.log("transform");
         console.log(transform);
-        let w = 1;
-        let h = 1 * 1.42;
+        let w = models_description[character.body].w;
+        let h = models_description[character.body].h;
         let d = transform.distance;
         function name_to_rect(s) {
             return {
@@ -74,7 +78,9 @@ export function update_local_npc_images(data) {
             };
         }
         if (character.dead) {
-            objects.push(name_to_rect(`${character.body}_dead`));
+            let corpse_index = character.id % models_description[character.body].corpse_images.length;
+            let corpse_image = models_description[character.body].corpse_images[corpse_index];
+            objects.push(name_to_rect(`${character.body}_dead_${corpse_image}`));
             continue;
         }
         for (let tag of EQUIPMENT_TAGS.slice().reverse()) {
