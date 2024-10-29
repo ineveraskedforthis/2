@@ -121,7 +121,8 @@ var MarketOrders;
         // shadow operations
         order.amount -= amount;
         const transaction_stash = new stash_1.Stash();
-        seller.stash.transfer(transaction_stash, material, amount);
+        transaction_stash.inc(material, amount);
+        // seller.stash.transfer(transaction_stash, material, amount)
         effects_1.Effect.Transfer.to_trade_savings(owner, -pay);
         //transaction
         effects_1.Effect.transaction(owner, seller, pay, empty_stash, 0, transaction_stash, "Trade" /* CHANGE_REASON.TRADE */);

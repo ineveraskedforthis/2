@@ -162,7 +162,8 @@ export namespace MarketOrders {
         // shadow operations
         order.amount -= amount;
         const transaction_stash = new Stash()
-        seller.stash.transfer(transaction_stash, material, amount)
+        transaction_stash.inc(material, amount)
+        // seller.stash.transfer(transaction_stash, material, amount)
 
         Effect.Transfer.to_trade_savings(owner, -pay as money)
 
