@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ItemOrders = exports.MarketOrders = exports.AuctionResponse = void 0;
+const content_1 = require("../../.././../game_content/src/content");
 const item_1 = require("../../content_wrappers/item");
 const data_id_1 = require("../data/data_id");
 const data_objects_1 = require("../data/data_objects");
@@ -18,16 +19,39 @@ var AuctionResponse;
 const empty_stash = new stash_1.Stash();
 var MarketOrders;
 (function (MarketOrders) {
+    function validate_character(character) {
+        let temp = content_1.MaterialConfiguration.zero_record;
+        let orders = data_id_1.DataID.Character.market_orders_list(character);
+        for (let item of orders) {
+            let order = data_objects_1.Data.MarketOrders.from_id(item);
+            if (order.typ == "sell") {
+                temp[order.material] += order.amount;
+            }
+        }
+        let fat_character = data_objects_1.Data.Characters.from_id(character);
+        for (let item of content_1.MaterialConfiguration.MATERIAL) {
+            let amount = fat_character.trade_stash.get(item);
+            if (amount != temp[item]) {
+                throw new Error(content_1.MaterialStorage.get(item).name + " INVALID TRADE STASH " + character + " expected: " + temp[item] + " has: " + amount);
+            }
+        }
+    }
+    MarketOrders.validate_character = validate_character;
     function execute_sell_order(id, amount, buyer) {
         const order = data_objects_1.Data.MarketOrders.from_id(id);
         const owner = data_objects_1.Data.Characters.from_id(order.owner_id);
-        const pay = amount * order.price;
+        amount = Math.max(0, amount);
         if (order.amount < amount)
             amount = order.amount;
+        const pay = amount * order.price;
         if (buyer.savings.get() < pay)
             return { tag: 'not_enough_money' };
         amount = Math.floor(amount);
         const material = order.material;
+        // console.log(`${buyer.id} buys from ${owner.id} ${amount} of ${material}`)
+        // console.log(`${order.owner_id} has ${order.amount} of ${material} available to sell for this price`)
+        // console.log(`there are ${owner.trade_stash.get(material)} in his trade stash.`)
+        // console.log(`there are ${owner.stash.get(material)} in his stash.`)
         // shadow operations with imaginary items
         order.amount -= amount;
         const transaction_stash = new stash_1.Stash();
@@ -35,6 +59,12 @@ var MarketOrders;
         effects_1.Effect.Transfer.to_trade_stash(owner, order.material, -amount);
         //actual transaction
         effects_1.Effect.transaction(owner, buyer, 0, transaction_stash, pay, empty_stash, "Trade" /* CHANGE_REASON.TRADE */);
+        // console.log(`${buyer.id} buys from ${owner.id} ${amount} of ${material}`)
+        // console.log(`${order.owner_id} has ${order.amount} of ${material} available to sell for this price`)
+        // console.log(`there are ${owner.trade_stash.get(material)} in his trade stash.`)
+        // console.log(`there are ${owner.stash.get(material)} in his stash.`)
+        MarketOrders.validate_character(owner.id);
+        MarketOrders.validate_character(buyer.id);
         return { tag: "ok", amount: amount };
     }
     MarketOrders.execute_sell_order = execute_sell_order;
@@ -52,24 +82,35 @@ var MarketOrders;
     MarketOrders.remove = remove;
     function remove_by_condition(character, tag) {
         const list = data_id_1.DataID.Character.market_orders_list(character.id);
+        const to_remove = [];
         for (const id of list) {
             const order = data_objects_1.Data.MarketOrders.from_id(id);
             if (order.material == tag) {
-                remove(id);
+                to_remove.push(id);
             }
+        }
+        for (let id of to_remove) {
+            remove(id);
         }
     }
     MarketOrders.remove_by_condition = remove_by_condition;
     function remove_by_character(character) {
         const list = data_id_1.DataID.Character.market_orders_list(character.id);
+        const to_remove = [];
         for (const id of list) {
+            to_remove.push(id);
+        }
+        for (let id of to_remove) {
             remove(id);
         }
     }
     MarketOrders.remove_by_character = remove_by_character;
     function execute_buy_order(id, amount, seller) {
+        amount = Math.max(0, amount);
         const order = data_objects_1.Data.MarketOrders.from_id(id);
         const owner = data_objects_1.Data.Characters.from_id(order.owner_id);
+        console.log(seller.id + " sells to " + owner.id);
+        // console.log(seller)
         if (order.amount < amount)
             amount = order.amount;
         if (seller.stash.get(order.material) < amount)
@@ -80,7 +121,7 @@ var MarketOrders;
         // shadow operations
         order.amount -= amount;
         const transaction_stash = new stash_1.Stash();
-        transaction_stash.inc(material, amount);
+        seller.stash.transfer(transaction_stash, material, amount);
         effects_1.Effect.Transfer.to_trade_savings(owner, -pay);
         //transaction
         effects_1.Effect.transaction(owner, seller, pay, empty_stash, 0, transaction_stash, "Trade" /* CHANGE_REASON.TRADE */);
@@ -102,6 +143,7 @@ var MarketOrders;
             return 'not_enough_savings';
         effects_1.Effect.Transfer.to_trade_savings(owner, amount * price);
         const order = data_objects_1.Data.MarketOrders.create(amount, price, 'buy', material, owner.id);
+        validate_character(owner.id);
         return 'ok';
     }
     MarketOrders.new_buy_order = new_buy_order;
@@ -117,6 +159,7 @@ var MarketOrders;
             return 'not_enough_material';
         effects_1.Effect.Transfer.to_trade_stash(owner, material, amount);
         const order = data_objects_1.Data.MarketOrders.create(amount, price, 'sell', material, owner.id);
+        validate_character(owner.id);
         return 'ok';
     }
     MarketOrders.new_sell_order = new_sell_order;
@@ -243,3 +286,4 @@ var ItemOrders;
     }
     ItemOrders.buy = buy;
 })(ItemOrders || (exports.ItemOrders = ItemOrders = {}));
+

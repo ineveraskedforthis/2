@@ -1,10 +1,7 @@
-import { Data } from "../../data/data_objects";
 import { Character } from "../../data/entities/character";
 import { AIActionsStorage } from "../Storage/storage";
-
 import "../Actions/_loader";
-import { AIfunctions } from "../HelperFunctions/common";
-import { MATERIAL } from "@content/content";
+import { MarketOrders } from "../../market/system";
 
 interface ActionCalculation<Target> {
     tag: string
@@ -39,6 +36,7 @@ export function decide(character: Character) {
     }
 
     if (best) {
+        // console.log(best.tag + " " + character.id)
         best.action(character, best.target)
         character.current_ai_action = best.tag + " " +  best.target.id
     }

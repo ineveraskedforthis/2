@@ -15,6 +15,7 @@ import { CharacterValues } from "../scripted-values/character";
 import { CharacterTemplate } from "../types";
 import { ms } from "@custom_types/battle_data";
 import { DataID } from "../data/data_id";
+import { MarketOrders } from "../market/system";
 
 
 export namespace CharacterSystem {
@@ -75,6 +76,8 @@ export namespace CharacterSystem {
                 if (material.category == MATERIAL_CATEGORY.FRUIT) Effect.spoilage(character, material_id, 0.01)
                 if (material.category == MATERIAL_CATEGORY.FOOD) Effect.spoilage(character, material_id, 0.001)
             }
+
+
             decide(character)
         })
 

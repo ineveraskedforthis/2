@@ -15,6 +15,7 @@ import { LocationInterface } from "../location/location_interface";
 import { EquipmentValues } from "../scripted-values/equipment-values";
 import { Status } from "../types";
 import { CharacterValues } from "../scripted-values/character";
+import { MarketOrders } from "../market/system";
 
 
 export const enum CHANGE_REASON {
@@ -105,6 +106,7 @@ export namespace Effect {
                 Alerts.Log.from_trade_stash(A, material, -amount)
                 return true
             }
+
 
             return true
         }

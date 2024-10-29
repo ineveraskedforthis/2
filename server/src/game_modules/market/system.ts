@@ -1,12 +1,13 @@
-import { ARMOUR, MATERIAL, WEAPON } from "@content/content";
+import { ARMOUR, MATERIAL, WEAPON, MaterialConfiguration, MaterialStorage } from "@content/content";
 import { money } from "@custom_types/common";
-import { cell_id, item_id, market_order_id } from "@custom_types/ids";
+import { cell_id, character_id, item_id, market_order_id } from "@custom_types/ids";
 import { is_armour, is_weapon } from "../../content_wrappers/item";
 import { DataID } from "../data/data_id";
 import { Data } from "../data/data_objects";
 import { Character } from "../data/entities/character";
 import { Stash } from "../data/entities/stash";
 import { CHANGE_REASON, Effect } from "../effects/effects";
+import { throws } from "assert/strict";
 
 export enum AuctionResponse {
     NOT_IN_THE_SAME_CELL = 'not_in_the_same_cell',
@@ -38,17 +39,47 @@ interface MarkerResponseSell {
 
 
 export namespace MarketOrders {
+    export function validate_character(character: character_id) {
+        let temp = MaterialConfiguration.zero_record
+
+        let orders = DataID.Character.market_orders_list(character)
+
+        for (let item of orders) {
+            let order = Data.MarketOrders.from_id(item)
+            if (order.typ == "sell") {
+                temp[order.material] += order.amount;
+            }
+        }
+
+        let fat_character = Data.Characters.from_id(character);
+
+        for (let item of MaterialConfiguration.MATERIAL) {
+            let amount = fat_character.trade_stash.get(item)
+
+            if (amount != temp[item]) {
+                throw new Error(MaterialStorage.get(item).name + " INVALID TRADE STASH " + character + " expected: " + temp[item] + " has: " + amount)
+            }
+        }
+    }
+
     export function execute_sell_order(id: market_order_id, amount: number, buyer: Character) : MarkerResponseBuyOK | MarketResponseBuyNotEnoughMoney {
         const order = Data.MarketOrders.from_id(id)
         const owner = Data.Characters.from_id(order.owner_id)
-        const pay = amount * order.price as money
+
+        amount = Math.max(0, amount);
 
         if (order.amount < amount) amount = order.amount
+
+        const pay = amount * order.price as money
         if (buyer.savings.get() < pay) return {tag: 'not_enough_money'}
 
         amount = Math.floor(amount)
-
         const material = order.material
+
+        // console.log(`${buyer.id} buys from ${owner.id} ${amount} of ${material}`)
+        // console.log(`${order.owner_id} has ${order.amount} of ${material} available to sell for this price`)
+        // console.log(`there are ${owner.trade_stash.get(material)} in his trade stash.`)
+        // console.log(`there are ${owner.stash.get(material)} in his stash.`)
 
         // shadow operations with imaginary items
         order.amount -= amount;
@@ -60,6 +91,15 @@ export namespace MarketOrders {
         Effect.transaction(owner, buyer,
                                     0 as money  , transaction_stash,
                                     pay         , empty_stash       , CHANGE_REASON.TRADE)
+
+
+        // console.log(`${buyer.id} buys from ${owner.id} ${amount} of ${material}`)
+        // console.log(`${order.owner_id} has ${order.amount} of ${material} available to sell for this price`)
+        // console.log(`there are ${owner.trade_stash.get(material)} in his trade stash.`)
+        // console.log(`there are ${owner.stash.get(material)} in his stash.`)
+
+        MarketOrders.validate_character(owner.id)
+        MarketOrders.validate_character(buyer.id)
 
         return {tag: "ok", amount: amount}
     }
@@ -78,24 +118,38 @@ export namespace MarketOrders {
 
     export function remove_by_condition(character: Character, tag: MATERIAL) {
         const list = DataID.Character.market_orders_list(character.id)
+        const to_remove = []
         for (const id of list) {
             const order = Data.MarketOrders.from_id(id)
             if (order.material == tag) {
-                remove(id)
+                to_remove.push(id)
             }
+        }
+        for (let id of to_remove) {
+            remove(id)
         }
     }
 
     export function remove_by_character(character:Character) {
         const list = DataID.Character.market_orders_list(character.id)
+        const to_remove = []
         for (const id of list) {
+            to_remove.push(id)
+        }
+        for (let id of to_remove) {
             remove(id)
         }
     }
 
     export function execute_buy_order(id:market_order_id, amount: number, seller: Character) : MarkerResponseSell {
+
+        amount = Math.max(0, amount);
+
         const order = Data.MarketOrders.from_id(id)
         const owner = Data.Characters.from_id(order.owner_id)
+
+        console.log(seller.id + " sells to " + owner.id)
+        // console.log(seller)
 
         if (order.amount < amount) amount = order.amount
         if (seller.stash.get(order.material) < amount) amount = seller.stash.get(order.material)
@@ -108,13 +162,16 @@ export namespace MarketOrders {
         // shadow operations
         order.amount -= amount;
         const transaction_stash = new Stash()
-        transaction_stash.inc(material, amount)
+        seller.stash.transfer(transaction_stash, material, amount)
+
         Effect.Transfer.to_trade_savings(owner, -pay as money)
 
         //transaction
         Effect.transaction(owner, seller,
                                     pay          , empty_stash,
                                     0 as money   , transaction_stash, CHANGE_REASON.TRADE)
+
+
         return {
             tag: "ok",
             amount: amount
@@ -131,6 +188,8 @@ export namespace MarketOrders {
 
         Effect.Transfer.to_trade_savings(owner, amount * price as money)
         const order = Data.MarketOrders.create(amount, price, 'buy', material, owner.id)
+
+        validate_character(owner.id)
         return 'ok'
     }
 
@@ -144,6 +203,8 @@ export namespace MarketOrders {
 
         Effect.Transfer.to_trade_stash(owner, material, amount)
         const order = Data.MarketOrders.create(amount, price, 'sell', material, owner.id)
+
+        validate_character(owner.id)
         return 'ok'
     }
 

@@ -43,6 +43,7 @@ var ActionManager;
             if (character.action != undefined) {
                 character.action_progress += dt / 1000;
                 if (character.action_progress > character.action_duration) {
+                    // console.log("action", character.id)
                     call_action(character.action, character, character.next_cell || character.cell_id);
                 }
             }

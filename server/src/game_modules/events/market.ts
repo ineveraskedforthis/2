@@ -51,6 +51,7 @@ export namespace EventMarket {
             }
         }
 
+
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.STASH)
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.SAVINGS)
         UserManagement.add_user_to_update_queue(seller.user_id, UI_Part.SAVINGS)
@@ -77,6 +78,7 @@ export namespace EventMarket {
                 AIfunctions.on_buyment_price_update(buyer, order.amount, result.amount)
             }
         }
+
 
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.STASH)
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.SAVINGS)
@@ -152,7 +154,7 @@ export namespace EventMarket {
 
         DataID.Cells.for_each_market_order(character.cell_id, (item) => {
             let order = Data.MarketOrders.from_id(item);
-            if (order.typ == 'buy')
+            if (order.typ == 'sell')
                 return;
             if (order.material != material)
                 return;

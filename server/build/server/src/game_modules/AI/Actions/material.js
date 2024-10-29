@@ -227,6 +227,9 @@ storage_1.AIActionsStorage.register_action_material({
         const desired = actor.ai_desired_stash.get(target.id);
         const can_buy = actor.savings.get() / actor.ai_price_buy_expectation[target.id];
         const have = actor.stash.get(target.id);
+        if (desired < have) {
+            return -1;
+        }
         // if (actor.is_player())
         //     console.log(target.name, desired, can_buy, have)
         return (Math.min(desired, can_buy) - have - already_trying_to_buy) / 50;
@@ -240,7 +243,7 @@ storage_1.AIActionsStorage.register_action_material({
         const desired = actor.ai_desired_stash.get(target.id);
         const can_buy = actor.savings.get() / actor.ai_price_buy_expectation[target.id];
         const have = actor.stash.get(target.id);
-        const amount_to_buy = Math.min(desired, can_buy) - have;
+        const amount_to_buy = Math.max(0, Math.min(desired, can_buy) - have);
         if (actor.is_player())
             console.log(target.name, desired, can_buy, have, amount_to_buy, actor.ai_price_buy_expectation[target.id]);
         market_1.EventMarket.buy_smart_with_limits(actor, target.id, common_1.AIfunctions.buy_price(actor, target.id), amount_to_buy);
@@ -256,6 +259,30 @@ storage_1.AIActionsStorage.register_action_self({
             return 0;
         }
         return (actor.equip.data.backpack.items.length / 10);
+    },
+    potential_targets(actor) {
+        return [actor];
+    },
+    action(actor, target) {
+        character_2.CharacterEffect.open_shop(actor);
+    }
+});
+storage_1.AIActionsStorage.register_action_self({
+    tag: "close-shop",
+    utility(actor, target) {
+        if (!actor.open_shop) {
+            return 0;
+        }
+        if (actor.home_location_id == undefined) {
+            return 0;
+        }
+        if (actor.cell_id != data_objects_1.Data.Locations.from_id(actor.home_location_id).cell_id) {
+            return 0;
+        }
+        if (actor.equip.data.backpack.items.length > 0) {
+            return 0;
+        }
+        return 1;
     },
     potential_targets(actor) {
         return [actor];

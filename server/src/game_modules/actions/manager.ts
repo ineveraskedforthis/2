@@ -3,6 +3,7 @@ import { Character, CharacterMapAction, TriggerResponse } from "../data/entities
 import { Alerts } from "../client_communication/network_actions/alerts"
 import { Data } from "../data/data_objects"
 import { ms } from "@custom_types/battle_data"
+import { MarketOrders } from "../market/system"
 
 
 
@@ -48,6 +49,7 @@ export namespace ActionManager {
             if (character.action != undefined) {
                 character.action_progress += dt / 1000
                 if (character.action_progress > character.action_duration) {
+                    // console.log("action", character.id)
                     call_action(character.action, character, character.next_cell||character.cell_id)
                 }
             }

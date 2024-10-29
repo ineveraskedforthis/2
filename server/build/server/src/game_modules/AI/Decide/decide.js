@@ -28,6 +28,7 @@ function decide(character) {
         }
     }
     if (best) {
+        // console.log(best.tag + " " + character.id)
         best.action(character, best.target);
         character.current_ai_action = best.tag + " " + best.target.id;
     }

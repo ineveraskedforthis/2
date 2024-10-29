@@ -136,7 +136,7 @@ var EventMarket;
         let best_price = min_price;
         data_id_1.DataID.Cells.for_each_market_order(character.cell_id, (item) => {
             let order = data_objects_1.Data.MarketOrders.from_id(item);
-            if (order.typ == 'buy')
+            if (order.typ == 'sell')
                 return;
             if (order.material != material)
                 return;
