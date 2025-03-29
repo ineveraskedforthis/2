@@ -354,7 +354,6 @@ export function render(r: RenderingData, objects: TexturedRect[], perspective: n
 
         r.context.activeTexture(r.context.TEXTURE0);
         r.context.uniform1i(r.texture_location, 0)
-
         r.context.bindTexture(r.context.TEXTURE_2D, r.texture_storage[object.texture_name])
 
         r.context.uniform1f(r.x_location, object.x)
