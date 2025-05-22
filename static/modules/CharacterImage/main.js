@@ -3,6 +3,7 @@ import { elementById } from "../HTMLwrappers/common.js";
 import { load, render, update_rects } from "./render.js";
 import { EQUIPMENT_TAGS } from "./equip_strings.js";
 import { models_description } from "./models.js";
+import { globals } from "../globals.js";
 const HEIGHT = 1080;
 const WIDTH = 1920;
 var flag_init = false;
@@ -62,6 +63,9 @@ export function update_local_npc_images(data) {
     }
     let objects = [];
     for (let character of data) {
+        if (character.id != globals.character_data?.id && !globals.draw_characters) {
+            continue;
+        }
         const transform = number_to_position(character.id, 25);
         console.log("transform");
         console.log(transform);

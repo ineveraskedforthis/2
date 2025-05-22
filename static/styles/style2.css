@@ -129,6 +129,14 @@ div {
     z-index: 10;
 }
 
+#toggle_render {
+    position: absolute;
+    top: 50px;
+    right: 180px;
+    width: 100px;
+    z-index: 10;
+}
+
 #base_background {
     position: absolute;
     width: 90%;

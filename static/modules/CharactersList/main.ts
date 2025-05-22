@@ -112,6 +112,7 @@ export function update_characters_list(data: CharacterView[]) {
     for (const item of lists) {
         item.data = data
     }
+
     update_local_npc_images(data)
 }
 

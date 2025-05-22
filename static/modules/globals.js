@@ -35,5 +35,6 @@ export var globals = {
     current_path: [],
     current_path_step: 0,
     character_data: undefined,
+    draw_characters: true,
     now: Date.now()
 };

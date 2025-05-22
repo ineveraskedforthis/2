@@ -536,7 +536,7 @@ function set_local_actions(actions) {
             }
             {
                 let chance_label = document.createElement('div');
-                chance_label.innerHTML = '100%';
+                chance_label.innerHTML = 'Auto:';
                 chance_label.id = action_tag + '_chance_desktop';
                 chance_label.classList.add('probability');
                 desktop_button.appendChild(chance_label);

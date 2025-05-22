@@ -44,7 +44,8 @@ type globals = {
     character_data: CharacterDataExpanded|undefined
     current_path_data: {[key: string]: [number, number]|undefined}
     current_path: [number, number][]
-    current_path_step: number
+    current_path_step: number,
+    draw_characters: boolean,
     now: number
 }
 
@@ -72,6 +73,7 @@ export var globals: globals = {
     current_path: [],
     current_path_step: 0,
     character_data: undefined,
+    draw_characters: true,
     now: Date.now()
 }
 

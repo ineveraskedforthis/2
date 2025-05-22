@@ -1,3 +1,4 @@
+import { globals } from "../globals.js";
 import { elementById } from "../HTMLwrappers/common.js";
 import { my_alert } from "../MessageBox/my_alert.js";
 import { socket } from "../Socket/socket.js";
@@ -18,6 +19,11 @@ function reloadCss()
 {
     let button = elementById('reset_windows');
     button.onclick = () => { localStorage.setItem('tabs_properties', 'null'); tab.reset_style_all(); tab.save_tabs_all()};
+}
+
+{
+    let button = elementById('toggle_render');
+    button.onclick = () => { globals.draw_characters = false; }
 }
 
 //CHANGE SCENES STUFF

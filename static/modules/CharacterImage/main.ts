@@ -6,6 +6,7 @@ import { elementById } from "../HTMLwrappers/common.js"
 import { load, render, update_rects, RenderingData, TexturedRect } from "./render.js"
 import { EQUIPMENT_TAGS, display_layers } from "./equip_strings.js";
 import { models_description } from "./models.js";
+import { globals } from "../globals.js";
 
 const HEIGHT = 1080
 const WIDTH = 1920
@@ -89,6 +90,10 @@ export function update_local_npc_images(data: CharacterImageData[]) {
 
 
     for (let character of data) {
+
+        if (character.id != globals.character_data?.id && !globals.draw_characters) {
+            continue;
+        }
 
         const transform = number_to_position(character.id, 25)
         console.log("transform")
